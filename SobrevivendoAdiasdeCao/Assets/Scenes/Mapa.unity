@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: "Pra\xE7a\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -497,7 +497,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: 'Hospital
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -726,7 +728,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: 'Mercado
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -842,8 +846,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -588, y: 171}
-  m_SizeDelta: {x: 261.2102, y: 223.2732}
+  m_AnchoredPosition: {x: -363, y: 127.56}
+  m_SizeDelta: {x: 192.1107, y: 164.21}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1003052310
 MonoBehaviour:
@@ -888,7 +892,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1003052311}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1679294878}
+        m_TargetAssemblyTypeName: MapManager, Assembly-CSharp
+        m_MethodName: IrParaMercado
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1003052311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -940,7 +956,7 @@ GameObject:
   - component: {fileID: 1220053327}
   - component: {fileID: 1220053326}
   m_Layer: 5
-  m_Name: Mercado (2)
+  m_Name: Hospital
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -963,8 +979,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 635, y: 171}
-  m_SizeDelta: {x: 261.2102, y: 223.2732}
+  m_AnchoredPosition: {x: 297.96387, y: 99.840546}
+  m_SizeDelta: {x: 190.8458, y: 163.1282}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1220053326
 MonoBehaviour:
@@ -1009,7 +1025,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1220053327}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1679294878}
+        m_TargetAssemblyTypeName: MapManager, Assembly-CSharp
+        m_MethodName: IrParaHospital
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1220053327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1048,6 +1076,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1220053324}
   m_CullTransparentMesh: 1
+--- !u!1 &1679294877
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1679294879}
+  - component: {fileID: 1679294878}
+  m_Layer: 0
+  m_Name: MapManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1679294878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679294877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fccceb26ea9538847aac5e16fbba1a69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapManager
+--- !u!4 &1679294879
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679294877}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.90242, y: 0.9034, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1807744537
 GameObject:
   m_ObjectHideFlags: 0
@@ -1061,7 +1133,7 @@ GameObject:
   - component: {fileID: 1807744540}
   - component: {fileID: 1807744539}
   m_Layer: 5
-  m_Name: Mercado (1)
+  m_Name: "Pra\xE7a"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1084,8 +1156,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -282}
-  m_SizeDelta: {x: 261.2102, y: 223.2732}
+  m_AnchoredPosition: {x: -30.465698, y: -151.85042}
+  m_SizeDelta: {x: 163.8865, y: 140.0844}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1807744539
 MonoBehaviour:
@@ -1130,7 +1202,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1807744540}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1679294878}
+        m_TargetAssemblyTypeName: MapManager, Assembly-CSharp
+        m_MethodName: IrParaPraca
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1807744540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1203,8 +1287,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0050049, y: 0.000045776}
-  m_SizeDelta: {x: 1920, y: 1080}
+  m_AnchoredPosition: {x: -0.0014086, y: -0.0010109}
+  m_SizeDelta: {x: 1101, y: 534}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1921389327
 MonoBehaviour:
@@ -1251,3 +1335,4 @@ SceneRoots:
   - {fileID: 728770758}
   - {fileID: 664505497}
   - {fileID: 566176907}
+  - {fileID: 1679294879}
