@@ -4,36 +4,48 @@ public class PlayerMovement : MonoBehaviour
 {
     public float speed = 5f;
     public float jumpForce = 7f;
+    public int maxJumps = 2;
 
     private Rigidbody2D rb;
-    private float moveInput;
+    private Animator anim;
 
-    private bool isGrounded;
+    private float moveInput;
     private int jumpCount;
-    public int maxJumps = 2;
+    private bool isGrounded;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
     }
 
     void Update()
     {
-        // Movimento lateral
         moveInput = Input.GetAxis("Horizontal");
 
-        // Pulo normal + duplo pulo
+        // animação andar
+        anim.SetFloat("Speed", Mathf.Abs(moveInput));
+
+        // pulo
         if (Input.GetKeyDown(KeyCode.Space) && jumpCount < maxJumps)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             jumpCount++;
         }
 
-        // Latido
+        // latido
         if (Input.GetKeyDown(KeyCode.Z))
         {
             Bark();
         }
+
+        anim.SetBool("Grounded", isGrounded);
+
+        // virar sprite
+        if (moveInput > 0)
+            transform.localScale = new Vector3(1, 1, 1);
+        else if (moveInput < 0)
+            transform.localScale = new Vector3(-1, 1, 1);
     }
 
     void FixedUpdate()
@@ -43,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Bark()
     {
+        anim.SetTrigger("Bark");
         Debug.Log("Latido!");
     }
 
@@ -51,7 +64,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
-            jumpCount = 0; // reseta pulos ao tocar chão
+            jumpCount = 0;
         }
     }
 
