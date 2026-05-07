@@ -34,7 +34,9 @@ public class GameManager : MonoBehaviour
     {
         painelVitoria.SetActive(false);
         painelDerrota.SetActive(false);
-        carrocinha.SetActive(false);
+
+        if (carrocinha != null)
+            carrocinha.SetActive(false);
 
         AtualizarUI();
     }
@@ -53,7 +55,39 @@ public class GameManager : MonoBehaviour
                 LiberarBoss();
             }
 
-            textoTempo.text = "Tempo: " + Mathf.Ceil(tempo);
+            AtualizarTempoUI();
+        }
+    }
+
+    void AtualizarTempoUI()
+    {
+        int minutos = Mathf.FloorToInt(tempo / 60);
+        int segundos = Mathf.FloorToInt(tempo % 60);
+        int milesimos = Mathf.FloorToInt((tempo * 100) % 100);
+
+        textoTempo.text = string.Format(
+            "{0:00}:{1:00}:{2:00}",
+            minutos,
+            segundos,
+            milesimos
+        );
+
+        // ÚLTIMOS 30 SEGUNDOS
+        if (tempo <= 30)
+        {
+            textoTempo.color = Color.red;
+        }
+
+        // ÚLTIMOS 10 SEGUNDOS
+        if (tempo <= 10)
+        {
+            float piscar = Mathf.PingPong(Time.time * 5f, 1f);
+
+            textoTempo.color = Color.Lerp(
+                Color.white,
+                Color.red,
+                piscar
+            );
         }
     }
 
@@ -62,6 +96,10 @@ public class GameManager : MonoBehaviour
         if (jogoAcabou) return;
 
         itensColetados += valor;
+
+        if (itensColetados < 0)
+            itensColetados = 0;
+
         AtualizarUI();
 
         if (itensColetados >= meta)
@@ -78,7 +116,9 @@ public class GameManager : MonoBehaviour
     void LiberarBoss()
     {
         bossLiberado = true;
-        carrocinha.SetActive(true);
+
+        if (carrocinha != null)
+            carrocinha.SetActive(true);
 
         textoTempo.text = "FUJA!";
     }
@@ -86,14 +126,18 @@ public class GameManager : MonoBehaviour
     public void Derrota()
     {
         jogoAcabou = true;
+
         painelDerrota.SetActive(true);
+
         Time.timeScale = 0f;
     }
 
     void Vitoria()
     {
         jogoAcabou = true;
+
         painelVitoria.SetActive(true);
+
         Time.timeScale = 0f;
     }
 }
