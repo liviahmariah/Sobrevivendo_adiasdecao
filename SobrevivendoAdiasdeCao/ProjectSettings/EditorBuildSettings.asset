@@ -16,20 +16,20 @@ EditorBuildSettings:
     guid: dceceb43c0899f34892dd49867413714
   - enabled: 1
     path: Assets/Scenes/Tutorial.unity
-    guid: ca860852378c77046b1ec731a5aeac53
+    guid: 803ea52b9a04c954589cf6bd7e78d99f
   - enabled: 1
     path: Assets/Scenes/Mapa.unity
     guid: 2d62e89f9b275234d873f823849d4cf3
   - enabled: 1
     path: Assets/Scenes/JogoTeste.unity
     guid: cf2fbeafa09f22d4b9ca11e851d1aaaf
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Hospital1.unity
     guid: 3df1f60b19a97854884589a519d3cdbf
   - enabled: 1
     path: Assets/Scenes/Mercado.unity
     guid: 0902b97ef1cb12f4b9890b4c5c9d78fa
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Praca1.unity
     guid: b0d68ac488f8dc744a66f1b9b02ebcfc
   - enabled: 0

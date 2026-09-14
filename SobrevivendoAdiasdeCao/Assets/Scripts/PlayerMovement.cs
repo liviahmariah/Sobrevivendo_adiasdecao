@@ -19,6 +19,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip somLatido;
 
+    [Header("Poeira da corrida")]
+    [SerializeField] private ParticleSystem poeiraCorrida;
+
     private Rigidbody2D rb;
     private Animator anim;
 
@@ -32,6 +35,9 @@ public class PlayerMovement : MonoBehaviour
     private float startY;
 
     private float velocidadeBase;
+
+    // Guarda se a poeira está ativa
+    private bool poeiraAtiva;
 
     // =====================================================
     // START
@@ -47,6 +53,12 @@ public class PlayerMovement : MonoBehaviour
         jumpCount = 0;
 
         rb.gravityScale = 1f;
+
+        // Garante que a poeira não comece sozinha
+        if (poeiraCorrida != null)
+        {
+            poeiraCorrida.Stop();
+        }
     }
 
     // =====================================================
@@ -80,6 +92,12 @@ public class PlayerMovement : MonoBehaviour
                 TutorialManager.instance.RegistrarCorrida();
             }
         }
+
+        // =================================================
+        // POEIRA DA CORRIDA
+        // =================================================
+
+        AtualizarPoeira();
 
         // =================================================
         // PULO
@@ -122,6 +140,52 @@ public class PlayerMovement : MonoBehaviour
         else if (moveInput < 0)
         {
             transform.localScale = new Vector3(1, 1, 1);
+        }
+    }
+
+    // =====================================================
+    // POEIRA DA CORRIDA
+    // =====================================================
+
+    void AtualizarPoeira()
+    {
+        if (poeiraCorrida == null)
+            return;
+
+        bool deveMostrarPoeira =
+            Mathf.Abs(moveInput) > 0.1f &&
+            isGrounded &&
+            !isJumping;
+
+        if (deveMostrarPoeira)
+        {
+            var shape = poeiraCorrida.shape;
+
+            // Correndo para a direita
+            if (moveInput > 0)
+            {
+                shape.rotation = new Vector3(0f, 0f, 90f);
+            }
+
+            // Correndo para a esquerda
+            else if (moveInput < 0)
+            {
+                shape.rotation = new Vector3(0f, 0f, -90f);
+            }
+
+            if (!poeiraAtiva)
+            {
+                poeiraCorrida.Play();
+                poeiraAtiva = true;
+            }
+        }
+        else
+        {
+            if (poeiraAtiva)
+            {
+                poeiraCorrida.Stop();
+                poeiraAtiva = false;
+            }
         }
     }
 
@@ -190,6 +254,9 @@ public class PlayerMovement : MonoBehaviour
     {
         isJumping = true;
 
+        // Para a poeira imediatamente ao pular
+        PararPoeira();
+
         jumpTime = 0f;
 
         startY = transform.position.y;
@@ -218,6 +285,19 @@ public class PlayerMovement : MonoBehaviour
         {
             TutorialManager.instance.RegistrarPulo();
         }
+    }
+
+    // =====================================================
+    // PARAR POEIRA
+    // =====================================================
+
+    void PararPoeira()
+    {
+        if (poeiraCorrida == null)
+            return;
+
+        poeiraCorrida.Stop();
+        poeiraAtiva = false;
     }
 
     // =====================================================
@@ -324,6 +404,8 @@ public class PlayerMovement : MonoBehaviour
             if (!isJumping)
             {
                 isGrounded = false;
+
+                PararPoeira();
 
                 if (anim != null)
                 {
