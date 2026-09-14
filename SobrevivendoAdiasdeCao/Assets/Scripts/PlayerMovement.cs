@@ -152,28 +152,40 @@ public class PlayerMovement : MonoBehaviour
         if (poeiraCorrida == null)
             return;
 
-        // A poeira só aparece quando:
-        // 1. Está se movimentando
-        // 2. Está no chão
-        // 3. Não está pulando
-
         bool deveMostrarPoeira =
             Mathf.Abs(moveInput) > 0.1f &&
             isGrounded &&
             !isJumping;
 
-        // Começa a poeira
-        if (deveMostrarPoeira && !poeiraAtiva)
+        if (deveMostrarPoeira)
         {
-            poeiraCorrida.Play();
-            poeiraAtiva = true;
-        }
+            var shape = poeiraCorrida.shape;
 
-        // Para a poeira
-        else if (!deveMostrarPoeira && poeiraAtiva)
+            // Correndo para a direita
+            if (moveInput > 0)
+            {
+                shape.rotation = new Vector3(0f, 0f, 90f);
+            }
+
+            // Correndo para a esquerda
+            else if (moveInput < 0)
+            {
+                shape.rotation = new Vector3(0f, 0f, -90f);
+            }
+
+            if (!poeiraAtiva)
+            {
+                poeiraCorrida.Play();
+                poeiraAtiva = true;
+            }
+        }
+        else
         {
-            poeiraCorrida.Stop();
-            poeiraAtiva = false;
+            if (poeiraAtiva)
+            {
+                poeiraCorrida.Stop();
+                poeiraAtiva = false;
+            }
         }
     }
 
