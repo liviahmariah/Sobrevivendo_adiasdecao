@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: fd078d6c8dff7ab4abbe09fc68fcc2d1
+guid: 88f69307c1af3cc4e9309b65a2e50a19
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7027179030860567877
-    second: PATA_0
+      213: 1131093271933411341
+    second: ElementosBotos_0
+  - first:
+      213: -988843450195705373
+    second: ElementosBotos_1
+  - first:
+      213: -1960244502839249907
+    second: ElementosBotos_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -84,6 +90,32 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -97,37 +129,11 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 2
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: iOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 2
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -140,7 +146,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -153,7 +159,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -166,7 +172,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -178,13 +184,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PATA_0
+      name: ElementosBotos_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 6
-        width: 10
-        height: 4
+        y: 19
+        width: 64
+        height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -193,52 +199,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5459483d81e858160800000000000000
-      internalID: 7027179030860567877
+      spriteID: d00ec69865372bf00800000000000000
+      internalID: 1131093271933411341
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PATA_1
+      name: ElementosBotos_1
       rect:
         serializedVersion: 2
-        x: 10
-        y: 4
-        width: 11
-        height: 9
+        x: 0
+        y: 3
+        width: 17
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 553ac58b88b6aa14bba37881b8ead81f
-      internalID: 43606317
+      spriteID: 3e10d940f1ce642f0800000000000000
+      internalID: -988843450195705373
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PATA_2
+      name: ElementosBotos_2
       rect:
         serializedVersion: 2
-        x: 21
-        y: 6
-        width: 11
-        height: 4
+        x: 32
+        y: 2
+        width: 17
+        height: 13
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 90696c75cdef2604ca7dfd85c4ebaba8
-      internalID: 941968681
+      spriteID: d04ba5fa200dbc4e0800000000000000
+      internalID: -1960244502839249907
       vertices: []
       indices: 
       edges: []
@@ -247,7 +253,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 53f8be05dd1266e4c97e022e8d404f44
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -257,9 +263,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      PATA_0: 7027179030860567877
-      PATA_1: 43606317
-      PATA_2: 941968681
+      ElementosBotos_0: 1131093271933411341
+      ElementosBotos_1: -988843450195705373
+      ElementosBotos_2: -1960244502839249907
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

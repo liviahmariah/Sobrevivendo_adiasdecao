@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: fd078d6c8dff7ab4abbe09fc68fcc2d1
+guid: 3c4a105b95faa494a929599099408dc0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7027179030860567877
-    second: PATA_0
+      213: 3847232457999218186
+    second: ElementosAA_0
+  - first:
+      213: -8985075559264957296
+    second: ElementosAA_1
+  - first:
+      213: -8494174482816144018
+    second: ElementosAA_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -84,6 +90,32 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -97,37 +129,11 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 2
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: iOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 2
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -140,7 +146,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -153,7 +159,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -166,7 +172,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -178,13 +184,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PATA_0
+      name: ElementosAA_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 4
         y: 6
-        width: 10
-        height: 4
+        width: 19
+        height: 18
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -193,52 +199,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5459483d81e858160800000000000000
-      internalID: 7027179030860567877
+      spriteID: a06756b798d146530800000000000000
+      internalID: 3847232457999218186
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PATA_1
+      name: ElementosAA_1
       rect:
         serializedVersion: 2
-        x: 10
+        x: 22
+        y: 5
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09cc7f142699e4380800000000000000
+      internalID: -8985075559264957296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ElementosAA_2
+      rect:
+        serializedVersion: 2
+        x: 42
         y: 4
-        width: 11
-        height: 9
+        width: 20
+        height: 20
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 553ac58b88b6aa14bba37881b8ead81f
-      internalID: 43606317
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PATA_2
-      rect:
-        serializedVersion: 2
-        x: 21
-        y: 6
-        width: 11
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 90696c75cdef2604ca7dfd85c4ebaba8
-      internalID: 941968681
+      spriteID: e6d6e8bdf41ae1a80800000000000000
+      internalID: -8494174482816144018
       vertices: []
       indices: 
       edges: []
@@ -247,7 +253,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 53f8be05dd1266e4c97e022e8d404f44
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -257,9 +263,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      PATA_0: 7027179030860567877
-      PATA_1: 43606317
-      PATA_2: 941968681
+      ElementosAA_0: 3847232457999218186
+      ElementosAA_1: -8985075559264957296
+      ElementosAA_2: -8494174482816144018
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
