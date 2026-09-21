@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -36,8 +37,10 @@ public class PlayerMovement : MonoBehaviour
 
     private float velocidadeBase;
 
-    // Guarda se a poeira está ativa
     private bool poeiraAtiva;
+
+    // Escala original do Player
+    private Vector3 escalaOriginal;
 
     // =====================================================
     // START
@@ -49,6 +52,9 @@ public class PlayerMovement : MonoBehaviour
         anim = GetComponent<Animator>();
 
         velocidadeBase = speed;
+
+        // Guarda o tamanho definido no Inspector
+        escalaOriginal = transform.localScale;
 
         jumpCount = 0;
 
@@ -131,15 +137,24 @@ public class PlayerMovement : MonoBehaviour
 
         // =================================================
         // VIRAR PERSONAGEM
+        // Mantém o tamanho original
         // =================================================
 
         if (moveInput > 0)
         {
-            transform.localScale = new Vector3(-1, 1, 1);
+            transform.localScale = new Vector3(
+                -Mathf.Abs(escalaOriginal.x),
+                escalaOriginal.y,
+                escalaOriginal.z
+            );
         }
         else if (moveInput < 0)
         {
-            transform.localScale = new Vector3(1, 1, 1);
+            transform.localScale = new Vector3(
+                Mathf.Abs(escalaOriginal.x),
+                escalaOriginal.y,
+                escalaOriginal.z
+            );
         }
     }
 
