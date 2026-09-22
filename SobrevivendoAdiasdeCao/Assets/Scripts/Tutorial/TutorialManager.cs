@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using TMPro;
 using System.Collections;
@@ -54,30 +55,40 @@ public class TutorialManager : MonoBehaviour
     [Header("Configuração")]
     public float tempoEntreFalase = 2f;
 
+    [Tooltip("Tempo que Duke espera antes de dar uma dica.")]
+    public float tempoParaDica = 8f;
+
+    [Tooltip("Tempo que cada fala fica visível.")]
+    public float tempoExibicaoFala = 3.5f;
+
+    private Coroutine rotinaDica;
+    private Coroutine rotinaFala;
+
     private bool tutorialIniciado = false;
+    private bool chefeLiberado = false;
 
     // =====================================================
-    // DIALOGOS DE DUKE
+    // FALAS DA INTRODUÇÃO
     // =====================================================
 
-    [Header("Falas de Duke")]
+    [Header("Falas da Introdução")]
 
     [TextArea(2, 5)]
-    public string[] falasDuke =
+    public string[] falasIntroducao =
     {
         "As coisas não estão boas para nós...",
 
         "Precisamos fugir deste lugar!",
 
-        "Sandy, você conseguiu sair da sua gaiola, ajude os outros a saírem também!",
+        "Sandy, você conseguiu sair da sua gaiola. Ajude os outros a saírem também!",
 
-        "O chefe da carrocinha está no horário de intervalo agora, é a nossa chance!",
+        "O chefe da carrocinha está no horário de intervalo agora. É a nossa chance!",
 
         "Mas o intervalo não vai durar para sempre. Quando ele voltar, vai começar a ronda pelas gaiolas.",
 
         "Precisamos libertar todos antes que ele termine a ronda!",
 
-        "Você precisa coletar as 9 chaves das gaiolas que estão com ele! Rápido, estamos quase sem tempo!"
+        "Você precisa coletar as 9 chaves das gaiolas. Rápido, estamos quase sem tempo!"
     };
 
     // =====================================================
@@ -103,6 +114,9 @@ public class TutorialManager : MonoBehaviour
     {
         etapaAtual = EtapaTutorial.Introducao;
 
+        tutorialIniciado = false;
+        chefeLiberado = false;
+
         if (objetivo != null)
             objetivo.SetActive(false);
 
@@ -119,7 +133,7 @@ public class TutorialManager : MonoBehaviour
     }
 
     // =====================================================
-    // INÍCIO
+    // INÍCIO DO TUTORIAL
     // =====================================================
 
     IEnumerator IniciarTutorial()
@@ -131,30 +145,97 @@ public class TutorialManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        yield return StartCoroutine(MostrarDialogos());
+        yield return StartCoroutine(MostrarDialogosIntroducao());
+
+        tutorialIniciado = true;
 
         ComecarCorrida();
     }
 
     // =====================================================
-    // FALAS DE DUKE
+    // DIÁLOGOS DA INTRODUÇÃO
     // =====================================================
 
-    IEnumerator MostrarDialogos()
+    IEnumerator MostrarDialogosIntroducao()
     {
-        if (painelDialogo != null)
-            painelDialogo.SetActive(true);
-
-        for (int i = 0; i < falasDuke.Length; i++)
+        for (int i = 0; i < falasIntroducao.Length; i++)
         {
-            if (textoDuke != null)
-                textoDuke.text = falasDuke[i];
+            MostrarFala(falasIntroducao[i]);
 
             yield return new WaitForSeconds(tempoEntreFalase);
         }
 
+        EsconderDialogo();
+    }
+
+    // =====================================================
+    // SISTEMA DE FALAS
+    // =====================================================
+
+    public void MostrarFala(string mensagem)
+    {
+        if (painelDialogo != null)
+            painelDialogo.SetActive(true);
+
+        if (textoDuke != null)
+            textoDuke.text = mensagem;
+    }
+
+    void EsconderDialogo()
+    {
         if (painelDialogo != null)
             painelDialogo.SetActive(false);
+    }
+
+    void MostrarFalaTemporaria(string mensagem)
+    {
+        if (rotinaFala != null)
+            StopCoroutine(rotinaFala);
+
+        rotinaFala = StartCoroutine(FalaTemporaria(mensagem));
+    }
+
+    IEnumerator FalaTemporaria(string mensagem)
+    {
+        MostrarFala(mensagem);
+
+        yield return new WaitForSeconds(tempoExibicaoFala);
+
+        EsconderDialogo();
+
+        rotinaFala = null;
+    }
+
+    // =====================================================
+    // SISTEMA DE DICAS
+    // =====================================================
+
+    void IniciarDica(string mensagem)
+    {
+        PararDica();
+
+        rotinaDica = StartCoroutine(AguardarDica(mensagem));
+    }
+
+    IEnumerator AguardarDica(string mensagem)
+    {
+        yield return new WaitForSeconds(tempoParaDica);
+
+        if (etapaAtual == EtapaTutorial.Finalizado)
+            yield break;
+
+        MostrarFalaTemporaria(mensagem);
+
+        rotinaDica = null;
+    }
+
+    void PararDica()
+    {
+        if (rotinaDica != null)
+        {
+            StopCoroutine(rotinaDica);
+            rotinaDica = null;
+        }
     }
 
     // =====================================================
@@ -166,6 +247,14 @@ public class TutorialManager : MonoBehaviour
         etapaAtual = EtapaTutorial.Corrida;
 
         MostrarObjetivo("Use as setas direcionais para andar!");
+
+        MostrarFalaTemporaria(
+            "Sandy, vamos começar! Use as setas direcionais para andar."
+        );
+
+        IniciarDica(
+            "Sandy, tente usar as setas direcionais para se movimentar!"
+        );
     }
 
     public void RegistrarCorrida()
@@ -173,7 +262,13 @@ public class TutorialManager : MonoBehaviour
         if (etapaAtual != EtapaTutorial.Corrida)
             return;
 
+        PararDica();
+
         Debug.Log("Corrida concluída!");
+
+        MostrarFalaTemporaria(
+            "Muito bem, Sandy! Você já sabe andar. Agora vamos aprender a pular!"
+        );
 
         ComecarPulo();
     }
@@ -187,6 +282,14 @@ public class TutorialManager : MonoBehaviour
         etapaAtual = EtapaTutorial.Pulo;
 
         MostrarObjetivo("Use ESPAÇO para pular e fugir dos golpes!");
+
+        MostrarFalaTemporaria(
+            "Agora vamos treinar o pulo! Aperte ESPAÇO para pular."
+        );
+
+        IniciarDica(
+            "Sandy, aperte ESPAÇO para pular! Você também pode usar o pulo duplo."
+        );
     }
 
     public void RegistrarPulo()
@@ -194,7 +297,13 @@ public class TutorialManager : MonoBehaviour
         if (etapaAtual != EtapaTutorial.Pulo)
             return;
 
+        PararDica();
+
         Debug.Log("Pulo concluído!");
+
+        MostrarFalaTemporaria(
+            "Muito bem! O pulo vai ajudar você a escapar dos obstáculos e dos golpes!"
+        );
 
         ComecarLatido();
     }
@@ -208,6 +317,14 @@ public class TutorialManager : MonoBehaviour
         etapaAtual = EtapaTutorial.Latido;
 
         MostrarObjetivo("Use Z para latir e assustar o chefe!");
+
+        MostrarFalaTemporaria(
+            "Agora vamos aprender a latir! Aperte Z para assustar a carrocinha."
+        );
+
+        IniciarDica(
+            "Sandy, use Z para latir! Seu latido pode ajudar a afastar o perigo."
+        );
     }
 
     public void RegistrarLatido()
@@ -215,7 +332,13 @@ public class TutorialManager : MonoBehaviour
         if (etapaAtual != EtapaTutorial.Latido)
             return;
 
+        PararDica();
+
         Debug.Log("Latido concluído!");
+
+        MostrarFalaTemporaria(
+            "Isso aí, Sandy! Agora você está pronta para ajudar os outros cães!"
+        );
 
         ComecarColeta();
     }
@@ -228,18 +351,27 @@ public class TutorialManager : MonoBehaviour
     {
         etapaAtual = EtapaTutorial.Coleta;
 
-        MostrarObjetivo("Colete as chaves e nos liberte daqui!");
+        MostrarObjetivo("Colete as 9 chaves das gaiolas!");
+
+        MostrarFalaTemporaria(
+            "O intervalo não vai durar para sempre! Colete as 9 chaves para libertar os cães."
+        );
+
+        IniciarDica(
+            "Sandy, procure as chaves das gaiolas! Precisamos libertar todos antes que o chefe volte."
+        );
 
         Debug.Log("Tutorial das mecânicas concluído!");
 
-        // Inicia o timer do intervalo
         if (tutorialTimer != null)
         {
             tutorialTimer.IniciarTimer();
         }
         else
         {
-            Debug.LogWarning("TutorialTimer1 não foi configurado no Inspector!");
+            Debug.LogWarning(
+                "TutorialTimer não foi configurado no Inspector!"
+            );
         }
     }
 
@@ -249,9 +381,20 @@ public class TutorialManager : MonoBehaviour
 
     public void IntervaloTerminou()
     {
+        if (chefeLiberado)
+            return;
+
+        chefeLiberado = true;
+
+        PararDica();
+
         Debug.Log("O CHEFE VOLTOU!");
 
-        MostrarObjetivo("O chefe voltou!");
+        MostrarFalaTemporaria(
+            "Sandy! O chefe voltou! Corra e use suas habilidades para fugir dele!"
+        );
+
+        MostrarObjetivo("O chefe voltou! Liberte os cães antes que seja tarde!");
 
         if (chefe != null)
         {
@@ -264,13 +407,25 @@ public class TutorialManager : MonoBehaviour
             );
         }
     }
+
     // =====================================================
     // FINAL
     // =====================================================
 
     public void FinalizarTutorial()
     {
+        if (etapaAtual == EtapaTutorial.Finalizado)
+            return;
+
         etapaAtual = EtapaTutorial.Finalizado;
+
+        PararDica();
+
+        if (rotinaFala != null)
+        {
+            StopCoroutine(rotinaFala);
+            rotinaFala = null;
+        }
 
         if (objetivo != null)
             objetivo.SetActive(false);

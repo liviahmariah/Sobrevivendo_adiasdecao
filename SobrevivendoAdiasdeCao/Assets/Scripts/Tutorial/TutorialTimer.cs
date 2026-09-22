@@ -1,10 +1,11 @@
+
 using UnityEngine;
 using TMPro;
 
 public class TutorialTimer : MonoBehaviour
 {
     [Header("Configuração")]
-    public float tempoInicial = 30f;
+    public float tempoInicial = 20f;
 
     [Header("UI")]
     public TextMeshProUGUI textoTimer;
@@ -17,15 +18,14 @@ public class TutorialTimer : MonoBehaviour
 
     void Start()
     {
-        tempoAtual = tempoInicial;
+        tempoAtual = 0f;
 
         TempoAcabou = false;
 
         AtualizarUI();
 
-        // IMPORTANTE:
-        // O timer NÃO começa automaticamente.
-        // O TutorialFugaManager vai iniciar.
+        // O timer não começa automaticamente.
+        // O TutorialManager vai iniciar.
     }
 
     void Update()
@@ -67,7 +67,7 @@ public class TutorialTimer : MonoBehaviour
 
         AtualizarUI();
 
-        Debug.Log("⏱️ Intervalo começou!");
+        Debug.Log("⏱️ O chefe está fora! 20 segundos restantes.");
     }
 
     // =====================================================
@@ -77,6 +77,21 @@ public class TutorialTimer : MonoBehaviour
     public void PararTimer()
     {
         timerAtivo = false;
+    }
+
+    // =====================================================
+    // REINICIAR
+    // =====================================================
+
+    public void ReiniciarTimer()
+    {
+        PararTimer();
+
+        tempoAtual = 0f;
+
+        TempoAcabou = false;
+
+        AtualizarUI();
     }
 
     // =====================================================

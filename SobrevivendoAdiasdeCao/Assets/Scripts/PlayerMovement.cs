@@ -23,6 +23,9 @@ public class PlayerMovement : MonoBehaviour
     [Header("Poeira da corrida")]
     [SerializeField] private ParticleSystem poeiraCorrida;
 
+    [Header("Molho de chaves")]
+    public MolhoChavesTutorial molhoChaves;
+
     private Rigidbody2D rb;
     private Animator anim;
 
@@ -38,6 +41,9 @@ public class PlayerMovement : MonoBehaviour
     private float velocidadeBase;
 
     private bool poeiraAtiva;
+
+    [Header("Carrocinha")]
+    public ChefeCarrocinhaTutorial chefe;
 
     // Escala original do Player
     private Vector3 escalaOriginal;
@@ -376,13 +382,19 @@ public class PlayerMovement : MonoBehaviour
 
         Debug.Log("Latido!");
 
-        // ================================================
-        // AVISA O TUTORIAL
-        // ================================================
-
         if (TutorialManager.instance != null)
         {
             TutorialManager.instance.RegistrarLatido();
+        }
+
+        if (chefe != null)
+        {
+            chefe.AssustarChefe();
+        }
+
+        if (molhoChaves != null)
+        {
+            molhoChaves.ReceberLatido();
         }
     }
 
