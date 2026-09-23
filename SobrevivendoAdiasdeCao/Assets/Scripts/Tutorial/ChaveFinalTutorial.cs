@@ -3,29 +3,38 @@ using System.Collections;
 
 public class ChaveFinalTutorial : MonoBehaviour
 {
-    [Header("Configuração")]
-    public bool chaveAtiva = false;
-
     [Header("Salto da chave")]
     public float distanciaSalto = 1.5f;
     public float alturaSalto = 1.5f;
     public float duracaoSalto = 0.5f;
 
     private bool podeColetar = false;
+    private bool chaveAtiva = false;
 
-    private void Start()
+    private Collider2D colisor;
+
+    private void Awake()
     {
-        gameObject.SetActive(false);
+        colisor = GetComponent<Collider2D>();
+
+        if (colisor != null)
+        {
+            colisor.isTrigger = true;
+            colisor.enabled = false;
+        }
     }
 
     public void SoltarChave(Vector3 posicaoInicial)
     {
-        gameObject.SetActive(true);
-
         chaveAtiva = true;
         podeColetar = false;
 
         transform.position = posicaoInicial;
+
+        if (colisor != null)
+        {
+            colisor.enabled = false;
+        }
 
         StartCoroutine(SaltoDaChave(posicaoInicial));
     }
@@ -34,15 +43,13 @@ public class ChaveFinalTutorial : MonoBehaviour
     {
         float tempo = 0f;
 
-        Vector3 destino =
-            inicio + Vector3.right * distanciaSalto;
+        Vector3 destino = inicio + Vector3.right * distanciaSalto;
 
         while (tempo < duracaoSalto)
         {
             tempo += Time.deltaTime;
 
-            float progresso =
-                Mathf.Clamp01(tempo / duracaoSalto);
+            float progresso = tempo / duracaoSalto;
 
             float x = Mathf.Lerp(
                 inicio.x,
@@ -56,8 +63,8 @@ public class ChaveFinalTutorial : MonoBehaviour
                 progresso
             );
 
-            float salto =
-                Mathf.Sin(progresso * Mathf.PI) * alturaSalto;
+            float salto = Mathf.Sin(progresso * Mathf.PI)
+                * alturaSalto;
 
             transform.position = new Vector3(
                 x,
@@ -71,6 +78,11 @@ public class ChaveFinalTutorial : MonoBehaviour
         transform.position = destino;
 
         podeColetar = true;
+
+        if (colisor != null)
+        {
+            colisor.enabled = true;
+        }
 
         Debug.Log("A chave final caiu e pode ser coletada.");
     }
@@ -96,7 +108,7 @@ public class ChaveFinalTutorial : MonoBehaviour
             TutorialChavesManager.instance.ColetarChaveFinal();
         }
 
-        gameObject.SetActive(false);
+        Destroy(gameObject);
 
         Debug.Log("Sandy coletou a chave final!");
     }

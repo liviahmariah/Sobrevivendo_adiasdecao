@@ -1,7 +1,6 @@
-
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using TMPro;
 
 public class EnergiaSandy : MonoBehaviour
 {
@@ -12,16 +11,26 @@ public class EnergiaSandy : MonoBehaviour
     [Header("Barra de Energia")]
     public Image barraEnergia;
 
-    [Header("Configuração da Captura")]
+    [Header("Configuração da Gaiola")]
     public Transform pontoRetorno;
-    public float tempoRetorno = 1f;
+
+    [Header("Aviso ao Jogador")]
+    public GameObject painelAviso;
+    public TextMeshProUGUI textoAviso;
+    public float duracaoAviso = 3f;
 
     private bool podePerderEnergia = true;
 
-    void Start()
+    private void Start()
     {
         energiaAtual = energiaMaxima;
+
         AtualizarBarra();
+
+        if (painelAviso != null)
+        {
+            painelAviso.SetActive(false);
+        }
     }
 
     public void PerderEnergia()
@@ -32,23 +41,28 @@ public class EnergiaSandy : MonoBehaviour
         energiaAtual--;
 
         if (energiaAtual < 0)
+        {
             energiaAtual = 0;
+        }
 
         AtualizarBarra();
 
-        Debug.Log("Energia perdida! Atual: " + energiaAtual);
+        Debug.Log(
+            "Energia perdida! Atual: " + energiaAtual
+        );
 
         if (energiaAtual <= 0)
         {
             FalharTutorial();
+            return;
         }
-        else
-        {
-            StartCoroutine(RetornarParaGaiola());
-        }
+
+        MostrarAviso(
+            "VOLTE PARA SUA GAIOLA!"
+        );
     }
 
-    void AtualizarBarra()
+    private void AtualizarBarra()
     {
         if (barraEnergia != null)
         {
@@ -57,28 +71,62 @@ public class EnergiaSandy : MonoBehaviour
         }
     }
 
-    IEnumerator RetornarParaGaiola()
+    private void MostrarAviso(string mensagem)
     {
-        podePerderEnergia = false;
-
-        yield return new WaitForSeconds(tempoRetorno);
-
-        if (pontoRetorno != null)
+        if (painelAviso != null)
         {
-            transform.position = pontoRetorno.position;
+            painelAviso.SetActive(true);
         }
 
-        podePerderEnergia = true;
+        if (textoAviso != null)
+        {
+            textoAviso.text = mensagem;
+        }
+
+        CancelInvoke(nameof(EsconderAviso));
+
+        Invoke(
+            nameof(EsconderAviso),
+            duracaoAviso
+        );
     }
 
-    void FalharTutorial()
+    private void EsconderAviso()
     {
-        Debug.Log("Sandy ficou sem energia! Tutorial reiniciado.");
+        if (painelAviso != null)
+        {
+            painelAviso.SetActive(false);
+        }
+    }
 
-        energiaAtual = energiaMaxima;
-        AtualizarBarra();
+    public void RetornarParaGaiolaPorCaptura()
+    {
+        if (pontoRetorno == null)
+        {
+            Debug.LogWarning(
+                "O ponto de retorno não foi configurado."
+            );
 
-        // Na próxima etapa vamos conectar
-        // o reinício completo do tutorial.
+            return;
+        }
+
+        transform.position = pontoRetorno.position;
+
+        Debug.Log(
+            "Sandy foi colocada de volta na gaiola."
+        );
+    }
+
+    private void FalharTutorial()
+    {
+        Debug.Log(
+            "Sandy ficou sem energia! Tutorial finalizado."
+        );
+
+        MostrarAviso(
+            "VOCÊ FICOU SEM ENERGIA!"
+        );
+
+        // O reinício completo será implementado depois.
     }
 }

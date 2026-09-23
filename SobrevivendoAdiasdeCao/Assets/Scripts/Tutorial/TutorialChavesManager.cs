@@ -6,8 +6,7 @@ public class TutorialChavesManager : MonoBehaviour
     public static TutorialChavesManager instance;
 
     [Header("Configuração")]
-    public int quantidadeChavesComuns = 8;
-    public int quantidadeChavesTotal = 9;
+    public int quantidadeGaiolasTotal = 9;
 
     [Header("Interface")]
     public TextMeshProUGUI textoChaves;
@@ -15,9 +14,12 @@ public class TutorialChavesManager : MonoBehaviour
     [Header("Referência da carrocinha")]
     public ChefeCarrocinhaTutorial chefe;
 
+    private int chavesDisponiveis = 0;
     private int chavesColetadas = 0;
+    private int gaiolasAbertas = 0;
 
-    public int ChavesColetadas => chavesColetadas;
+    public int ChavesDisponiveis => chavesDisponiveis;
+    public int GaiolasAbertas => gaiolasAbertas;
 
     private void Awake()
     {
@@ -33,19 +35,16 @@ public class TutorialChavesManager : MonoBehaviour
 
     private void Start()
     {
+        chavesDisponiveis = 0;
         chavesColetadas = 0;
+        gaiolasAbertas = 0;
+
         AtualizarUI();
     }
 
-    // =====================================================
-    // COLETAR CHAVE COMUM
-    // =====================================================
-
     public void ColetarChaveComum()
     {
-        if (chavesColetadas >= quantidadeChavesComuns)
-            return;
-
+        chavesDisponiveis++;
         chavesColetadas++;
 
         AtualizarUI();
@@ -56,75 +55,61 @@ public class TutorialChavesManager : MonoBehaviour
         }
 
         Debug.Log(
-            "Chave comum coletada: "
-            + chavesColetadas
-            + "/"
-            + quantidadeChavesTotal
+            "Chave coletada! Disponíveis: "
+            + chavesDisponiveis
         );
-
-        if (chavesColetadas >= quantidadeChavesComuns)
-        {
-            LiberarChaveFinal();
-        }
     }
 
-    // =====================================================
-    // COLETAR CHAVE FINAL
-    // =====================================================
-
-    public void ColetarChaveFinal()
+    public bool TemChaveDisponivel()
     {
-        if (chavesColetadas < quantidadeChavesComuns)
-        {
-            Debug.LogWarning(
-                "As chaves comuns ainda não foram coletadas."
-            );
+        return chavesDisponiveis > 0;
+    }
 
-            return;
+    public bool UsarChaveParaAbrirGaiola()
+    {
+        if (chavesDisponiveis <= 0)
+        {
+            Debug.Log("Sandy não possui chaves disponíveis.");
+            return false;
         }
 
-        if (chavesColetadas >= quantidadeChavesTotal)
+        if (gaiolasAbertas >= quantidadeGaiolasTotal)
         {
-            return;
+            Debug.Log("Todas as gaiolas já foram abertas.");
+            return false;
         }
 
-        chavesColetadas++;
+        chavesDisponiveis--;
+        gaiolasAbertas++;
 
         AtualizarUI();
 
         Debug.Log(
-            "Chave final coletada: "
-            + chavesColetadas
+            "Gaiola aberta! Progresso: "
+            + gaiolasAbertas
             + "/"
-            + quantidadeChavesTotal
+            + quantidadeGaiolasTotal
         );
 
-        if (chavesColetadas >= quantidadeChavesTotal)
-        {
-            Debug.Log("TODAS AS 9 CHAVES FORAM COLETADAS!");
-        }
+        return true;
     }
 
-    // =====================================================
-    // LIBERAR CHAVE FINAL
-    // =====================================================
-
-    private void LiberarChaveFinal()
+    public void ColetarChaveFinal()
     {
-        Debug.Log("As 8 chaves comuns foram coletadas!");
-        Debug.Log("Agora Sandy pode assustar a carrocinha.");
-    }
+        chavesDisponiveis++;
+        chavesColetadas++;
 
-    // =====================================================
-    // ATUALIZAR UI
-    // =====================================================
+        AtualizarUI();
+
+        Debug.Log("Chave final coletada!");
+    }
 
     private void AtualizarUI()
     {
         if (textoChaves != null)
         {
             textoChaves.text =
-                chavesColetadas + "/" + quantidadeChavesTotal;
+                gaiolasAbertas + "/" + quantidadeGaiolasTotal;
         }
     }
 }
