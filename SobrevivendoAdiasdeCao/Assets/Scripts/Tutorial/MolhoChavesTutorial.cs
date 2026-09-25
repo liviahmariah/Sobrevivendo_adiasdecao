@@ -4,7 +4,6 @@ public class MolhoChavesTutorial : MonoBehaviour
 {
     [Header("Configuração das chaves")]
     [SerializeField] private int quantidadeTotal = 8;
-    [SerializeField] private int chavesColetadas = 0;
 
     [Header("Prefab da chave")]
     [SerializeField] private GameObject chavePrefab;
@@ -18,7 +17,19 @@ public class MolhoChavesTutorial : MonoBehaviour
     [Header("Distância necessária para latir")]
     [SerializeField] private float distanciaMaxima = 3f;
 
+    // Quantas chaves o molho já derrubou
+    private int chavesDerrubadas = 0;
+
+    // Existe uma chave esperando ser coletada?
     private bool chaveNoChao = false;
+
+    // Sandy já coletou a chave, mas ainda não usou?
+    private bool chaveEmUso = false;
+
+
+    // =====================================================
+    // RECEBER LATIDO
+    // =====================================================
 
     public void ReceberLatido()
     {
@@ -42,17 +53,52 @@ public class MolhoChavesTutorial : MonoBehaviour
             return;
         }
 
-        if (chavesColetadas >= quantidadeTotal)
+        // -------------------------------------------------
+        // JÁ LIBEROU AS 8 CHAVES
+        // -------------------------------------------------
+
+        if (chavesDerrubadas >= quantidadeTotal)
         {
-            Debug.Log("Todas as chaves já foram coletadas.");
+            Debug.Log(
+                "O molho já liberou todas as "
+                + quantidadeTotal
+                + " chaves."
+            );
+
             return;
         }
 
+        // -------------------------------------------------
+        // AINDA EXISTE UMA CHAVE NO CHÃO
+        // -------------------------------------------------
+
         if (chaveNoChao)
         {
-            Debug.Log("Colete a chave atual antes de derrubar outra.");
+            Debug.Log(
+                "A chave atual ainda está no chão. "
+                + "Sandy precisa coletá-la primeiro."
+            );
+
             return;
         }
+
+        // -------------------------------------------------
+        // SANDY PEGOU A CHAVE, MAS AINDA NÃO USOU
+        // -------------------------------------------------
+
+        if (chaveEmUso)
+        {
+            Debug.Log(
+                "Sandy ainda possui uma chave. "
+                + "Use a chave para abrir uma gaiola antes de pegar outra."
+            );
+
+            return;
+        }
+
+        // -------------------------------------------------
+        // VERIFICAR DISTÂNCIA
+        // -------------------------------------------------
 
         float distancia = Vector2.Distance(
             sandy.position,
@@ -61,12 +107,24 @@ public class MolhoChavesTutorial : MonoBehaviour
 
         if (distancia > distanciaMaxima)
         {
-            Debug.Log("Sandy está longe demais do molho.");
+            Debug.Log(
+                "Sandy está longe demais do molho."
+            );
+
             return;
         }
 
+        // -------------------------------------------------
+        // PODE DERRUBAR
+        // -------------------------------------------------
+
         DerrubarChave();
     }
+
+
+    // =====================================================
+    // DERRUBAR CHAVE
+    // =====================================================
 
     private void DerrubarChave()
     {
@@ -94,34 +152,85 @@ public class MolhoChavesTutorial : MonoBehaviour
 
         chaveNoChao = true;
 
-        Debug.Log("Uma chave foi derrubada.");
+        chavesDerrubadas++;
+
+        Debug.Log(
+            "Chave comum derrubada: "
+            + chavesDerrubadas
+            + "/"
+            + quantidadeTotal
+        );
     }
+
+
+    // =====================================================
+    // SANDY COLETOU A CHAVE
+    // =====================================================
 
     public void RegistrarColeta()
     {
         if (!chaveNoChao)
         {
-            Debug.LogWarning("Nenhuma chave está aguardando coleta.");
+            Debug.LogWarning(
+                "Nenhuma chave está aguardando coleta."
+            );
+
             return;
         }
 
         chaveNoChao = false;
+
+        // Sandy agora possui uma chave.
+        // Ela precisa usá-la antes de pegar outra.
+        chaveEmUso = true;
 
         if (TutorialChavesManager.instance != null)
         {
             TutorialChavesManager.instance.ColetarChaveComum();
         }
 
-        Debug.Log("Chave comum coletada!");
+        Debug.Log(
+            "Sandy coletou a chave. "
+            + "Ela precisa usá-la antes de pegar outra."
+        );
     }
 
-    public int ObterChavesColetadas()
+
+    // =====================================================
+    // CHAVE FOI USADA EM UMA GAIOLA
+    // =====================================================
+
+    public void RegistrarUsoDaChave()
     {
-        return chavesColetadas;
+        if (!chaveEmUso)
+        {
+            Debug.LogWarning(
+                "Não havia uma chave do molho em uso."
+            );
+
+            return;
+        }
+
+        chaveEmUso = false;
+
+        Debug.Log(
+            "A chave foi usada. "
+            + "O molho pode liberar a próxima."
+        );
     }
 
-    public bool TodasAsChavesForamColetadas()
+
+    // =====================================================
+    // INFORMAÇÕES
+    // =====================================================
+
+    public bool TodasAsChavesForamLiberadas()
     {
-        return chavesColetadas >= quantidadeTotal;
+        return chavesDerrubadas >= quantidadeTotal;
+    }
+
+    public bool SandyPossuiChave()
+    {
+        return chaveEmUso;
     }
 }

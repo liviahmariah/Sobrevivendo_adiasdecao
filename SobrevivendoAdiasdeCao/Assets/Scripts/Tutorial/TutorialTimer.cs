@@ -1,34 +1,30 @@
-
 using UnityEngine;
 using TMPro;
 
 public class TutorialTimer : MonoBehaviour
 {
-    [Header("Configuração")]
+    [Header("Configuração inicial")]
     public float tempoInicial = 20f;
 
-    [Header("UI")]
+    [Header("Interface")]
+    public TextMeshProUGUI textoEstado;
     public TextMeshProUGUI textoTimer;
 
     private float tempoAtual;
-
     private bool timerAtivo = false;
+    private bool tempoAcabou = false;
 
-    public bool TempoAcabou { get; private set; }
-
-    void Start()
+    public bool TempoAcabou
     {
-        tempoAtual = 0f;
-
-        TempoAcabou = false;
-
-        AtualizarUI();
-
-        // O timer não começa automaticamente.
-        // O TutorialManager vai iniciar.
+        get { return tempoAcabou; }
     }
 
-    void Update()
+
+    // =========================================================
+    // UPDATE
+    // =========================================================
+
+    private void Update()
     {
         if (!timerAtivo)
             return;
@@ -40,85 +36,127 @@ public class TutorialTimer : MonoBehaviour
             tempoAtual = 0f;
 
             timerAtivo = false;
+            tempoAcabou = true;
 
-            TempoAcabou = true;
+            AtualizarTimerUI();
 
-            AtualizarUI();
+            Debug.Log(
+                "Intervalo terminou. " +
+                "A carrocinha voltou!"
+            );
 
-            QuandoTempoAcabar();
+            if (TutorialManager.instance != null)
+            {
+                TutorialManager.instance.IntervaloTerminou();
+            }
 
             return;
         }
 
-        AtualizarUI();
+        AtualizarTimerUI();
     }
 
-    // =====================================================
-    // INICIAR
-    // =====================================================
+
+    // =========================================================
+    // TIMER INICIAL
+    // =========================================================
 
     public void IniciarTimer()
     {
         tempoAtual = tempoInicial;
 
-        TempoAcabou = false;
-
         timerAtivo = true;
+        tempoAcabou = false;
 
-        AtualizarUI();
+        if (textoEstado != null)
+        {
+            textoEstado.text = "CHEFE RETORNA EM";
+        }
 
-        Debug.Log("⏱️ O chefe está fora! 20 segundos restantes.");
+        AtualizarTimerUI();
+
+        Debug.Log(
+            "Timer inicial iniciado: " +
+            tempoInicial +
+            " segundos."
+        );
     }
 
-    // =====================================================
-    // PARAR
-    // =====================================================
+
+    // =========================================================
+    // PARAR TIMER
+    // =========================================================
 
     public void PararTimer()
     {
         timerAtivo = false;
     }
 
-    // =====================================================
-    // REINICIAR
-    // =====================================================
 
-    public void ReiniciarTimer()
-    {
-        PararTimer();
+    // =========================================================
+    // ATUALIZAR TIMER
+    // =========================================================
 
-        tempoAtual = 0f;
-
-        TempoAcabou = false;
-
-        AtualizarUI();
-    }
-
-    // =====================================================
-    // UI
-    // =====================================================
-
-    void AtualizarUI()
+    private void AtualizarTimerUI()
     {
         if (textoTimer == null)
             return;
 
-        int segundos = Mathf.CeilToInt(tempoAtual);
+        int segundos =
+            Mathf.Max(
+                0,
+                Mathf.CeilToInt(tempoAtual)
+            );
 
-        textoTimer.text = segundos.ToString();
+        int minutos =
+            segundos / 60;
+
+        int segundosRestantes =
+            segundos % 60;
+
+        textoTimer.text =
+            minutos.ToString("00") +
+            ":" +
+            segundosRestantes.ToString("00");
     }
 
-    // =====================================================
-    // TEMPO ACABOU
-    // =====================================================
 
-    void QuandoTempoAcabar()
+    // =========================================================
+    // TIMER DA CARROCINHA
+    // =========================================================
+
+    public void MostrarTimerChefe(
+        string mensagem,
+        float tempo
+    )
     {
-        Debug.Log("🚨 O CHEFE VOLTOU!");
+        // O timer inicial deixa de controlar a contagem.
 
-        if (TutorialManager.instance != null)
+        timerAtivo = false;
+
+        if (textoEstado != null)
         {
-            TutorialManager.instance.IntervaloTerminou();
+            textoEstado.text = mensagem;
+        }
+
+        int segundos =
+            Mathf.Max(
+                0,
+                Mathf.CeilToInt(tempo)
+            );
+
+        int minutos =
+            segundos / 60;
+
+        int segundosRestantes =
+            segundos % 60;
+
+        if (textoTimer != null)
+        {
+            textoTimer.text =
+                minutos.ToString("00") +
+                ":" +
+                segundosRestantes.ToString("00");
         }
     }
 }

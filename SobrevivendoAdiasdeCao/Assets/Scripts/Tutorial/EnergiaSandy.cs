@@ -5,8 +5,8 @@ using TMPro;
 public class EnergiaSandy : MonoBehaviour
 {
     [Header("Energia")]
-    public int energiaMaxima = 5;
-    public int energiaAtual = 5;
+    public int energiaMaxima = 3;
+    public int energiaAtual = 3;
 
     [Header("Barra de Energia")]
     public Image barraEnergia;

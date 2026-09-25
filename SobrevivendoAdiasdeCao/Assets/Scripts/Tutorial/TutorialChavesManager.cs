@@ -14,9 +14,17 @@ public class TutorialChavesManager : MonoBehaviour
     [Header("Referência da carrocinha")]
     public ChefeCarrocinhaTutorial chefe;
 
+    [Header("Molho de chaves")]
+    public MolhoChavesTutorial molhoChaves;
+
+    [Header("Tutorial")]
+    public TutorialManager tutorialManager;
+
     private int chavesDisponiveis = 0;
     private int chavesColetadas = 0;
     private int gaiolasAbertas = 0;
+
+    private bool avisoUltimaChaveMostrado = false;
 
     public int ChavesDisponiveis => chavesDisponiveis;
     public int GaiolasAbertas => gaiolasAbertas;
@@ -38,6 +46,7 @@ public class TutorialChavesManager : MonoBehaviour
         chavesDisponiveis = 0;
         chavesColetadas = 0;
         gaiolasAbertas = 0;
+        avisoUltimaChaveMostrado = false;
 
         AtualizarUI();
     }
@@ -69,18 +78,39 @@ public class TutorialChavesManager : MonoBehaviour
     {
         if (chavesDisponiveis <= 0)
         {
-            Debug.Log("Sandy não possui chaves disponíveis.");
+            Debug.Log(
+                "Sandy não possui chaves disponíveis."
+            );
+
             return false;
         }
 
         if (gaiolasAbertas >= quantidadeGaiolasTotal)
         {
-            Debug.Log("Todas as gaiolas já foram abertas.");
+            Debug.Log(
+                "Todas as gaiolas já foram abertas."
+            );
+
             return false;
         }
 
+        // Consome a chave
         chavesDisponiveis--;
+
+        // Registra a gaiola aberta
         gaiolasAbertas++;
+
+        // Avisa o molho que a chave foi usada
+        if (molhoChaves != null)
+        {
+            molhoChaves.RegistrarUsoDaChave();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "MolhoChavesTutorial não foi configurado no Inspector."
+            );
+        }
 
         AtualizarUI();
 
@@ -91,7 +121,36 @@ public class TutorialChavesManager : MonoBehaviour
             + quantidadeGaiolasTotal
         );
 
+        // Quando o 8º cão for libertado,
+        // avisar que falta a chave da carrocinha
+        if (gaiolasAbertas == 8 &&
+            !avisoUltimaChaveMostrado)
+        {
+            avisoUltimaChaveMostrado = true;
+
+            AvisarSobreUltimaChave();
+        }
+
         return true;
+    }
+
+    private void AvisarSobreUltimaChave()
+    {
+        Debug.Log(
+            "Os 8 primeiros cães foram libertados. " +
+            "A última chave está com a carrocinha!"
+        );
+
+        if (tutorialManager != null)
+        {
+            tutorialManager.MostrarAvisoUltimaChave();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "TutorialManager não foi configurado no Inspector."
+            );
+        }
     }
 
     public void ColetarChaveFinal()
@@ -101,7 +160,9 @@ public class TutorialChavesManager : MonoBehaviour
 
         AtualizarUI();
 
-        Debug.Log("Chave final coletada!");
+        Debug.Log(
+            "Chave final coletada!"
+        );
     }
 
     private void AtualizarUI()

@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using TMPro;
 using System.Collections;
@@ -45,6 +44,10 @@ public class TutorialManager : MonoBehaviour
     [Header("Timer")]
     public TutorialTimer tutorialTimer;
 
+    // =====================================================
+    // CHEFE
+    // =====================================================
+
     [Header("Chefe")]
     public ChefeCarrocinhaTutorial chefe;
 
@@ -88,7 +91,11 @@ public class TutorialManager : MonoBehaviour
 
         "Precisamos libertar todos antes que ele termine a ronda!",
 
-        "Você precisa coletar as 9 chaves das gaiolas. Rápido, estamos quase sem tempo!"
+        "Cuidado, Sandy! Se a carrocinha conseguir pegar você, você perderá 1 ponto de energia.",
+
+        "Você começa com 3 pontos de energia. Se sua energia chegar a zero, terá que recomeçar o tutorial.",
+
+        "Você precisa coletar as 8 chaves do molho. A última está com a carrocinha!"
     };
 
     // =====================================================
@@ -187,7 +194,8 @@ public class TutorialManager : MonoBehaviour
             painelDialogo.SetActive(false);
     }
 
-    void MostrarFalaTemporaria(string mensagem)
+    // PÚBLICO para outros scripts poderem chamar falas.
+    public void MostrarFalaTemporaria(string mensagem)
     {
         if (rotinaFala != null)
             StopCoroutine(rotinaFala);
@@ -246,7 +254,9 @@ public class TutorialManager : MonoBehaviour
     {
         etapaAtual = EtapaTutorial.Corrida;
 
-        MostrarObjetivo("Use as setas direcionais para andar!");
+        MostrarObjetivo(
+            "Use as setas direcionais para andar!"
+        );
 
         MostrarFalaTemporaria(
             "Sandy, vamos começar! Use as setas direcionais para andar."
@@ -281,7 +291,9 @@ public class TutorialManager : MonoBehaviour
     {
         etapaAtual = EtapaTutorial.Pulo;
 
-        MostrarObjetivo("Use ESPAÇO para pular e fugir dos golpes!");
+        MostrarObjetivo(
+            "Use ESPAÇO para pular e fugir dos golpes!"
+        );
 
         MostrarFalaTemporaria(
             "Agora vamos treinar o pulo! Aperte ESPAÇO para pular."
@@ -316,7 +328,9 @@ public class TutorialManager : MonoBehaviour
     {
         etapaAtual = EtapaTutorial.Latido;
 
-        MostrarObjetivo("Use Z para latir e assustar o chefe!");
+        MostrarObjetivo(
+            "Use Z para latir e assustar o chefe!"
+        );
 
         MostrarFalaTemporaria(
             "Agora vamos aprender a latir! Aperte Z para assustar a carrocinha."
@@ -351,10 +365,12 @@ public class TutorialManager : MonoBehaviour
     {
         etapaAtual = EtapaTutorial.Coleta;
 
-        MostrarObjetivo("Colete as 9 chaves das gaiolas!");
+        MostrarObjetivo(
+            "Colete as 8 chaves e liberte os cães!"
+        );
 
         MostrarFalaTemporaria(
-            "O intervalo não vai durar para sempre! Colete as 9 chaves para libertar os cães."
+            "O intervalo não vai durar para sempre! Colete as 8 chaves do molho e liberte os cães. A última chave está com a carrocinha."
         );
 
         IniciarDica(
@@ -376,6 +392,36 @@ public class TutorialManager : MonoBehaviour
     }
 
     // =====================================================
+    // AVISO DA ÚLTIMA CHAVE
+    // =====================================================
+
+    public void MostrarAvisoUltimaChave()
+    {
+        PararDica();
+
+        MostrarFalaTemporaria(
+            "Muito bem! Você libertou os oito cães! Agora falta apenas uma chave. A carrocinha está com ela. Assuste o chefe para conseguir a última chave!"
+        );
+
+        MostrarObjetivo(
+            "Assuste a carrocinha e pegue a última chave!"
+        );
+
+        Debug.Log(
+            "Objetivo atualizado: conseguir a última chave com a carrocinha."
+        );
+    }
+
+    // =====================================================
+    // MÉTODO PARA OUTROS SCRIPTS ALTERAREM O OBJETIVO
+    // =====================================================
+
+    public void MostrarObjetivoExterno(string mensagem)
+    {
+        MostrarObjetivo(mensagem);
+    }
+
+    // =====================================================
     // INTERVALO TERMINOU
     // =====================================================
 
@@ -391,10 +437,12 @@ public class TutorialManager : MonoBehaviour
         Debug.Log("O CHEFE VOLTOU!");
 
         MostrarFalaTemporaria(
-            "Sandy! O chefe voltou! Corra e use suas habilidades para fugir dele!"
+            "Sandy! O chefe voltou! Cuidado: se ele pegar você, você perderá 1 ponto de energia."
         );
 
-        MostrarObjetivo("O chefe voltou! Liberte os cães antes que seja tarde!");
+        MostrarObjetivo(
+            "O chefe voltou! Liberte os cães antes que seja tarde!"
+        );
 
         if (chefe != null)
         {
