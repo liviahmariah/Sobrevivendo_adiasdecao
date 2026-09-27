@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class TutorialManager : MonoBehaviour
 {
@@ -38,6 +39,22 @@ public class TutorialManager : MonoBehaviour
     public TextMeshProUGUI textoObjetivo;
 
     // =====================================================
+    // PAINEL DE VITÓRIA
+    // =====================================================
+
+    [Header("Painel de Vitória")]
+    public GameObject painelVitoria;
+    public TextMeshProUGUI textoVitoria;
+
+    // =====================================================
+    // PAINEL DE DERROTA
+    // =====================================================
+
+    [Header("Painel de Derrota")]
+    public GameObject painelDerrota;
+    public TextMeshProUGUI textoDerrota;
+
+    // =====================================================
     // TIMER
     // =====================================================
 
@@ -69,6 +86,8 @@ public class TutorialManager : MonoBehaviour
 
     private bool tutorialIniciado = false;
     private bool chefeLiberado = false;
+
+    private bool tutorialTerminou = false;
 
     // =====================================================
     // FALAS DA INTRODUÇÃO
@@ -123,6 +142,7 @@ public class TutorialManager : MonoBehaviour
 
         tutorialIniciado = false;
         chefeLiberado = false;
+        tutorialTerminou = false;
 
         if (objetivo != null)
             objetivo.SetActive(false);
@@ -132,6 +152,12 @@ public class TutorialManager : MonoBehaviour
 
         if (tituloFase != null)
             tituloFase.SetActive(true);
+
+        if (painelVitoria != null)
+            painelVitoria.SetActive(false);
+
+        if (painelDerrota != null)
+            painelDerrota.SetActive(false);
 
         if (textoTitulo != null)
             textoTitulo.text = "A FUGA";
@@ -194,7 +220,6 @@ public class TutorialManager : MonoBehaviour
             painelDialogo.SetActive(false);
     }
 
-    // PÚBLICO para outros scripts poderem chamar falas.
     public void MostrarFalaTemporaria(string mensagem)
     {
         if (rotinaFala != null)
@@ -252,6 +277,9 @@ public class TutorialManager : MonoBehaviour
 
     void ComecarCorrida()
     {
+        if (tutorialTerminou)
+            return;
+
         etapaAtual = EtapaTutorial.Corrida;
 
         MostrarObjetivo(
@@ -269,6 +297,9 @@ public class TutorialManager : MonoBehaviour
 
     public void RegistrarCorrida()
     {
+        if (tutorialTerminou)
+            return;
+
         if (etapaAtual != EtapaTutorial.Corrida)
             return;
 
@@ -289,6 +320,9 @@ public class TutorialManager : MonoBehaviour
 
     void ComecarPulo()
     {
+        if (tutorialTerminou)
+            return;
+
         etapaAtual = EtapaTutorial.Pulo;
 
         MostrarObjetivo(
@@ -306,6 +340,9 @@ public class TutorialManager : MonoBehaviour
 
     public void RegistrarPulo()
     {
+        if (tutorialTerminou)
+            return;
+
         if (etapaAtual != EtapaTutorial.Pulo)
             return;
 
@@ -326,6 +363,9 @@ public class TutorialManager : MonoBehaviour
 
     void ComecarLatido()
     {
+        if (tutorialTerminou)
+            return;
+
         etapaAtual = EtapaTutorial.Latido;
 
         MostrarObjetivo(
@@ -343,6 +383,9 @@ public class TutorialManager : MonoBehaviour
 
     public void RegistrarLatido()
     {
+        if (tutorialTerminou)
+            return;
+
         if (etapaAtual != EtapaTutorial.Latido)
             return;
 
@@ -363,6 +406,9 @@ public class TutorialManager : MonoBehaviour
 
     void ComecarColeta()
     {
+        if (tutorialTerminou)
+            return;
+
         etapaAtual = EtapaTutorial.Coleta;
 
         MostrarObjetivo(
@@ -397,6 +443,9 @@ public class TutorialManager : MonoBehaviour
 
     public void MostrarAvisoUltimaChave()
     {
+        if (tutorialTerminou)
+            return;
+
         PararDica();
 
         MostrarFalaTemporaria(
@@ -418,6 +467,9 @@ public class TutorialManager : MonoBehaviour
 
     public void MostrarObjetivoExterno(string mensagem)
     {
+        if (tutorialTerminou)
+            return;
+
         MostrarObjetivo(mensagem);
     }
 
@@ -428,6 +480,9 @@ public class TutorialManager : MonoBehaviour
     public void IntervaloTerminou()
     {
         if (chefeLiberado)
+            return;
+
+        if (tutorialTerminou)
             return;
 
         chefeLiberado = true;
@@ -457,12 +512,169 @@ public class TutorialManager : MonoBehaviour
     }
 
     // =====================================================
+    // VITÓRIA
+    // =====================================================
+
+    public void VerificarVitoria()
+    {
+        if (tutorialTerminou)
+            return;
+
+        if (TutorialChavesManager.instance == null)
+        {
+            Debug.LogWarning(
+                "TutorialChavesManager não foi encontrado."
+            );
+
+            return;
+        }
+
+        int gaiolasAbertas =
+            TutorialChavesManager.instance.GaiolasAbertas;
+
+        if (gaiolasAbertas >= 9)
+        {
+            Vitoria();
+        }
+    }
+
+    public void Vitoria()
+    {
+        if (tutorialTerminou)
+            return;
+
+        tutorialTerminou = true;
+        etapaAtual = EtapaTutorial.Finalizado;
+
+        PararDica();
+
+        if (rotinaFala != null)
+        {
+            StopCoroutine(rotinaFala);
+            rotinaFala = null;
+        }
+
+        // Para o timer
+        if (tutorialTimer != null)
+        {
+            tutorialTimer.PararTimer();
+        }
+
+        // Para a carrocinha
+        if (chefe != null)
+        {
+            chefe.DesativarChefe();
+        }
+
+        // Esconde interface normal
+        if (objetivo != null)
+            objetivo.SetActive(false);
+
+        if (painelDialogo != null)
+            painelDialogo.SetActive(false);
+
+        // Mostra painel de vitória
+        if (painelVitoria != null)
+        {
+            painelVitoria.SetActive(true);
+        }
+
+        if (textoVitoria != null)
+        {
+            textoVitoria.text =
+                "VOCÊ CONSEGUIU!\n" +
+                "Todos os cães foram libertados!";
+        }
+
+        Debug.Log(
+            "VITÓRIA! Sandy libertou os 9 cães."
+        );
+    }
+
+    // =====================================================
+    // DERROTA
+    // =====================================================
+
+    public void Derrota()
+    {
+        if (tutorialTerminou)
+            return;
+
+        tutorialTerminou = true;
+        etapaAtual = EtapaTutorial.Finalizado;
+
+        PararDica();
+
+        if (rotinaFala != null)
+        {
+            StopCoroutine(rotinaFala);
+            rotinaFala = null;
+        }
+
+        // Para o timer
+        if (tutorialTimer != null)
+        {
+            tutorialTimer.PararTimer();
+        }
+
+        // Para a carrocinha
+        if (chefe != null)
+        {
+            chefe.DesativarChefe();
+        }
+
+        // Esconde interface normal
+        if (objetivo != null)
+            objetivo.SetActive(false);
+
+        if (painelDialogo != null)
+            painelDialogo.SetActive(false);
+
+        // Mostra painel de derrota
+        if (painelDerrota != null)
+        {
+            painelDerrota.SetActive(true);
+        }
+
+        if (textoDerrota != null)
+        {
+            textoDerrota.text =
+                "A FUGA FALHOU\n" +
+                "Sandy ficou sem energia.";
+        }
+
+        Debug.Log(
+            "DERROTA! Sandy ficou sem energia."
+        );
+    }
+
+    // =====================================================
+    // REINICIAR TUTORIAL
+    // =====================================================
+
+    public void ReiniciarTutorial()
+    {
+        Debug.Log(
+            "Reiniciando o tutorial..."
+        );
+
+        Time.timeScale = 1f;
+
+        Scene cenaAtual =
+            SceneManager.GetActiveScene();
+
+        SceneManager.LoadScene(
+            cenaAtual.name
+        );
+    }
+
+    // =====================================================
     // FINAL
     // =====================================================
 
     public void FinalizarTutorial()
     {
-        if (etapaAtual == EtapaTutorial.Finalizado)
+        if (tutorialTerminou)
             return;
 
         etapaAtual = EtapaTutorial.Finalizado;

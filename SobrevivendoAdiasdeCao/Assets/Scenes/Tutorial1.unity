@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 33372606}
   - component: {fileID: 33372608}
   - component: {fileID: 33372607}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Barra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -454,7 +454,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 97512998}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: PontoTransporteSandy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -792,7 +792,7 @@ GameObject:
   - component: {fileID: 152397249}
   - component: {fileID: 152397251}
   - component: {fileID: 152397250}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -929,7 +929,7 @@ GameObject:
   - component: {fileID: 165581094}
   - component: {fileID: 165581096}
   - component: {fileID: 165581095}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: FundoDaBarra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1005,7 +1005,7 @@ GameObject:
   - component: {fileID: 174673929}
   - component: {fileID: 174673931}
   - component: {fileID: 174673930}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: Chefe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1021,8 +1021,8 @@ Transform:
   m_GameObject: {fileID: 174673926}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.316991, y: -3.8967187, z: 0}
-  m_LocalScale: {x: 0.5, y: 1, z: 1}
+  m_LocalPosition: {x: -9.005852, y: -2.622855, z: 0}
+  m_LocalScale: {x: 1.2925, y: 3.4102, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 97512998}
@@ -1075,7 +1075,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -1
+  m_SortingOrder: 3
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1314,6 +1314,10 @@ MonoBehaviour:
   textoTitulo: {fileID: 501726594}
   objetivo: {fileID: 0}
   textoObjetivo: {fileID: 120947667}
+  painelVitoria: {fileID: 408048416}
+  textoVitoria: {fileID: 1876035198}
+  painelDerrota: {fileID: 1392083486}
+  textoDerrota: {fileID: 1893782185}
   tutorialTimer: {fileID: 1614496688}
   chefe: {fileID: 174673931}
   tempoEntreFalase: 2
@@ -1330,6 +1334,143 @@ MonoBehaviour:
   - Precisamos libertar todos antes que ele termine a ronda!
   - "Voc\xEA precisa coletar as 9 chaves das gaiolas. R\xE1pido, estamos quase sem
     tempo!"
+--- !u!1 &262369585
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 262369586}
+  - component: {fileID: 262369588}
+  - component: {fileID: 262369587}
+  m_Layer: 0
+  m_Name: Text (TMP) (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &262369586
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262369585}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 408048417}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -188.96507, y: 53.99002}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &262369587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262369585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: Tente novamente
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 79.2
+  m_fontSizeBase: 79.2
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: -429.82492, y: 0, z: -877.1935, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &262369588
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262369585}
+  m_CullTransparentMesh: 1
 --- !u!1 &264786347
 GameObject:
   m_ObjectHideFlags: 0
@@ -1759,7 +1900,7 @@ GameObject:
   - component: {fileID: 340067038}
   - component: {fileID: 340067040}
   - component: {fileID: 340067039}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: FundoDaBarra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2498,6 +2639,83 @@ Transform:
   m_Children: []
   m_Father: {fileID: 990798940}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &408048416
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 408048417}
+  - component: {fileID: 408048419}
+  - component: {fileID: 408048418}
+  m_Layer: 0
+  m_Name: PainelVitoria
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &408048417
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 408048416}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1876035196}
+  - {fileID: 262369586}
+  m_Father: {fileID: 906350484}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &408048418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 408048416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.7372549}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &408048419
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 408048416}
+  m_CullTransparentMesh: 1
 --- !u!1 &430076928
 GameObject:
   m_ObjectHideFlags: 0
@@ -2927,7 +3145,7 @@ GameObject:
   - component: {fileID: 495112802}
   - component: {fileID: 495112804}
   - component: {fileID: 495112803}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Barra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3231,7 +3449,7 @@ GameObject:
   - component: {fileID: 505370568}
   - component: {fileID: 505370570}
   - component: {fileID: 505370569}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3711,7 +3929,7 @@ GameObject:
   - component: {fileID: 608433274}
   - component: {fileID: 608433276}
   - component: {fileID: 608433275}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: InteracaoGaiola
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3789,7 +4007,7 @@ GameObject:
   - component: {fileID: 610445306}
   - component: {fileID: 610445308}
   - component: {fileID: 610445307}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Barra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3956,7 +4174,7 @@ GameObject:
   - component: {fileID: 663286168}
   - component: {fileID: 663286170}
   - component: {fileID: 663286169}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4561,8 +4779,8 @@ Transform:
   m_GameObject: {fileID: 732841715}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.1533256, y: -5.8525496, z: 0}
-  m_LocalScale: {x: 22.448294, y: 2.336991, z: 1}
+  m_LocalPosition: {x: 1.4929191, y: -5.8525496, z: 0}
+  m_LocalScale: {x: 23.768253, y: 2.336991, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1339361057}
@@ -4851,7 +5069,7 @@ GameObject:
   - component: {fileID: 813815923}
   - component: {fileID: 813815925}
   - component: {fileID: 813815924}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: FundoDaBarra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5056,7 +5274,7 @@ GameObject:
   - component: {fileID: 867300579}
   - component: {fileID: 867300581}
   - component: {fileID: 867300580}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: FundoDaBarra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5293,6 +5511,7 @@ RectTransform:
   - {fileID: 129194750}
   - {fileID: 1469971075}
   - {fileID: 1392083487}
+  - {fileID: 408048417}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5311,7 +5530,7 @@ GameObject:
   - component: {fileID: 916747906}
   - component: {fileID: 916747908}
   - component: {fileID: 916747907}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: InteracaoGaiola
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5821,7 +6040,7 @@ Transform:
   m_GameObject: {fileID: 1025519870}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.96353, y: -3.0489101, z: 0}
+  m_LocalPosition: {x: -11.21353, y: -3.0489101, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6116,7 +6335,7 @@ GameObject:
   - component: {fileID: 1068632174}
   - component: {fileID: 1068632176}
   - component: {fileID: 1068632175}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Barra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6191,7 +6410,7 @@ GameObject:
   - component: {fileID: 1094648478}
   - component: {fileID: 1094648480}
   - component: {fileID: 1094648479}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: FundoDaBarra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6266,7 +6485,7 @@ GameObject:
   - component: {fileID: 1101231358}
   - component: {fileID: 1101231360}
   - component: {fileID: 1101231359}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: InteracaoGaiola
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6436,7 +6655,7 @@ GameObject:
   - component: {fileID: 1139204195}
   - component: {fileID: 1139204194}
   - component: {fileID: 1139204193}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Barra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6511,7 +6730,7 @@ GameObject:
   - component: {fileID: 1192766348}
   - component: {fileID: 1192766350}
   - component: {fileID: 1192766349}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: FundoDaBarra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6689,11 +6908,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1364348034942072925, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.9875617
+      value: 1.0124383
       objectReference: {fileID: 0}
     - target: {fileID: 1364348034942072925, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.3587108
+      value: -2.6087108
       objectReference: {fileID: 0}
     - target: {fileID: 1364348034942072925, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -7367,7 +7586,7 @@ GameObject:
   - component: {fileID: 1349095699}
   - component: {fileID: 1349095701}
   - component: {fileID: 1349095700}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: InteracaoGaiola
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7452,7 +7671,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1354190194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7551,7 +7770,7 @@ GameObject:
   - component: {fileID: 1363513771}
   - component: {fileID: 1363513773}
   - component: {fileID: 1363513772}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Barra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7718,7 +7937,7 @@ GameObject:
   - component: {fileID: 1378862712}
   - component: {fileID: 1378862714}
   - component: {fileID: 1378862713}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: InteracaoGaiola
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8024,7 +8243,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1390219930}
   - component: {fileID: 1390219929}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Gaiolas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8341,7 +8560,7 @@ GameObject:
   - component: {fileID: 1413394895}
   - component: {fileID: 1413394897}
   - component: {fileID: 1413394896}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: FundoDaBarra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8416,7 +8635,7 @@ GameObject:
   - component: {fileID: 1414188073}
   - component: {fileID: 1414188075}
   - component: {fileID: 1414188074}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8893,7 +9112,7 @@ GameObject:
   - component: {fileID: 1480444605}
   - component: {fileID: 1480444607}
   - component: {fileID: 1480444606}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Barra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9105,7 +9324,7 @@ GameObject:
   - component: {fileID: 1497323469}
   - component: {fileID: 1497323471}
   - component: {fileID: 1497323470}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: InteracaoGaiola
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9306,7 +9525,7 @@ GameObject:
   - component: {fileID: 1553920538}
   - component: {fileID: 1553920540}
   - component: {fileID: 1553920539}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: InteracaoGaiola
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9559,7 +9778,7 @@ GameObject:
   - component: {fileID: 1580704244}
   - component: {fileID: 1580704246}
   - component: {fileID: 1580704245}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9915,7 +10134,7 @@ GameObject:
   - component: {fileID: 1662357009}
   - component: {fileID: 1662357011}
   - component: {fileID: 1662357010}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10085,7 +10304,7 @@ GameObject:
   - component: {fileID: 1698998460}
   - component: {fileID: 1698998462}
   - component: {fileID: 1698998461}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10895,7 +11114,7 @@ Canvas:
   m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1972754281
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!224 &1760709912
@@ -10960,7 +11179,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -11163,7 +11382,7 @@ GameObject:
   - component: {fileID: 1822910731}
   - component: {fileID: 1822910733}
   - component: {fileID: 1822910732}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16288,7 +16507,7 @@ GameObject:
   - component: {fileID: 1858551716}
   - component: {fileID: 1858551718}
   - component: {fileID: 1858551717}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Barra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16352,6 +16571,143 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1858551715}
   m_CullTransparentMesh: 1
+--- !u!1 &1876035195
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1876035196}
+  - component: {fileID: 1876035197}
+  - component: {fileID: 1876035198}
+  m_Layer: 0
+  m_Name: Text (TMP)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1876035196
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1876035195}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 408048417}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 215.96007}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1876035197
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1876035195}
+  m_CullTransparentMesh: 1
+--- !u!114 &1876035198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1876035195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: VOCE CONSEGUOU
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 150
+  m_fontSizeBase: 150
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: -429.82492, y: 0, z: -877.1935, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &1887317449
 GameObject:
   m_ObjectHideFlags: 0
@@ -16790,7 +17146,7 @@ Transform:
   m_GameObject: {fileID: 1931860781}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7, y: -3.25, z: 0}
+  m_LocalPosition: {x: 7.749323, y: -3.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16899,7 +17255,7 @@ GameObject:
   - component: {fileID: 2017402770}
   - component: {fileID: 2017402772}
   - component: {fileID: 2017402771}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: InteracaoGaiola
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17299,7 +17655,7 @@ GameObject:
   - component: {fileID: 2056229316}
   - component: {fileID: 2056229318}
   - component: {fileID: 2056229317}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: FundoDaBarra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17531,7 +17887,7 @@ GameObject:
   - component: {fileID: 2078028999}
   - component: {fileID: 2078028998}
   - component: {fileID: 2078028997}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17601,7 +17957,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2078028998}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 262285610}
+        m_TargetAssemblyTypeName: TutorialManager, Assembly-CSharp
+        m_MethodName: ReiniciarTutorial
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2078028998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17882,7 +18250,7 @@ GameObject:
   - component: {fileID: 2101409153}
   - component: {fileID: 2101409152}
   - component: {fileID: 2101409151}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
