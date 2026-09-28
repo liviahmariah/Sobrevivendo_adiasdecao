@@ -39,6 +39,62 @@ public class TutorialManager : MonoBehaviour
     public TextMeshProUGUI textoObjetivo;
 
     // =====================================================
+    // ANIMAÇÃO DO BALÃO
+    // =====================================================
+
+    [Header("Animação do Balão")]
+
+    [Tooltip("Objeto que será animado. Normalmente é o próprio balão.")]
+    public RectTransform balãoAnimado;
+
+    [Tooltip("Tempo para o balão aparecer.")]
+    public float tempoEntradaBalao = 0.2f;
+
+    [Tooltip("Tempo para o balão desaparecer.")]
+    public float tempoSaidaBalao = 0.15f;
+
+    [Tooltip("Tamanho máximo do efeito POP.")]
+    public float escalaPop = 1.08f;
+
+    [Tooltip("Velocidade da pequena flutuação do balão.")]
+    public float velocidadeFlutuacao = 2f;
+
+    [Tooltip("Quanto o balão sobe e desce.")]
+    public float intensidadeFlutuacao = 2f;
+
+    private Vector3 escalaOriginalBalao;
+    private Vector2 posicaoOriginalBalao;
+
+    private Coroutine rotinaAnimacaoBalao;
+
+    // =====================================================
+    // SOM DO DUKE
+    // =====================================================
+
+    [Header("Som do Duke")]
+
+    [Tooltip("AudioSource usado para reproduzir o latido do Duke.")]
+    public AudioSource audioSourceDuke;
+
+    [Tooltip("Som de latido do Duke.")]
+    public AudioClip somLatidoDuke;
+
+    // =====================================================
+    // EFEITO DE TEXTO
+    // =====================================================
+
+    [Header("Efeito de Texto")]
+
+    [Tooltip("Tempo entre cada caractere.")]
+    public float velocidadeTexto = 0.035f;
+
+    [Tooltip("Pausa extra depois de vírgulas.")]
+    public float pausaVirgula = 0.06f;
+
+    [Tooltip("Pausa extra depois de pontos, ! e ?.")]
+    public float pausaPontuacao = 0.15f;
+
+    // =====================================================
     // PAINEL DE VITÓRIA
     // =====================================================
 
@@ -73,12 +129,13 @@ public class TutorialManager : MonoBehaviour
     // =====================================================
 
     [Header("Configuração")]
+
     public float tempoEntreFalase = 2f;
 
     [Tooltip("Tempo que Duke espera antes de dar uma dica.")]
     public float tempoParaDica = 8f;
 
-    [Tooltip("Tempo que cada fala fica visível.")]
+    [Tooltip("Tempo que cada fala fica visível depois de terminar de escrever.")]
     public float tempoExibicaoFala = 3.5f;
 
     private Coroutine rotinaDica;
@@ -86,8 +143,9 @@ public class TutorialManager : MonoBehaviour
 
     private bool tutorialIniciado = false;
     private bool chefeLiberado = false;
-
     private bool tutorialTerminou = false;
+
+    private bool textoSendoEscrito = false;
 
     // =====================================================
     // FALAS DA INTRODUÇÃO
@@ -99,21 +157,13 @@ public class TutorialManager : MonoBehaviour
     public string[] falasIntroducao =
     {
         "As coisas não estão boas para nós...",
-
         "Precisamos fugir deste lugar!",
-
         "Sandy, você conseguiu sair da sua gaiola. Ajude os outros a saírem também!",
-
         "O chefe da carrocinha está no horário de intervalo agora. É a nossa chance!",
-
         "Mas o intervalo não vai durar para sempre. Quando ele voltar, vai começar a ronda pelas gaiolas.",
-
         "Precisamos libertar todos antes que ele termine a ronda!",
-
         "Cuidado, Sandy! Se a carrocinha conseguir pegar você, você perderá 1 ponto de energia.",
-
         "Você começa com 3 pontos de energia. Se sua energia chegar a zero, terá que recomeçar o tutorial.",
-
         "Você precisa coletar as 8 chaves do molho. A última está com a carrocinha!"
     };
 
@@ -143,6 +193,22 @@ public class TutorialManager : MonoBehaviour
         tutorialIniciado = false;
         chefeLiberado = false;
         tutorialTerminou = false;
+
+        // ---------------------------------------------
+        // BALÃO
+        // ---------------------------------------------
+
+        if (balãoAnimado != null)
+        {
+            escalaOriginalBalao =
+                balãoAnimado.localScale;
+
+            posicaoOriginalBalao =
+                balãoAnimado.anchoredPosition;
+
+            balãoAnimado.localScale =
+                Vector3.zero;
+        }
 
         if (objetivo != null)
             objetivo.SetActive(false);
@@ -178,7 +244,9 @@ public class TutorialManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        yield return StartCoroutine(MostrarDialogosIntroducao());
+        yield return StartCoroutine(
+            MostrarDialogosIntroducao()
+        );
 
         tutorialIniciado = true;
 
@@ -191,48 +259,371 @@ public class TutorialManager : MonoBehaviour
 
     IEnumerator MostrarDialogosIntroducao()
     {
-        for (int i = 0; i < falasIntroducao.Length; i++)
+        for (
+            int i = 0;
+            i < falasIntroducao.Length;
+            i++
+        )
         {
-            MostrarFala(falasIntroducao[i]);
+            yield return StartCoroutine(
+                MostrarFalaEEsperar(
+                    falasIntroducao[i]
+                )
+            );
 
-            yield return new WaitForSeconds(tempoEntreFalase);
+            yield return new WaitForSeconds(
+                tempoEntreFalase
+            );
         }
 
         EsconderDialogo();
     }
 
     // =====================================================
+    // MOSTRAR FALA E ESPERAR
+    // =====================================================
+
+    IEnumerator MostrarFalaEEsperar(
+        string mensagem
+    )
+    {
+        yield return StartCoroutine(
+            MostrarFalaAnimada(mensagem)
+        );
+
+        yield return new WaitForSeconds(
+            tempoExibicaoFala
+        );
+    }
+
+    // =====================================================
     // SISTEMA DE FALAS
     // =====================================================
 
-    public void MostrarFala(string mensagem)
+    public void MostrarFala(
+        string mensagem
+    )
     {
         if (painelDialogo != null)
             painelDialogo.SetActive(true);
 
         if (textoDuke != null)
+        {
             textoDuke.text = mensagem;
+            textoDuke.maxVisibleCharacters =
+                int.MaxValue;
+        }
+
+        // Anima o balão
+        if (balãoAnimado != null)
+        {
+            if (rotinaAnimacaoBalao != null)
+            {
+                StopCoroutine(
+                    rotinaAnimacaoBalao
+                );
+            }
+
+            rotinaAnimacaoBalao =
+                StartCoroutine(
+                    AnimarEntradaBalao()
+                );
+        }
+
+        // Toca o latido
+        TocarLatidoDuke();
     }
+
+    // =====================================================
+    // FALA ANIMADA
+    // =====================================================
+
+    IEnumerator MostrarFalaAnimada(
+        string mensagem
+    )
+    {
+        if (painelDialogo != null)
+            painelDialogo.SetActive(true);
+
+        if (textoDuke == null)
+            yield break;
+
+        // ---------------------------------------------
+        // TEXTO
+        // ---------------------------------------------
+
+        textoDuke.text = mensagem;
+
+        textoDuke.ForceMeshUpdate();
+
+        int quantidadeCaracteres =
+            textoDuke.textInfo.characterCount;
+
+        textoDuke.maxVisibleCharacters = 0;
+
+        textoSendoEscrito = true;
+
+        // ---------------------------------------------
+        // BALÃO + LATIDO
+        // ---------------------------------------------
+
+        if (rotinaAnimacaoBalao != null)
+        {
+            StopCoroutine(
+                rotinaAnimacaoBalao
+            );
+        }
+
+        rotinaAnimacaoBalao =
+            StartCoroutine(
+                AnimarEntradaBalao()
+            );
+
+        TocarLatidoDuke();
+
+        // ---------------------------------------------
+        // ESCREVER TEXTO
+        // ---------------------------------------------
+
+        for (
+            int i = 0;
+            i <= quantidadeCaracteres;
+            i++
+        )
+        {
+            textoDuke.maxVisibleCharacters = i;
+
+            if (i < quantidadeCaracteres)
+            {
+                char caractere =
+                    mensagem[i];
+
+                // ---------------------------------
+                // PONTUAÇÃO
+                // ---------------------------------
+
+                if (
+                    caractere == '.' ||
+                    caractere == '!' ||
+                    caractere == '?'
+                )
+                {
+                    yield return new WaitForSeconds(
+                        pausaPontuacao
+                    );
+                }
+
+                // ---------------------------------
+                // VÍRGULA
+                // ---------------------------------
+
+                else if (
+                    caractere == ','
+                )
+                {
+                    yield return new WaitForSeconds(
+                        pausaVirgula
+                    );
+                }
+
+                // ---------------------------------
+                // LETRA NORMAL
+                // ---------------------------------
+
+                else
+                {
+                    yield return new WaitForSeconds(
+                        velocidadeTexto
+                    );
+                }
+            }
+        }
+
+        textoSendoEscrito = false;
+    }
+
+    // =====================================================
+    // SOM DO DUKE
+    // =====================================================
+
+    void TocarLatidoDuke()
+    {
+        if (
+            audioSourceDuke != null &&
+            somLatidoDuke != null
+        )
+        {
+            audioSourceDuke.PlayOneShot(
+                somLatidoDuke
+            );
+        }
+    }
+
+    // =====================================================
+    // ENTRADA DO BALÃO
+    // =====================================================
+
+    IEnumerator AnimarEntradaBalao()
+    {
+        if (balãoAnimado == null)
+            yield break;
+
+        Vector3 inicio =
+            Vector3.zero;
+
+        Vector3 meio =
+            escalaOriginalBalao *
+            escalaPop;
+
+        Vector3 fim =
+            escalaOriginalBalao;
+
+        float tempo = 0f;
+
+        // ---------------------------------------------
+        // POP
+        // ---------------------------------------------
+
+        while (
+            tempo < tempoEntradaBalao
+        )
+        {
+            tempo += Time.deltaTime;
+
+            float progresso =
+                tempo /
+                tempoEntradaBalao;
+
+            balãoAnimado.localScale =
+                Vector3.Lerp(
+                    inicio,
+                    meio,
+                    progresso
+                );
+
+            yield return null;
+        }
+
+        tempo = 0f;
+
+        // ---------------------------------------------
+        // VOLTA PARA O TAMANHO NORMAL
+        // ---------------------------------------------
+
+        while (
+            tempo <
+            tempoEntradaBalao * 0.4f
+        )
+        {
+            tempo += Time.deltaTime;
+
+            float progresso =
+                tempo /
+                (tempoEntradaBalao * 0.4f);
+
+            balãoAnimado.localScale =
+                Vector3.Lerp(
+                    meio,
+                    fim,
+                    progresso
+                );
+
+            yield return null;
+        }
+
+        balãoAnimado.localScale =
+            escalaOriginalBalao;
+
+        rotinaAnimacaoBalao = null;
+    }
+
+    // =====================================================
+    // FLUTUAÇÃO DO BALÃO
+    // =====================================================
+
+    void Update()
+    {
+        if (
+            balãoAnimado != null &&
+            painelDialogo != null &&
+            painelDialogo.activeSelf
+        )
+        {
+            float movimento =
+                Mathf.Sin(
+                    Time.time *
+                    velocidadeFlutuacao
+                ) *
+                intensidadeFlutuacao;
+
+            balãoAnimado.anchoredPosition =
+                posicaoOriginalBalao +
+                Vector2.up *
+                movimento;
+        }
+    }
+
+    // =====================================================
+    // ESCONDER BALÃO
+    // =====================================================
 
     void EsconderDialogo()
     {
         if (painelDialogo != null)
             painelDialogo.SetActive(false);
+
+        if (balãoAnimado != null)
+        {
+            balãoAnimado.localScale =
+                escalaOriginalBalao;
+
+            balãoAnimado.anchoredPosition =
+                posicaoOriginalBalao;
+        }
+
+        if (textoDuke != null)
+        {
+            textoDuke.maxVisibleCharacters =
+                int.MaxValue;
+        }
     }
 
-    public void MostrarFalaTemporaria(string mensagem)
+    // =====================================================
+    // FALA TEMPORÁRIA
+    // =====================================================
+
+    public void MostrarFalaTemporaria(
+        string mensagem
+    )
     {
         if (rotinaFala != null)
-            StopCoroutine(rotinaFala);
+        {
+            StopCoroutine(
+                rotinaFala
+            );
+        }
 
-        rotinaFala = StartCoroutine(FalaTemporaria(mensagem));
+        rotinaFala =
+            StartCoroutine(
+                FalaTemporaria(
+                    mensagem
+                )
+            );
     }
 
-    IEnumerator FalaTemporaria(string mensagem)
+    IEnumerator FalaTemporaria(
+        string mensagem
+    )
     {
-        MostrarFala(mensagem);
+        yield return StartCoroutine(
+            MostrarFalaAnimada(
+                mensagem
+            )
+        );
 
-        yield return new WaitForSeconds(tempoExibicaoFala);
+        yield return new WaitForSeconds(
+            tempoExibicaoFala
+        );
 
         EsconderDialogo();
 
@@ -243,21 +634,39 @@ public class TutorialManager : MonoBehaviour
     // SISTEMA DE DICAS
     // =====================================================
 
-    void IniciarDica(string mensagem)
+    void IniciarDica(
+        string mensagem
+    )
     {
         PararDica();
 
-        rotinaDica = StartCoroutine(AguardarDica(mensagem));
+        rotinaDica =
+            StartCoroutine(
+                AguardarDica(
+                    mensagem
+                )
+            );
     }
 
-    IEnumerator AguardarDica(string mensagem)
+    IEnumerator AguardarDica(
+        string mensagem
+    )
     {
-        yield return new WaitForSeconds(tempoParaDica);
+        yield return new WaitForSeconds(
+            tempoParaDica
+        );
 
-        if (etapaAtual == EtapaTutorial.Finalizado)
+        if (
+            etapaAtual ==
+            EtapaTutorial.Finalizado
+        )
+        {
             yield break;
+        }
 
-        MostrarFalaTemporaria(mensagem);
+        MostrarFalaTemporaria(
+            mensagem
+        );
 
         rotinaDica = null;
     }
@@ -266,7 +675,10 @@ public class TutorialManager : MonoBehaviour
     {
         if (rotinaDica != null)
         {
-            StopCoroutine(rotinaDica);
+            StopCoroutine(
+                rotinaDica
+            );
+
             rotinaDica = null;
         }
     }
@@ -280,7 +692,8 @@ public class TutorialManager : MonoBehaviour
         if (tutorialTerminou)
             return;
 
-        etapaAtual = EtapaTutorial.Corrida;
+        etapaAtual =
+            EtapaTutorial.Corrida;
 
         MostrarObjetivo(
             "Use as setas direcionais para andar!"
@@ -300,12 +713,17 @@ public class TutorialManager : MonoBehaviour
         if (tutorialTerminou)
             return;
 
-        if (etapaAtual != EtapaTutorial.Corrida)
+        if (
+            etapaAtual !=
+            EtapaTutorial.Corrida
+        )
             return;
 
         PararDica();
 
-        Debug.Log("Corrida concluída!");
+        Debug.Log(
+            "Corrida concluída!"
+        );
 
         MostrarFalaTemporaria(
             "Muito bem, Sandy! Você já sabe andar. Agora vamos aprender a pular!"
@@ -323,7 +741,8 @@ public class TutorialManager : MonoBehaviour
         if (tutorialTerminou)
             return;
 
-        etapaAtual = EtapaTutorial.Pulo;
+        etapaAtual =
+            EtapaTutorial.Pulo;
 
         MostrarObjetivo(
             "Use ESPAÇO para pular e fugir dos golpes!"
@@ -343,12 +762,17 @@ public class TutorialManager : MonoBehaviour
         if (tutorialTerminou)
             return;
 
-        if (etapaAtual != EtapaTutorial.Pulo)
+        if (
+            etapaAtual !=
+            EtapaTutorial.Pulo
+        )
             return;
 
         PararDica();
 
-        Debug.Log("Pulo concluído!");
+        Debug.Log(
+            "Pulo concluído!"
+        );
 
         MostrarFalaTemporaria(
             "Muito bem! O pulo vai ajudar você a escapar dos obstáculos e dos golpes!"
@@ -366,7 +790,8 @@ public class TutorialManager : MonoBehaviour
         if (tutorialTerminou)
             return;
 
-        etapaAtual = EtapaTutorial.Latido;
+        etapaAtual =
+            EtapaTutorial.Latido;
 
         MostrarObjetivo(
             "Use Z para latir e assustar o chefe!"
@@ -386,12 +811,17 @@ public class TutorialManager : MonoBehaviour
         if (tutorialTerminou)
             return;
 
-        if (etapaAtual != EtapaTutorial.Latido)
+        if (
+            etapaAtual !=
+            EtapaTutorial.Latido
+        )
             return;
 
         PararDica();
 
-        Debug.Log("Latido concluído!");
+        Debug.Log(
+            "Latido concluído!"
+        );
 
         MostrarFalaTemporaria(
             "Isso aí, Sandy! Agora você está pronta para ajudar os outros cães!"
@@ -409,21 +839,24 @@ public class TutorialManager : MonoBehaviour
         if (tutorialTerminou)
             return;
 
-        etapaAtual = EtapaTutorial.Coleta;
+        etapaAtual =
+            EtapaTutorial.Coleta;
 
         MostrarObjetivo(
             "Colete as 8 chaves e liberte os cães!"
         );
 
         MostrarFalaTemporaria(
-            "O intervalo não vai durar para sempre! Colete as 8 chaves do molho e liberte os cães. A última chave está com a carrocinha."
+            "O intervalo não vai durar para sempre! Colete as 8 chaves do molho e liberte os cães. A última está com a carrocinha."
         );
 
         IniciarDica(
             "Sandy, procure as chaves das gaiolas! Precisamos libertar todos antes que o chefe volte."
         );
 
-        Debug.Log("Tutorial das mecânicas concluído!");
+        Debug.Log(
+            "Tutorial das mecânicas concluído!"
+        );
 
         if (tutorialTimer != null)
         {
@@ -465,12 +898,16 @@ public class TutorialManager : MonoBehaviour
     // MÉTODO PARA OUTROS SCRIPTS ALTERAREM O OBJETIVO
     // =====================================================
 
-    public void MostrarObjetivoExterno(string mensagem)
+    public void MostrarObjetivoExterno(
+        string mensagem
+    )
     {
         if (tutorialTerminou)
             return;
 
-        MostrarObjetivo(mensagem);
+        MostrarObjetivo(
+            mensagem
+        );
     }
 
     // =====================================================
@@ -489,7 +926,9 @@ public class TutorialManager : MonoBehaviour
 
         PararDica();
 
-        Debug.Log("O CHEFE VOLTOU!");
+        Debug.Log(
+            "O CHEFE VOLTOU!"
+        );
 
         MostrarFalaTemporaria(
             "Sandy! O chefe voltou! Cuidado: se ele pegar você, você perderá 1 ponto de energia."
@@ -520,7 +959,10 @@ public class TutorialManager : MonoBehaviour
         if (tutorialTerminou)
             return;
 
-        if (TutorialChavesManager.instance == null)
+        if (
+            TutorialChavesManager.instance ==
+            null
+        )
         {
             Debug.LogWarning(
                 "TutorialChavesManager não foi encontrado."
@@ -530,7 +972,9 @@ public class TutorialManager : MonoBehaviour
         }
 
         int gaiolasAbertas =
-            TutorialChavesManager.instance.GaiolasAbertas;
+            TutorialChavesManager
+            .instance
+            .GaiolasAbertas;
 
         if (gaiolasAbertas >= 9)
         {
@@ -544,36 +988,37 @@ public class TutorialManager : MonoBehaviour
             return;
 
         tutorialTerminou = true;
-        etapaAtual = EtapaTutorial.Finalizado;
+
+        etapaAtual =
+            EtapaTutorial.Finalizado;
 
         PararDica();
 
         if (rotinaFala != null)
         {
-            StopCoroutine(rotinaFala);
+            StopCoroutine(
+                rotinaFala
+            );
+
             rotinaFala = null;
         }
 
-        // Para o timer
         if (tutorialTimer != null)
         {
             tutorialTimer.PararTimer();
         }
 
-        // Para a carrocinha
         if (chefe != null)
         {
             chefe.DesativarChefe();
         }
 
-        // Esconde interface normal
         if (objetivo != null)
             objetivo.SetActive(false);
 
         if (painelDialogo != null)
             painelDialogo.SetActive(false);
 
-        // Mostra painel de vitória
         if (painelVitoria != null)
         {
             painelVitoria.SetActive(true);
@@ -601,36 +1046,37 @@ public class TutorialManager : MonoBehaviour
             return;
 
         tutorialTerminou = true;
-        etapaAtual = EtapaTutorial.Finalizado;
+
+        etapaAtual =
+            EtapaTutorial.Finalizado;
 
         PararDica();
 
         if (rotinaFala != null)
         {
-            StopCoroutine(rotinaFala);
+            StopCoroutine(
+                rotinaFala
+            );
+
             rotinaFala = null;
         }
 
-        // Para o timer
         if (tutorialTimer != null)
         {
             tutorialTimer.PararTimer();
         }
 
-        // Para a carrocinha
         if (chefe != null)
         {
             chefe.DesativarChefe();
         }
 
-        // Esconde interface normal
         if (objetivo != null)
             objetivo.SetActive(false);
 
         if (painelDialogo != null)
             painelDialogo.SetActive(false);
 
-        // Mostra painel de derrota
         if (painelDerrota != null)
         {
             painelDerrota.SetActive(true);
@@ -677,13 +1123,17 @@ public class TutorialManager : MonoBehaviour
         if (tutorialTerminou)
             return;
 
-        etapaAtual = EtapaTutorial.Finalizado;
+        etapaAtual =
+            EtapaTutorial.Finalizado;
 
         PararDica();
 
         if (rotinaFala != null)
         {
-            StopCoroutine(rotinaFala);
+            StopCoroutine(
+                rotinaFala
+            );
+
             rotinaFala = null;
         }
 
@@ -699,27 +1149,34 @@ public class TutorialManager : MonoBehaviour
                 "Conseguimos! Vamos libertar todos!";
         }
 
-        Debug.Log("Tutorial concluído!");
+        Debug.Log(
+            "Tutorial concluído!"
+        );
     }
 
     // =====================================================
     // MOSTRAR OBJETIVO
     // =====================================================
 
-    void MostrarObjetivo(string mensagem)
+    void MostrarObjetivo(
+        string mensagem
+    )
     {
         if (objetivo != null)
             objetivo.SetActive(true);
 
         if (textoObjetivo != null)
-            textoObjetivo.text = mensagem;
+            textoObjetivo.text =
+                mensagem;
     }
 
     // =====================================================
     // VERIFICAR ETAPA
     // =====================================================
 
-    public bool EstaNaEtapa(EtapaTutorial etapa)
+    public bool EstaNaEtapa(
+        EtapaTutorial etapa
+    )
     {
         return etapaAtual == etapa;
     }
