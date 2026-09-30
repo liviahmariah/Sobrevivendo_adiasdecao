@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 39f223bb028b6af479cbcf0dd15ba5e4
+guid: 2abdd64b5aa9b694282524aecfad7b9a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7898445865278313018
-    second: Sandy_Sorrindo_0
+      213: 4394561249303111336
+    second: BalaoTUTU_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Sandy_Sorrindo_0
+      name: BalaoTUTU_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 0
-        width: 30
-        height: 41
+        x: 3
+        y: 2
+        width: 182
+        height: 45
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a32119daaaaec9d60800000000000000
-      internalID: 7898445865278313018
+      spriteID: 8a6a8604c2e9cfc30800000000000000
+      internalID: 4394561249303111336
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Sandy_Sorrindo_0: 7898445865278313018
+      BalaoTUTU_0: 4394561249303111336
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
