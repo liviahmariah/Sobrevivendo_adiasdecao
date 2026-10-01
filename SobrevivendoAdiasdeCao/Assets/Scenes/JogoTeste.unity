@@ -152,6 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Item
   valor: 1
   itemBom: 0
+  tipoRecurso: 0
   popupBom: {fileID: 0}
   popupRuim: {fileID: 2699118817791772296, guid: da19d5abe594ba04e89a346f1c95682a, type: 3}
 --- !u!61 &131828679
@@ -202,7 +203,7 @@ BoxCollider2D:
   m_EdgeRadius: 0
 --- !u!212 &131828680
 SpriteRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -259,6 +260,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!4 &131828681
 Transform:
   m_ObjectHideFlags: 0
@@ -371,7 +373,7 @@ Rigidbody2D:
   m_Constraints: 4
 --- !u!212 &197994815
 SpriteRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -428,6 +430,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!4 &197994816
 Transform:
   m_ObjectHideFlags: 0
@@ -457,8 +460,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   speed: 10
-  jumpForce: 10
+  jumpHeight: 3
+  jumpDuration: 0.8
   maxJumps: 2
+  groundCheck: {fileID: 0}
+  groundCheckRadius: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  audioSource: {fileID: 0}
+  somLatido: {fileID: 0}
+  poeiraCorrida: {fileID: 0}
+  molhoChaves: {fileID: 0}
+  chefe: {fileID: 0}
 --- !u!114 &197994818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -471,9 +485,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3760140bcd9a1214e8a1cc139d8e6e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  energiaMaxima: 5
-  energiaAtual: 0
-  barraEnergia: {fileID: 1547236779}
+  vidaMaxima: 5
+  vidaAtual: 0
+  barraVida: {fileID: 1547236779}
+  velocidadeBase: 7
+  velocidadeVida5: 1
+  velocidadeVida4: 0.9
+  velocidadeVida3: 0.8
+  velocidadeVida2: 0.7
+  velocidadeVida1: 0.6
 --- !u!95 &197994819
 Animator:
   serializedVersion: 7
@@ -730,6 +750,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -1406,6 +1427,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -1530,6 +1552,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -1569,6 +1592,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Carrocinha
   player: {fileID: 197994816}
   speed: 4
+  dano: 1
+  intervaloEntreGolpes: 1.2
 --- !u!61 &803586460
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1644,7 +1669,7 @@ Rigidbody2D:
   m_Constraints: 4
 --- !u!212 &803586462
 SpriteRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1701,6 +1726,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!4 &803586463
 Transform:
   m_ObjectHideFlags: 0
@@ -2122,6 +2148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Item
   valor: 1
   itemBom: 0
+  tipoRecurso: 0
   popupBom: {fileID: 0}
   popupRuim: {fileID: 2699118817791772296, guid: da19d5abe594ba04e89a346f1c95682a, type: 3}
 --- !u!61 &1339174803
@@ -2172,7 +2199,7 @@ BoxCollider2D:
   m_EdgeRadius: 0
 --- !u!212 &1339174804
 SpriteRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2229,6 +2256,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!4 &1339174805
 Transform:
   m_ObjectHideFlags: 0
@@ -2740,7 +2768,7 @@ Rigidbody2D:
   m_Constraints: 0
 --- !u!212 &1704489942
 SpriteRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2797,6 +2825,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!4 &1704489943
 Transform:
   m_ObjectHideFlags: 0
@@ -2993,6 +3022,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Item
   valor: 1
   itemBom: 0
+  tipoRecurso: 0
   popupBom: {fileID: 0}
   popupRuim: {fileID: 2699118817791772296, guid: da19d5abe594ba04e89a346f1c95682a, type: 3}
 --- !u!61 &1728545221
@@ -3043,7 +3073,7 @@ BoxCollider2D:
   m_EdgeRadius: 0
 --- !u!212 &1728545222
 SpriteRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3100,6 +3130,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!4 &1728545223
 Transform:
   m_ObjectHideFlags: 0
@@ -3148,6 +3179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Item
   valor: 1
   itemBom: 0
+  tipoRecurso: 0
   popupBom: {fileID: 0}
   popupRuim: {fileID: 2699118817791772296, guid: da19d5abe594ba04e89a346f1c95682a, type: 3}
 --- !u!61 &1748382193
@@ -3198,7 +3230,7 @@ BoxCollider2D:
   m_EdgeRadius: 0
 --- !u!212 &1748382194
 SpriteRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3255,6 +3287,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!4 &1748382195
 Transform:
   m_ObjectHideFlags: 0
@@ -3452,6 +3485,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -3614,7 +3648,7 @@ GameObject:
   m_IsActive: 1
 --- !u!212 &1942511128
 SpriteRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3671,6 +3705,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!4 &1942511129
 Transform:
   m_ObjectHideFlags: 0
@@ -3765,6 +3800,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Item
   valor: 1
   itemBom: 0
+  tipoRecurso: 0
   popupBom: {fileID: 0}
   popupRuim: {fileID: 2699118817791772296, guid: da19d5abe594ba04e89a346f1c95682a, type: 3}
 --- !u!61 &1990371037
@@ -3815,7 +3851,7 @@ BoxCollider2D:
   m_EdgeRadius: 0
 --- !u!212 &1990371038
 SpriteRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3872,6 +3908,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!4 &1990371039
 Transform:
   m_ObjectHideFlags: 0
@@ -3996,7 +4033,7 @@ Rigidbody2D:
   m_Constraints: 0
 --- !u!212 &2040072764
 SpriteRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -4053,6 +4090,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!4 &2040072765
 Transform:
   m_ObjectHideFlags: 0
