@@ -4,82 +4,40 @@ using TMPro;
 
 public class CommunityManager : MonoBehaviour
 {
-    // =========================================================
-    // SINGLETON
-    // =========================================================
-
     public static CommunityManager instance;
 
-
-    // =========================================================
-    // STATUS DA COMUNIDADE
-    // =========================================================
-
     [Header("Status da Comunidade")]
-
-    [Range(0, 100)]
-    public float alimentacao = 100f;
-
-    [Range(0, 100)]
-    public float saude = 100f;
-
-    [Range(0, 100)]
-    public float felicidade = 100f;
-
-
-    // =========================================================
-    // BARRAS
-    // =========================================================
+    [Range(0, 100)] public float alimentacao = 100f;
+    [Range(0, 100)] public float saude = 100f;
+    [Range(0, 100)] public float felicidade = 100f;
 
     [Header("Barras")]
-
     public Slider barraAlimentacao;
     public Slider barraSaude;
     public Slider barraFelicidade;
 
-
-    // =========================================================
-    // TEXTOS DOS PERCENTUAIS
-    // =========================================================
-
     [Header("Percentuais")]
-
     public TextMeshProUGUI textoAlimentacao;
     public TextMeshProUGUI textoSaude;
     public TextMeshProUGUI textoFelicidade;
 
+    [Header("Consumo de Alimentação")]
+    public float consumoAlimentacaoNormal = 0.8f;
+    public float multiplicadorConsumoSaudeAtencao = 1.5f;
+    public float multiplicadorConsumoSaudeCritica = 2f;
 
-    // =========================================================
-    // CONSUMO NATURAL
-    // =========================================================
-
-    [Header("Consumo Natural")]
-
-    [Tooltip("Quanto a alimentação diminui por segundo.")]
-    public float consumoAlimentacaoPorSegundo = 0.8f;
-
-
-    // =========================================================
-    // INFLUÊNCIA ENTRE NECESSIDADES
-    // =========================================================
-
-    [Header("Influência entre necessidades")]
-
-    [Tooltip("Perda de saúde quando alimentação está em atenção.")]
-    public float perdaSaudeFome = 1f;
-
-    [Tooltip("Perda de saúde quando alimentação está crítica.")]
+    [Header("Alimentação → Saúde")]
+    public float perdaSaudeFomeAtencao = 1f;
     public float perdaSaudeFomeCritica = 2f;
 
-    [Tooltip("Perda de felicidade causada pela fome.")]
+    [Header("Influência na Felicidade")]
     public float perdaFelicidadeFome = 0.5f;
-
-    [Tooltip("Perda de felicidade causada pela saúde baixa.")]
     public float perdaFelicidadeSaude = 0.5f;
+    public float perdaFelicidadeSaudeCritica = 1f;
 
 
     // =========================================================
-    // AWAKE
+    // INICIALIZAÇÃO
     // =========================================================
 
     private void Awake()
@@ -94,11 +52,6 @@ public class CommunityManager : MonoBehaviour
         }
     }
 
-
-    // =========================================================
-    // START
-    // =========================================================
-
     private void Start()
     {
         ConfigurarBarras();
@@ -107,12 +60,18 @@ public class CommunityManager : MonoBehaviour
 
 
     // =========================================================
-    // UPDATE
+    // ATUALIZAÇÃO
     // =========================================================
 
     private void Update()
     {
-        AtualizarComunidade();
+        // A comunidade só sofre o desgaste natural
+        // enquanto o dia estiver correndo no MAPA.
+        if (DayManager.Instance != null && DayManager.Instance.DiaEstaAtivo())
+        {
+            AtualizarComunidade();
+        }
+
         AtualizarUI();
     }
 
@@ -144,55 +103,70 @@ public class CommunityManager : MonoBehaviour
 
 
     // =========================================================
-    // LÓGICA DA COMUNIDADE
+    // LÓGICA NATURAL DA COMUNIDADE
     // =========================================================
 
     private void AtualizarComunidade()
     {
-        // -----------------------------------------------------
-        // ALIMENTAÇÃO DIMINUI COM O TEMPO
-        // -----------------------------------------------------
+        // -----------------------------------------
+        // CONSUMO DE ALIMENTAÇÃO
+        // -----------------------------------------
 
-        alimentacao -= consumoAlimentacaoPorSegundo * Time.deltaTime;
+        float consumoAtual = consumoAlimentacaoNormal;
+
+        if (SaudeCritica())
+        {
+            consumoAtual *= multiplicadorConsumoSaudeCritica;
+        }
+        else if (SaudeEmAtencao())
+        {
+            consumoAtual *= multiplicadorConsumoSaudeAtencao;
+        }
+
+        alimentacao -= consumoAtual * Time.deltaTime;
 
 
-        // -----------------------------------------------------
-        // ALIMENTAÇÃO → SAÚDE
-        // -----------------------------------------------------
+        // -----------------------------------------
+        // FOME → PERDA DE SAÚDE
+        // -----------------------------------------
 
-        if (alimentacao < 40f)
+        if (AlimentacaoCritica())
         {
             saude -= perdaSaudeFomeCritica * Time.deltaTime;
         }
-        else if (alimentacao < 70f)
+        else if (AlimentacaoEmAtencao())
         {
-            saude -= perdaSaudeFome * Time.deltaTime;
+            saude -= perdaSaudeFomeAtencao * Time.deltaTime;
         }
 
 
-        // -----------------------------------------------------
-        // ALIMENTAÇÃO → FELICIDADE
-        // -----------------------------------------------------
+        // -----------------------------------------
+        // FOME → PERDA DE FELICIDADE
+        // -----------------------------------------
 
-        if (alimentacao < 70f)
+        if (AlimentacaoEmAtencao() || AlimentacaoCritica())
         {
             felicidade -= perdaFelicidadeFome * Time.deltaTime;
         }
 
 
-        // -----------------------------------------------------
-        // SAÚDE → FELICIDADE
-        // -----------------------------------------------------
+        // -----------------------------------------
+        // SAÚDE → PERDA DE FELICIDADE
+        // -----------------------------------------
 
-        if (saude < 70f)
+        if (SaudeCritica())
+        {
+            felicidade -= perdaFelicidadeSaudeCritica * Time.deltaTime;
+        }
+        else if (SaudeEmAtencao())
         {
             felicidade -= perdaFelicidadeSaude * Time.deltaTime;
         }
 
 
-        // -----------------------------------------------------
-        // LIMITES
-        // -----------------------------------------------------
+        // -----------------------------------------
+        // LIMITAR VALORES ENTRE 0 E 100
+        // -----------------------------------------
 
         alimentacao = Mathf.Clamp(alimentacao, 0f, 100f);
         saude = Mathf.Clamp(saude, 0f, 100f);
@@ -201,79 +175,65 @@ public class CommunityManager : MonoBehaviour
 
 
     // =========================================================
-    // RECURSOS DAS FASES
+    // ADICIONAR RECURSOS
     // =========================================================
 
     public void AdicionarComida(float valor)
     {
-        alimentacao += valor;
-        alimentacao = Mathf.Clamp(alimentacao, 0f, 100f);
-
+        alimentacao = Mathf.Clamp(alimentacao + valor, 0f, 100f);
         AtualizarUI();
     }
-
 
     public void AdicionarRemedios(float valor)
     {
-        saude += valor;
-        saude = Mathf.Clamp(saude, 0f, 100f);
-
+        saude = Mathf.Clamp(saude + valor, 0f, 100f);
         AtualizarUI();
     }
 
-
     public void AdicionarDiversao(float valor)
     {
-        felicidade += valor;
-        felicidade = Mathf.Clamp(felicidade, 0f, 100f);
-
+        felicidade = Mathf.Clamp(felicidade + valor, 0f, 100f);
         AtualizarUI();
     }
 
 
     // =========================================================
-    // ALTERAÇÕES CAUSADAS POR EVENTOS
+    // ALTERAR STATUS
     // =========================================================
 
     public void AlterarAlimentacao(float valor)
     {
-        alimentacao += valor;
-        alimentacao = Mathf.Clamp(alimentacao, 0f, 100f);
-
+        alimentacao = Mathf.Clamp(alimentacao + valor, 0f, 100f);
         AtualizarUI();
     }
-
 
     public void AlterarSaude(float valor)
     {
-        saude += valor;
-        saude = Mathf.Clamp(saude, 0f, 100f);
-
+        saude = Mathf.Clamp(saude + valor, 0f, 100f);
         AtualizarUI();
     }
 
-
     public void AlterarFelicidade(float valor)
     {
-        felicidade += valor;
-        felicidade = Mathf.Clamp(felicidade, 0f, 100f);
-
+        felicidade = Mathf.Clamp(felicidade + valor, 0f, 100f);
         AtualizarUI();
     }
 
 
     // =========================================================
-    // PASSAGEM DE DIA
+    // FINALIZAÇÃO DO DIA
     // =========================================================
 
     public void FinalizarDia()
     {
-        // Reservado para a lógica dos dias.
+        // A lógica dos dias pertence ao DayManager.
+        // Este método permanece para compatibilidade
+        // com outros sistemas que possam chamá-lo.
     }
 
 
     // =========================================================
-    // ESTADOS — CRÍTICO
+    // ESTADOS DA COMUNIDADE
     // =========================================================
 
     public bool AlimentacaoCritica()
@@ -292,10 +252,6 @@ public class CommunityManager : MonoBehaviour
     }
 
 
-    // =========================================================
-    // ESTADOS — ATENÇÃO
-    // =========================================================
-
     public bool AlimentacaoEmAtencao()
     {
         return alimentacao >= 40f && alimentacao < 70f;
@@ -311,10 +267,6 @@ public class CommunityManager : MonoBehaviour
         return felicidade >= 40f && felicidade < 70f;
     }
 
-
-    // =========================================================
-    // ESTADOS — ESTÁVEL
-    // =========================================================
 
     public bool AlimentacaoEstavel()
     {
@@ -333,7 +285,7 @@ public class CommunityManager : MonoBehaviour
 
 
     // =========================================================
-    // CONSULTAS
+    // ESTADOS SIMPLIFICADOS
     // =========================================================
 
     public bool ComunidadeComFome()
@@ -353,6 +305,44 @@ public class CommunityManager : MonoBehaviour
 
 
     // =========================================================
+    // INFLUÊNCIAS PARA AS FASES
+    // =========================================================
+
+    // Felicidade baixa → menos recursos aparecem.
+    public float MultiplicadorSpawnRecursos()
+    {
+        if (FelicidadeCritica())
+            return 0.5f;
+
+        if (FelicidadeEmAtencao())
+            return 0.75f;
+
+        return 1f;
+    }
+
+
+    // Felicidade baixa → carrocinha chega mais rápido.
+    public float MultiplicadorTempoCarrocinha()
+    {
+        if (FelicidadeCritica())
+            return 0.7f;
+
+        if (FelicidadeEmAtencao())
+            return 0.85f;
+
+        return 1f;
+    }
+
+
+    // Saúde abaixo de 70 → comunidade pode precisar
+    // de medicamentos específicos.
+    public bool PrecisaDeMedicamentoEspecifico()
+    {
+        return SaudeEmAtencao() || SaudeCritica();
+    }
+
+
+    // =========================================================
     // MÉDIA DA COMUNIDADE
     // =========================================================
 
@@ -363,58 +353,28 @@ public class CommunityManager : MonoBehaviour
 
 
     // =========================================================
-    // ATUALIZAÇÃO DA UI
+    // ATUALIZAÇÃO DA INTERFACE
     // =========================================================
 
     private void AtualizarUI()
     {
-        // -----------------------------------------------------
-        // BARRA DE ALIMENTAÇÃO
-        // -----------------------------------------------------
-
         if (barraAlimentacao != null)
-        {
             barraAlimentacao.value = alimentacao;
-        }
-
-
-        // -----------------------------------------------------
-        // BARRA DE SAÚDE
-        // -----------------------------------------------------
 
         if (barraSaude != null)
-        {
             barraSaude.value = saude;
-        }
-
-
-        // -----------------------------------------------------
-        // BARRA DE FELICIDADE
-        // -----------------------------------------------------
 
         if (barraFelicidade != null)
-        {
             barraFelicidade.value = felicidade;
-        }
 
-
-        // -----------------------------------------------------
-        // PERCENTUAIS
-        // -----------------------------------------------------
 
         if (textoAlimentacao != null)
-        {
             textoAlimentacao.text = Mathf.RoundToInt(alimentacao) + "%";
-        }
 
         if (textoSaude != null)
-        {
             textoSaude.text = Mathf.RoundToInt(saude) + "%";
-        }
 
         if (textoFelicidade != null)
-        {
             textoFelicidade.text = Mathf.RoundToInt(felicidade) + "%";
-        }
     }
 }
