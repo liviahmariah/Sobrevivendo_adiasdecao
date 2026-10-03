@@ -739,7 +739,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -672.96985, y: -425.48798}
+  m_AnchoredPosition: {x: -417.15378, y: -228.70638}
   m_SizeDelta: {x: 495.88, y: 92.98}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &678678140
@@ -786,9 +786,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1583056515}
-        m_TargetAssemblyTypeName: PhaseManager, Assembly-CSharp
-        m_MethodName: VoltarParaMapa
+      - m_Target: {fileID: 757972750}
+        m_TargetAssemblyTypeName: BotaoVoltarMapa, Assembly-CSharp
+        m_MethodName: Voltar
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -910,6 +910,50 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &757972749
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 757972751}
+  - component: {fileID: 757972750}
+  m_Layer: 0
+  m_Name: BotaoVoltarMapa
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &757972750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 757972749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8178cee1f84c92c4f9ee1f88bd87e992, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotaoVoltarMapa
+--- !u!4 &757972751
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 757972749}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.42842, y: -0.15648, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1140,8 +1184,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -668.7774, y: 507.62393}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -627.9038, y: 503.99997}
+  m_SizeDelta: {x: 195.81, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1130723454
 MonoBehaviour:
@@ -1329,8 +1373,8 @@ Transform:
   m_GameObject: {fileID: 1199090327}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.09636688, y: 4.37705, z: 0}
-  m_LocalScale: {x: 1.8059, y: 1.906, z: 1.906}
+  m_LocalPosition: {x: 0.0559, y: 4.379, z: 0}
+  m_LocalScale: {x: 1.7882587, y: 1.9002372, z: 1.906}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1701,8 +1745,8 @@ Transform:
   m_GameObject: {fileID: 1373074823}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.000639, y: 4.3823214, z: 0}
-  m_LocalScale: {x: 3.5739, y: 3.5739, z: 3.5739}
+  m_LocalPosition: {x: -7.38, y: 4.39, z: 0}
+  m_LocalScale: {x: 3.193542, y: 3.193542, z: 3.193542}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1878,7 +1922,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -672.96985, y: 507.62393}
+  m_AnchoredPosition: {x: -630, y: 504}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1396340615
@@ -2525,7 +2569,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 735.768, y: 472.32205}
+  m_AnchoredPosition: {x: 724, y: 466.08}
   m_SizeDelta: {x: 399.22, y: 147.83}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1632677308
@@ -8127,3 +8171,4 @@ SceneRoots:
   - {fileID: 1199090329}
   - {fileID: 573599233}
   - {fileID: 1583056516}
+  - {fileID: 757972751}
