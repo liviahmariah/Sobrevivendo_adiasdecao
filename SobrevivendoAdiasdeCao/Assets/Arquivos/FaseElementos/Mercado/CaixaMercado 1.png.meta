@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e27c9ce545396dd45b7ecec84df7b15c
+guid: 3ce3cbc94e49f6e40940f58fb309725e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8473153082776676441
-    second: SandyEnergiaEstrutura_0
+      213: 5403717635117260208
+    second: CaixaMercado_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SandyEnergiaEstrutura_0
+      name: CaixaMercado_0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 15
-        width: 95
-        height: 25
+        x: 12
+        y: 12
+        width: 73
+        height: 29
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7a71795f920596a80800000000000000
-      internalID: -8473153082776676441
+      spriteID: 0bd9dab1f8cddfa40800000000000000
+      internalID: 5403717635117260208
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: a9ed78388e59eb743bc00b4b32e0f7ee
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      SandyEnergiaEstrutura_0: -8473153082776676441
+      CaixaMercado_0: 5403717635117260208
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

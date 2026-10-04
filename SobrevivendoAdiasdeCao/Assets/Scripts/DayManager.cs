@@ -12,8 +12,10 @@ public class DayManager : MonoBehaviour
     public int diaAtual = 1;
     public float tempoRestante;
 
-    [Header("Histórico")]
+    [Header("Histórico dos Dias")]
     public float[] mediasDosDias;
+
+    private bool[] diasRegistrados;
 
     [Header("Resultado Final")]
     public float mediaFinal;
@@ -23,7 +25,7 @@ public class DayManager : MonoBehaviour
 
     private void Awake()
     {
-        // Impede a criação de outro DayManager
+        // Impede outro DayManager de existir
         if (Instance != null && Instance != this)
         {
             Debug.LogWarning(
@@ -38,9 +40,11 @@ public class DayManager : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
 
-        // Inicialização feita SOMENTE uma vez
+        // Inicializa apenas uma vez
         tempoRestante = duracaoDia;
+
         mediasDosDias = new float[totalDias];
+        diasRegistrados = new bool[totalDias];
 
         Debug.Log(
             "DAY MANAGER INICIADO | Dia: " +
@@ -75,6 +79,10 @@ public class DayManager : MonoBehaviour
             "FINALIZANDO DIA " + diaAtual
         );
 
+        // Primeiro registra o estado da comunidade
+        RegistrarMediaDoDia();
+
+        // Depois verifica se ainda existem dias
         if (diaAtual < totalDias)
         {
             diaAtual++;
@@ -90,26 +98,102 @@ public class DayManager : MonoBehaviour
         }
         else
         {
-            diaAtivo = false;
-
-            Debug.Log("TODOS OS DIAS TERMINARAM.");
-
-            mediaFinal = CalcularMediaFinal();
-            resultadoFinal = DeterminarResultadoFinal();
+            FinalizarJogo();
         }
     }
 
     // =====================================================
-    // MÉDIA
+    // REGISTRAR MÉDIA DO DIA
+    // =====================================================
+
+    private void RegistrarMediaDoDia()
+    {
+        if (CommunityManager.instance == null)
+        {
+            Debug.LogWarning(
+                "DayManager: CommunityManager não encontrado."
+            );
+
+            return;
+        }
+
+        float media =
+            CommunityManager.instance.MediaComunidade();
+
+        int indice = diaAtual - 1;
+
+        if (indice >= 0 && indice < mediasDosDias.Length)
+        {
+            mediasDosDias[indice] = media;
+            diasRegistrados[indice] = true;
+
+            Debug.Log(
+                "DIA " +
+                diaAtual +
+                " REGISTRADO | " +
+                "Alimentação: " +
+                CommunityManager.instance.alimentacao.ToString("F1") +
+                " | Saúde: " +
+                CommunityManager.instance.saude.ToString("F1") +
+                " | Felicidade: " +
+                CommunityManager.instance.felicidade.ToString("F1") +
+                " | MÉDIA: " +
+                media.ToString("F1")
+            );
+        }
+    }
+
+    // =====================================================
+    // FINAL DO JOGO
+    // =====================================================
+
+    private void FinalizarJogo()
+    {
+        diaAtivo = false;
+
+        mediaFinal = CalcularMediaFinal();
+        resultadoFinal = DeterminarResultadoFinal();
+
+        Debug.Log("=================================");
+        Debug.Log("JOGO FINALIZADO");
+        Debug.Log(
+            "MÉDIA FINAL: " +
+            mediaFinal.ToString("F1")
+        );
+        Debug.Log(
+            "RESULTADO: " +
+            resultadoFinal
+        );
+        Debug.Log("=================================");
+    }
+
+    // =====================================================
+    // CALCULAR MÉDIA DOS DIAS
     // =====================================================
 
     private float CalcularMediaFinal()
     {
-        if (CommunityManager.instance == null)
+        float soma = 0f;
+        int quantidadeDias = 0;
+
+        for (int i = 0; i < mediasDosDias.Length; i++)
+        {
+            if (diasRegistrados[i])
+            {
+                soma += mediasDosDias[i];
+                quantidadeDias++;
+            }
+        }
+
+        if (quantidadeDias == 0)
             return 0f;
 
-        return CommunityManager.instance.MediaComunidade();
+        return soma / quantidadeDias;
     }
+
+    // =====================================================
+    // RESULTADO FINAL
+    // =====================================================
 
     private string DeterminarResultadoFinal()
     {
@@ -134,5 +218,18 @@ public class DayManager : MonoBehaviour
     public bool DiaEstaAtivo()
     {
         return diaAtivo;
+    }
+
+    public float ObterMediaDoDia(int numeroDoDia)
+    {
+        int indice = numeroDoDia - 1;
+
+        if (indice < 0 || indice >= mediasDosDias.Length)
+            return 0f;
+
+        if (!diasRegistrados[indice])
+            return 0f;
+
+        return mediasDosDias[indice];
     }
 }

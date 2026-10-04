@@ -156,15 +156,15 @@ public class TutorialManager : MonoBehaviour
     [TextArea(2, 5)]
     public string[] falasIntroducao =
     {
-        "As coisas não estão boas para nós...",
-        "Precisamos fugir deste lugar!",
-        "Sandy, você conseguiu sair da sua gaiola. Ajude os outros a saírem também!",
-        "O chefe da carrocinha está no horário de intervalo agora. É a nossa chance!",
-        "Mas o intervalo não vai durar para sempre. Quando ele voltar, vai começar a ronda pelas gaiolas.",
-        "Precisamos libertar todos antes que ele termine a ronda!",
-        "Cuidado, Sandy! Se a carrocinha conseguir pegar você, você perderá 1 ponto de energia.",
-        "Você começa com 3 pontos de energia. Se sua energia chegar a zero, terá que recomeçar o tutorial.",
-        "Você precisa coletar as 8 chaves do molho. A última está com a carrocinha!"
+        "<mark=#FFFFFFFF padding=\"5,5,3,3\">As coisas não estão boas para nós...</mark>",
+        "<mark=#FFFFFFFF padding=\"5,5,3,3\">Precisamos fugir deste lugar!</mark>",
+        "<mark=#FFFFFFFF padding=\"5,5,3,3\">Sandy, você conseguiu sair da sua gaiola. Ajude os outros a saírem também!</mark>",
+        "<mark=#FFFFFFFF padding=\"5,5,3,3\">O chefe da carrocinha está no horário de intervalo agora. É a nossa chance!</mark>",
+        "<mark=#FFFFFFFF padding=\"5,5,3,3\">Mas o intervalo não vai durar para sempre. Quando ele voltar, vai começar a ronda pelas gaiolas.</mark>",
+        "<mark=#FFFFFFFF padding=\"5,5,3,3\">Precisamos libertar todos antes que ele termine a ronda!</mark>",
+        "<mark=#FFFFFFFF padding=\"5,5,3,3\">Cuidado, Sandy! Se a carrocinha conseguir pegar você, você perderá 1 ponto de energia.</mark>",
+        "<mark=#FFFFFFFF padding=\"5,5,3,3\">Você começa com 3 pontos de energia. Se sua energia chegar a zero, terá que recomeçar o tutorial.</mark>",
+        "<mark=#FFFFFFFF padding=\"5,5,3,3\">Você precisa coletar as 8 chaves do molho. A última está com a carrocinha!</mark>"
     };
 
     // =====================================================
@@ -193,10 +193,6 @@ public class TutorialManager : MonoBehaviour
         tutorialIniciado = false;
         chefeLiberado = false;
         tutorialTerminou = false;
-
-        // ---------------------------------------------
-        // BALÃO
-        // ---------------------------------------------
 
         if (balãoAnimado != null)
         {
@@ -228,7 +224,29 @@ public class TutorialManager : MonoBehaviour
         if (textoTitulo != null)
             textoTitulo.text = "A FUGA";
 
+        // Garante a ordem correta do efeito <mark>
+        ConfigurarTextoDuke();
+
         StartCoroutine(IniciarTutorial());
+    }
+
+    // =====================================================
+    // CONFIGURAÇÃO DO TEXTO
+    // =====================================================
+
+    void ConfigurarTextoDuke()
+    {
+        if (textoDuke == null)
+            return;
+
+        // O Reverse faz o fundo do <mark> ficar atrás do texto.
+        textoDuke.geometrySortingOrder =
+            VertexSortingOrder.Reverse;
+
+        textoDuke.maxVisibleCharacters =
+            int.MaxValue;
+
+        textoDuke.ForceMeshUpdate();
     }
 
     // =====================================================
@@ -310,11 +328,19 @@ public class TutorialManager : MonoBehaviour
         if (textoDuke != null)
         {
             textoDuke.text = mensagem;
+
+            // IMPORTANTE:
+            // Mantém o <mark> atrás mesmo quando a fala
+            // é mostrada instantaneamente.
+            textoDuke.geometrySortingOrder =
+                VertexSortingOrder.Reverse;
+
+            textoDuke.ForceMeshUpdate();
+
             textoDuke.maxVisibleCharacters =
                 int.MaxValue;
         }
 
-        // Anima o balão
         if (balãoAnimado != null)
         {
             if (rotinaAnimacaoBalao != null)
@@ -330,7 +356,6 @@ public class TutorialManager : MonoBehaviour
                 );
         }
 
-        // Toca o latido
         TocarLatidoDuke();
     }
 
@@ -354,6 +379,11 @@ public class TutorialManager : MonoBehaviour
 
         textoDuke.text = mensagem;
 
+        // Mantém o fundo do <mark> atrás do texto.
+        textoDuke.geometrySortingOrder =
+            VertexSortingOrder.Reverse;
+
+        // Processa as tags Rich Text antes da animação.
         textoDuke.ForceMeshUpdate();
 
         int quantidadeCaracteres =
@@ -395,8 +425,12 @@ public class TutorialManager : MonoBehaviour
 
             if (i < quantidadeCaracteres)
             {
-                char caractere =
-                    mensagem[i];
+                char caractere = '\0';
+
+                // Ignora as tags <mark> na hora das pausas.
+                // O TMP já está cuidando delas.
+                if (i < mensagem.Length)
+                    caractere = mensagem[i];
 
                 // ---------------------------------
                 // PONTUAÇÃO
@@ -439,6 +473,13 @@ public class TutorialManager : MonoBehaviour
             }
         }
 
+        // Garante a configuração depois que a escrita termina.
+        textoDuke.geometrySortingOrder =
+            VertexSortingOrder.Reverse;
+
+        textoDuke.maxVisibleCharacters =
+            int.MaxValue;
+
         textoSendoEscrito = false;
     }
 
@@ -480,10 +521,6 @@ public class TutorialManager : MonoBehaviour
 
         float tempo = 0f;
 
-        // ---------------------------------------------
-        // POP
-        // ---------------------------------------------
-
         while (
             tempo < tempoEntradaBalao
         )
@@ -505,10 +542,6 @@ public class TutorialManager : MonoBehaviour
         }
 
         tempo = 0f;
-
-        // ---------------------------------------------
-        // VOLTA PARA O TAMANHO NORMAL
-        // ---------------------------------------------
 
         while (
             tempo <
@@ -583,6 +616,9 @@ public class TutorialManager : MonoBehaviour
 
         if (textoDuke != null)
         {
+            textoDuke.geometrySortingOrder =
+                VertexSortingOrder.Reverse;
+
             textoDuke.maxVisibleCharacters =
                 int.MaxValue;
         }
@@ -1145,8 +1181,16 @@ public class TutorialManager : MonoBehaviour
 
         if (textoDuke != null)
         {
+            textoDuke.geometrySortingOrder =
+                VertexSortingOrder.Reverse;
+
             textoDuke.text =
                 "Conseguimos! Vamos libertar todos!";
+
+            textoDuke.ForceMeshUpdate();
+
+            textoDuke.maxVisibleCharacters =
+                int.MaxValue;
         }
 
         Debug.Log(

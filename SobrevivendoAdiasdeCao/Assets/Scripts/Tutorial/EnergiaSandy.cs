@@ -5,8 +5,11 @@ using TMPro;
 public class EnergiaSandy : MonoBehaviour
 {
     [Header("Energia")]
-    public int energiaMaxima = 3;
-    public int energiaAtual = 3;
+    public int energiaMaxima = 5;
+    public int energiaAtual;
+
+    [Header("Comportamento ao zerar")]
+    public bool derrotarAoZerarEnergia = false;
 
     [Header("Barra de Energia")]
     public Image barraEnergia;
@@ -19,29 +22,35 @@ public class EnergiaSandy : MonoBehaviour
     public TextMeshProUGUI textoAviso;
     public float duracaoAviso = 3f;
 
-    private bool podePerderEnergia = true;
+    [Header("Penalidade de Velocidade")]
+    public bool usarPenalidadeVelocidade = false;
+    public PlayerMovement playerMovement;
 
-    // =====================================================
-    // START
-    // =====================================================
+    private bool podePerderEnergia = true;
 
     private void Start()
     {
         energiaAtual = energiaMaxima;
 
+        if (playerMovement == null)
+        {
+            playerMovement = GetComponent<PlayerMovement>();
+        }
+
         podePerderEnergia = true;
 
         AtualizarBarra();
+
+        if (usarPenalidadeVelocidade)
+        {
+            AtualizarVelocidade();
+        }
 
         if (painelAviso != null)
         {
             painelAviso.SetActive(false);
         }
     }
-
-    // =====================================================
-    // PERDER ENERGIA
-    // =====================================================
 
     public void PerderEnergia()
     {
@@ -56,33 +65,27 @@ public class EnergiaSandy : MonoBehaviour
         }
 
         AtualizarBarra();
+        AtualizarVelocidade();
 
-        Debug.Log(
-            "Energia perdida! Atual: " + energiaAtual
-        );
+        Debug.Log("Energia perdida! Atual: " + energiaAtual);
 
-        // =================================================
-        // DERROTA
-        // =================================================
-
+        // Se chegou a zero
         if (energiaAtual <= 0)
         {
-            FalharTutorial();
+            if (derrotarAoZerarEnergia)
+            {
+                FalharTutorial();
+                return;
+            }
+
+            // Nas fases comuns, NÃO derrota.
+            MostrarAviso("SANDY ESTÁ SEM ENERGIA!");
+
             return;
         }
 
-        // =================================================
-        // AINDA TEM ENERGIA
-        // =================================================
-
-        MostrarAviso(
-            "VOLTE PARA SUA GAIOLA!"
-        );
+        MostrarAviso("VOLTE PARA SUA GAIOLA!");
     }
-
-    // =====================================================
-    // ATUALIZAR BARRA
-    // =====================================================
 
     private void AtualizarBarra()
     {
@@ -100,9 +103,45 @@ public class EnergiaSandy : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // MOSTRAR AVISO
-    // =====================================================
+    private void AtualizarVelocidade()
+    {
+        if (!usarPenalidadeVelocidade)
+            return;
+
+        if (playerMovement == null)
+            return;
+
+        float multiplicador = 1f;
+
+        switch (energiaAtual)
+        {
+            case 5:
+                multiplicador = 1f;
+                break;
+
+            case 4:
+                multiplicador = 0.9f;
+                break;
+
+            case 3:
+                multiplicador = 0.8f;
+                break;
+
+            case 2:
+                multiplicador = 0.65f;
+                break;
+
+            case 1:
+                multiplicador = 0.5f;
+                break;
+
+            case 0:
+                multiplicador = 0.4f;
+                break;
+        }
+
+        playerMovement.DefinirVelocidade(multiplicador);
+    }
 
     private void MostrarAviso(string mensagem)
     {
@@ -118,15 +157,8 @@ public class EnergiaSandy : MonoBehaviour
 
         CancelInvoke(nameof(EsconderAviso));
 
-        Invoke(
-            nameof(EsconderAviso),
-            duracaoAviso
-        );
+        Invoke(nameof(EsconderAviso), duracaoAviso);
     }
-
-    // =====================================================
-    // ESCONDER AVISO
-    // =====================================================
 
     private void EsconderAviso()
     {
@@ -136,49 +168,26 @@ public class EnergiaSandy : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // RETORNAR PARA A GAIOLA
-    // =====================================================
-
     public void RetornarParaGaiolaPorCaptura()
     {
         if (pontoRetorno == null)
         {
-            Debug.LogWarning(
-                "O ponto de retorno não foi configurado."
-            );
-
+            Debug.LogWarning("O ponto de retorno não foi configurado.");
             return;
         }
 
-        transform.position =
-            pontoRetorno.position;
+        transform.position = pontoRetorno.position;
 
-        Debug.Log(
-            "Sandy foi colocada de volta na gaiola."
-        );
+        Debug.Log("Sandy foi colocada de volta na gaiola.");
     }
-
-    // =====================================================
-    // DERROTA
-    // =====================================================
 
     private void FalharTutorial()
     {
-        // Impede novas perdas de energia
         podePerderEnergia = false;
 
-        Debug.Log(
-            "Sandy ficou sem energia! Tutorial finalizado."
-        );
+        Debug.Log("Sandy ficou sem energia! Tutorial finalizado.");
 
-        MostrarAviso(
-            "VOCÊ FICOU SEM ENERGIA!"
-        );
-
-        // =================================================
-        // CHAMA O PAINEL DE DERROTA
-        // =================================================
+        MostrarAviso("VOCÊ FICOU SEM ENERGIA!");
 
         if (TutorialManager.instance != null)
         {

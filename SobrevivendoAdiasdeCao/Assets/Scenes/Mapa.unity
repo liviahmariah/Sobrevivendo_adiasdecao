@@ -3396,6 +3396,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1222132989}
   m_CullTransparentMesh: 1
+--- !u!1 &1230291880
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1230291882}
+  - component: {fileID: 1230291881}
+  m_Layer: 0
+  m_Name: CommunityUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1230291881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230291880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71bc36324b8ed944e8bc18d33bf40dee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommunityUI
+  barraAlimentacao: {fileID: 824349726}
+  barraSaude: {fileID: 1531373469}
+  barraFelicidade: {fileID: 683108172}
+  textoAlimentacao: {fileID: 1792896735}
+  textoSaude: {fileID: 1732873728}
+  textoFelicidade: {fileID: 486226085}
+--- !u!4 &1230291882
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230291880}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.96156, y: 1.1831, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1257030013
 GameObject:
   m_ObjectHideFlags: 0
@@ -10030,3 +10080,4 @@ SceneRoots:
   - {fileID: 672475452}
   - {fileID: 1604284867}
   - {fileID: 1084467374}
+  - {fileID: 1230291882}

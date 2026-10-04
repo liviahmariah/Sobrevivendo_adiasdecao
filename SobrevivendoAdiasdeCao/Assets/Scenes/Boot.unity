@@ -217,12 +217,6 @@ MonoBehaviour:
   alimentacao: 100
   saude: 100
   felicidade: 100
-  barraAlimentacao: {fileID: 0}
-  barraSaude: {fileID: 0}
-  barraFelicidade: {fileID: 0}
-  textoAlimentacao: {fileID: 0}
-  textoSaude: {fileID: 0}
-  textoFelicidade: {fileID: 0}
   consumoAlimentacaoNormal: 0.8
   multiplicadorConsumoSaudeAtencao: 1.5
   multiplicadorConsumoSaudeCritica: 2
