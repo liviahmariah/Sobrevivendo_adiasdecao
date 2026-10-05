@@ -7,6 +7,8 @@ TagManager:
   - Ground
   - NPC
   - chao
+  - Carrocinha
+  - carrocinha
   layers:
   - Default
   - TransparentFX

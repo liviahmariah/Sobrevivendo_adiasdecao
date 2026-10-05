@@ -41,6 +41,20 @@ public class RecursoColetavel : MonoBehaviour
         if (coletado)
             return;
 
+        // ==========================================
+        // BLOQUEIA A COLETA QUANDO O TEMPO DA FASE ACABOU
+        // ==========================================
+
+        if (FaseManager.Instance != null &&
+            !FaseManager.Instance.PodeColetar())
+        {
+            return;
+        }
+
+        // ==========================================
+        // VERIFICA COMMUNITY MANAGER
+        // ==========================================
+
         if (CommunityManager.instance == null)
         {
             Debug.LogWarning(
@@ -79,7 +93,6 @@ public class RecursoColetavel : MonoBehaviour
         {
             if (MercadoManager.Instance != null)
             {
-                // Adiciona o valor da comida ao estoque.
                 MercadoManager.Instance.AdicionarComida(
                     valorFinal
                 );

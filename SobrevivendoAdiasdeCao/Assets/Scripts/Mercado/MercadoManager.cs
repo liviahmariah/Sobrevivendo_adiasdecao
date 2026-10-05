@@ -1,18 +1,23 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class MercadoManager : MonoBehaviour
+public class MercadoManager : FaseManager
 {
     public static MercadoManager Instance;
 
     [Header("Comida conseguida nesta fase")]
     public float comidaConseguida = 0f;
 
+    [Header("Penalidade por ser pega")]
+    public float perdaFelicidadeAoSerPega = 10f;
+
     private HashSet<string> tiposDeComidaConseguidos =
         new HashSet<string>();
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         if (Instance == null)
         {
             Instance = this;
@@ -23,22 +28,68 @@ public class MercadoManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    protected override void Start()
     {
-        Debug.Log("FASE MERCADO INICIADA!");
+        // Configuração específica do Mercado
+        tipoFase = TipoFase.Mercado;
 
-        if (DayManager.Instance != null)
-        {
-            Debug.Log(
-                "Tempo restante do dia: " +
-                DayManager.Instance.ObterTempoRestante() +
-                "s"
-            );
-        }
+        comidaConseguida = 0f;
+
+        tiposDeComidaConseguidos.Clear();
+
+        base.Start();
     }
+
+    // ==========================================
+    // TEMPO ESPECÍFICO DO MERCADO
+    // ==========================================
+
+    protected override float CalcularTempoDaFase()
+    {
+        if (CommunityManager.instance == null)
+        {
+            Debug.LogWarning(
+                "MercadoManager: CommunityManager não encontrado!"
+            );
+
+            return tempoMaximo;
+        }
+
+        float alimentacao =
+            CommunityManager.instance.alimentacao;
+
+        alimentacao =
+            Mathf.Clamp(alimentacao, 0f, 100f);
+
+        float percentual =
+            alimentacao / 100f;
+
+        float tempo =
+            Mathf.Lerp(
+                tempoMinimo,
+                tempoMaximo,
+                percentual
+            );
+
+        return Mathf.Clamp(
+            tempo,
+            tempoMinimo,
+            tempoMaximo
+        );
+    }
+
+    // ==========================================
+    // COMIDA
+    // ==========================================
 
     public void AdicionarComida(float valor)
     {
+        if (faseFinalizada)
+            return;
+
+        if (!coletaAtiva)
+            return;
+
         comidaConseguida += valor;
 
         if (comidaConseguida < 0f)
@@ -56,6 +107,9 @@ public class MercadoManager : MonoBehaviour
         string idComida,
         Sprite imagemComida)
     {
+        if (!coletaAtiva)
+            return false;
+
         if (string.IsNullOrEmpty(idComida))
         {
             Debug.LogWarning(
@@ -72,7 +126,6 @@ public class MercadoManager : MonoBehaviour
 
         tiposDeComidaConseguidos.Add(idComida);
 
-        // Avisa a caixa visual.
         if (CaixaComidasUI.Instance != null)
         {
             CaixaComidasUI.Instance.AdicionarComida(
@@ -80,24 +133,15 @@ public class MercadoManager : MonoBehaviour
                 imagemComida
             );
         }
-        else
-        {
-            Debug.LogWarning(
-                "MercadoManager: CaixaComidasUI não encontrada!"
-            );
-        }
-
-        Debug.Log(
-            "MERCADO | NOVO TIPO DE COMIDA: " +
-            idComida
-        );
 
         return true;
     }
 
     public bool JaConseguiuComida(string idComida)
     {
-        return tiposDeComidaConseguidos.Contains(idComida);
+        return tiposDeComidaConseguidos.Contains(
+            idComida
+        );
     }
 
     public float ObterComidaConseguida()
@@ -105,34 +149,68 @@ public class MercadoManager : MonoBehaviour
         return comidaConseguida;
     }
 
-    public void FinalizarMercado()
+    // ==========================================
+    // VITÓRIA DO MERCADO
+    // ==========================================
+
+    protected override void Vitoria()
     {
+        if (faseFinalizada)
+            return;
+
+        Debug.Log("=================================");
+        Debug.Log("MERCADO: VITÓRIA!");
         Debug.Log(
-            "Mercado finalizado | Comida conseguida: " +
+            "Comida entregue: " +
             comidaConseguida
         );
+        Debug.Log("=================================");
 
+        // A comida vai para a comunidade.
         if (CommunityManager.instance != null)
         {
             CommunityManager.instance.AlterarAlimentacao(
                 comidaConseguida
             );
+        }
+
+        base.Vitoria();
+    }
+
+    // ==========================================
+    // DERROTA DO MERCADO
+    // ==========================================
+
+    public override void Derrota()
+    {
+        if (faseFinalizada)
+            return;
+
+        Debug.Log("=================================");
+        Debug.Log("MERCADO: DERROTA!");
+        Debug.Log(
+            "Comida perdida: " +
+            comidaConseguida
+        );
+
+        // Perde felicidade.
+        if (CommunityManager.instance != null)
+        {
+            CommunityManager.instance.AlterarFelicidade(
+                -perdaFelicidadeAoSerPega
+            );
 
             Debug.Log(
-                "Alimentação da comunidade aumentou em: " +
-                comidaConseguida
-            );
-        }
-        else
-        {
-            Debug.LogWarning(
-                "MercadoManager: CommunityManager não encontrado!"
+                "Felicidade perdida: " +
+                perdaFelicidadeAoSerPega
             );
         }
 
-        if (PhaseManager.Instance != null)
-        {
-            PhaseManager.Instance.VoltarParaMapa();
-        }
+        // Não adicionamos comida.
+        // Portanto, a comida coletada é perdida.
+
+        Debug.Log("=================================");
+
+        base.Derrota();
     }
 }

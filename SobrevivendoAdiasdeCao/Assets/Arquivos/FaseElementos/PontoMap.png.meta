@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 16528a11c16446348b671ae843029b30
+guid: 8478c594431137a48a715b6fef68ecb8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8032019939536090911
-    second: CaixaHospital_0
+      213: -7561192166574492504
+    second: PontoMap_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CaixaHospital_0
+      name: PontoMap_0
       rect:
         serializedVersion: 2
-        x: 22
-        y: 12
-        width: 56
-        height: 34
+        x: 5
+        y: 2
+        width: 21
+        height: 26
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f1737ec5497777f60800000000000000
-      internalID: 8032019939536090911
+      spriteID: 8a47cd019cf311790800000000000000
+      internalID: -7561192166574492504
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CaixaHospital_0: 8032019939536090911
+      PontoMap_0: -7561192166574492504
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -3271,9 +3271,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 257825922}
-        m_TargetAssemblyTypeName: MapManager, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 257825924}
+        m_TargetAssemblyTypeName: PhaseManager, Assembly-CSharp
+        m_MethodName: EntrarNoHospital
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9932,12 +9932,6 @@ MonoBehaviour:
   alimentacao: 100
   saude: 100
   felicidade: 100
-  barraAlimentacao: {fileID: 824349726}
-  barraSaude: {fileID: 1531373469}
-  barraFelicidade: {fileID: 683108172}
-  textoAlimentacao: {fileID: 1792896735}
-  textoSaude: {fileID: 1732873728}
-  textoFelicidade: {fileID: 486226085}
   consumoAlimentacaoNormal: 0.8
   multiplicadorConsumoSaudeAtencao: 1.5
   multiplicadorConsumoSaudeCritica: 2

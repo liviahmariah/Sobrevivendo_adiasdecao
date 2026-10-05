@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Configurações do pulo")]
     public float jumpHeight = 3f;
     public float jumpDuration = 0.8f;
-    public int maxJumps = 2;
+    public int maxJumps = 1;
 
     [Header("Detecção do chão")]
     public Transform groundCheck;
