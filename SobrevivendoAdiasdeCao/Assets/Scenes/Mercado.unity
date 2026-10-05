@@ -222,8 +222,8 @@ Transform:
   m_GameObject: {fileID: 71420914}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.97, y: -2.28, z: 0}
-  m_LocalScale: {x: 1, y: 2.6221, z: 1}
+  m_LocalPosition: {x: -10.1603, y: -3.2553, z: 0}
+  m_LocalScale: {x: 0.6194, y: 0.67153525, z: 0.6194}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -441,7 +441,7 @@ GameObject:
   - component: {fileID: 120947666}
   - component: {fileID: 120947668}
   - component: {fileID: 120947667}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Objetivo (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -576,7 +576,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 198608420}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Conteudo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -613,7 +613,7 @@ GameObject:
   - component: {fileID: 353382676}
   - component: {fileID: 353382678}
   - component: {fileID: 353382677}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Contagem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -750,7 +750,7 @@ GameObject:
   - component: {fileID: 501726593}
   - component: {fileID: 501726595}
   - component: {fileID: 501726594}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Titulo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -773,7 +773,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 263, y: 165}
+  m_AnchoredPosition: {x: 244, y: 165}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &501726594
@@ -940,7 +940,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: -7561192166574492504, guid: 8478c594431137a48a715b6fef68ecb8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -962,7 +962,7 @@ Transform:
   m_GameObject: {fileID: 513286607}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.443, y: 4.347, z: 0}
+  m_LocalPosition: {x: -7.382, y: 4.347, z: 0}
   m_LocalScale: {x: 3.0282454, y: 3.0282454, z: 3.0282454}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1742,7 +1742,7 @@ GameObject:
   - component: {fileID: 827630882}
   - component: {fileID: 827630881}
   - component: {fileID: 827630883}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: IntroPainel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2553,13 +2553,13 @@ GameObject:
   - component: {fileID: 1354190196}
   - component: {fileID: 1354190195}
   - component: {fileID: 1354190194}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: CanvasPainelInicio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1354190194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3069,7 +3069,7 @@ GameObject:
   - component: {fileID: 1518453666}
   - component: {fileID: 1518453668}
   - component: {fileID: 1518453667}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3149,7 +3149,7 @@ GameObject:
   - component: {fileID: 1540770390}
   - component: {fileID: 1540770392}
   - component: {fileID: 1540770391}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3561,6 +3561,26 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
+  - first: {x: 9, y: -6, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 0
+      m_TileSpriteIndex: 0
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
+  - first: {x: 10, y: -6, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 0
+      m_TileSpriteIndex: 0
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   - first: {x: -11, y: -5, z: 0}
     second:
       serializedVersion: 2
@@ -3761,18 +3781,38 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
+  - first: {x: 9, y: -5, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 0
+      m_TileSpriteIndex: 0
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
+  - first: {x: 10, y: -5, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 0
+      m_TileSpriteIndex: 0
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   m_AnimatedTiles: {}
   m_TileAssetArray:
   - serializedVersion: 2
-    m_RefCount: 40
+    m_RefCount: 44
     m_Data: {fileID: 11400000, guid: 87390627c57f2d348bb2d4ddc8b305f8, type: 2}
   m_TileSpriteArray:
   - serializedVersion: 2
-    m_RefCount: 40
+    m_RefCount: 44
     m_Data: {fileID: 21300000, guid: 6a50a30fb7e9d2c419014f4ea41d5a46, type: 3}
   m_TileMatrixArray:
   - serializedVersion: 2
-    m_RefCount: 40
+    m_RefCount: 44
     m_Data:
       e00: 1
       e01: 0
@@ -3792,13 +3832,13 @@ Tilemap:
       e33: 1
   m_TileColorArray:
   - serializedVersion: 2
-    m_RefCount: 40
+    m_RefCount: 44
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: -11, y: -6, z: 0}
-  m_Size: {x: 20, y: 11, z: 1}
+  m_Size: {x: 22, y: 11, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -3923,7 +3963,8 @@ GameObject:
   - component: {fileID: 1615706627}
   - component: {fileID: 1615706626}
   - component: {fileID: 1615706628}
-  m_Layer: 5
+  - component: {fileID: 1615706629}
+  m_Layer: 0
   m_Name: Caixa
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4004,6 +4045,20 @@ MonoBehaviour:
   itemComidaPrefab: {fileID: 2607391835851243762, guid: 586a77fdce6535b499fb419e9c1cb368, type: 3}
   margem: 10
   variacaoRotacao: 12
+--- !u!114 &1615706629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1615706624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29bce4dbbb9717544b10d23618bbd5d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlacaFlutuante
+  altura: 0.15
+  velocidade: 1.5
 --- !u!1 &1632677306
 GameObject:
   m_ObjectHideFlags: 0
@@ -4412,7 +4467,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1776822596}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
@@ -9418,7 +9473,7 @@ GameObject:
   - component: {fileID: 2034611797}
   - component: {fileID: 2034611799}
   - component: {fileID: 2034611798}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Objetivo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9620,6 +9675,72 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2042959039}
   m_CullTransparentMesh: 1
+--- !u!1 &2063694829
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2063694830}
+  - component: {fileID: 2063694831}
+  m_Layer: 5
+  m_Name: ConfeteVitoria
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2063694830
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2063694829}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 90}
+  m_LocalScale: {x: 0.009261068, y: 0.009261068, z: 0.009261068}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.0586, y: 0.0611}
+  m_SizeDelta: {x: 138.5602, y: 132.6279}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2063694831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2063694829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41b1e792f542ee449a9417b013099b3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConfeteVitoria
+  quantidadePorLado: 35
+  alturaLancamento: -4
+  forcaHorizontal: 5
+  forcaVerticalMin: 6
+  forcaVerticalMax: 9
+  tamanhoMin: 0.08
+  tamanhoMax: 0.16
+  tempoVidaMin: 3
+  tempoVidaMax: 5
+  gravidade: 2
+  distanciaLateral: 8
+  cores:
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  - {r: 0, g: 0, b: 1, a: 1}
+  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 1, g: 0.3, b: 0.7, a: 1}
+  - {r: 1, g: 0.5, b: 0, a: 1}
 --- !u!1 &2085112261
 GameObject:
   m_ObjectHideFlags: 0
@@ -10041,10 +10162,11 @@ SceneRoots:
   - {fileID: 2085112264}
   - {fileID: 1243386601}
   - {fileID: 1339361057}
-  - {fileID: 1760709912}
   - {fileID: 693354345}
   - {fileID: 1614496687}
   - {fileID: 1354190197}
+  - {fileID: 1760709912}
+  - {fileID: 2063694830}
   - {fileID: 1776822598}
   - {fileID: 77605549}
   - {fileID: 1851379331}
