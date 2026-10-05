@@ -7187,7 +7187,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1364348034942072925, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1838257857}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2388431810192326692, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1787660342}
   m_SourcePrefab: {fileID: 100100000, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
 --- !u!1 &1253276725
 GameObject:
@@ -11486,7 +11489,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1428899917796115198, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
   m_PrefabInstance: {fileID: 1243386601}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1787660341}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a82017858f776184b8a4f283dd89746c, type: 3}
@@ -11522,7 +11525,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 5fac790be2c36a34faac3b94f16df62c, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.084
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -11621,6 +11624,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1787660341 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2388431810192326692, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
+  m_PrefabInstance: {fileID: 1243386601}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1787660342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1787660341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7b1d87e86f1eec40a3e4f6518ae6133, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandyAudio
+  somRespiracao: {fileID: 8300000, guid: d1a931ab7088f6f429ec83892dd46d7a, type: 3}
+  somPata: {fileID: 8300000, guid: b621c23f933954b428fcb6defcb32c32, type: 3}
+  somPulo: {fileID: 8300000, guid: f989c133db1f79e44879a3e220fb6e87, type: 3}
+  volumeRespiracao: 0.858
+  volumePata: 0.783
+  volumePulo: 0.475
+  intervaloPassos: 0.25
 --- !u!1 &1798359568
 GameObject:
   m_ObjectHideFlags: 0
