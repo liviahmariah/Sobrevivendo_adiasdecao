@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using System.Collections;
 
@@ -54,6 +55,9 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
     [Header("Timer da interface")]
     public TutorialTimer tutorialTimer;
 
+    [Header("Indicadores da HUD")]
+    public IndicadorChefeHUD indicadorChefeHUD;
+
     [Header("Prefab da chave final")]
     public GameObject chaveFinalPrefab;
 
@@ -82,9 +86,10 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
         if (sandy != null)
         {
-            movimentoSandy =
-                sandy.GetComponent<PlayerMovement>();
+            movimentoSandy = sandy.GetComponent<PlayerMovement>();
         }
+
+        AtualizarIndicadorChefe();
     }
 
 
@@ -102,10 +107,6 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
         switch (estadoAtual)
         {
-            // -------------------------------------------------
-            // PATRULHA
-            // -------------------------------------------------
-
             case EstadoChefe.Patrulhando:
                 {
                     float distancia = Vector2.Distance(
@@ -115,9 +116,6 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
                     VerificarSandy(distancia);
 
-                    // Se VerificarSandy colocou o chefe
-                    // em perseguição, não executa a patrulha
-                    // neste frame.
                     if (estadoAtual != EstadoChefe.Perseguindo)
                     {
                         ExecutarPatrulha();
@@ -125,11 +123,6 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
                     break;
                 }
-
-
-            // -------------------------------------------------
-            // PERSEGUIÇÃO
-            // -------------------------------------------------
 
             case EstadoChefe.Perseguindo:
                 {
@@ -148,22 +141,25 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
                     break;
                 }
 
-
-            // -------------------------------------------------
-            // ASSUSTADO
-            // -------------------------------------------------
-
             case EstadoChefe.Assustado:
                 break;
-
-
-            // -------------------------------------------------
-            // LEVANDO SANDY
-            // -------------------------------------------------
 
             case EstadoChefe.LevandoSandy:
                 ExecutarTransporte();
                 break;
+        }
+    }
+
+
+    // =========================================================
+    // INDICADORES DA HUD
+    // =========================================================
+
+    private void AtualizarIndicadorChefe()
+    {
+        if (indicadorChefeHUD != null)
+        {
+            indicadorChefeHUD.AtualizarIndicadores(chefeAtivo);
         }
     }
 
@@ -176,10 +172,7 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
     {
         chavesColetadas = quantidade;
 
-        Debug.Log(
-            "Chaves coletadas: " +
-            chavesColetadas
-        );
+        Debug.Log("Chaves coletadas: " + chavesColetadas);
     }
 
 
@@ -189,8 +182,6 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
     public void LiberarChefe()
     {
-        // Se já existe um ciclo rodando,
-        // não cria outro.
         if (cicloChefeCoroutine != null)
         {
             StopCoroutine(cicloChefeCoroutine);
@@ -200,69 +191,47 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
         podeCapturar = true;
         transportandoSandy = false;
 
-        estadoAtual =
-            EstadoChefe.Patrulhando;
-
+        estadoAtual = EstadoChefe.Patrulhando;
         pontoAtual = 0;
+
+        AtualizarIndicadorChefe();
 
         if (pontoInicioRonda != null)
         {
-            transform.position =
-                pontoInicioRonda.position;
+            transform.position = pontoInicioRonda.position;
         }
 
         Debug.Log(
-            "A carrocinha voltou e iniciou " +
-            "uma nova ronda de 20 segundos."
+            "A carrocinha voltou e iniciou uma nova ronda."
         );
 
-        cicloChefeCoroutine =
-            StartCoroutine(CicloDoChefe());
+        cicloChefeCoroutine = StartCoroutine(CicloDoChefe());
     }
 
 
     // =========================================================
-    // CICLO:
-    // 20s PATRULHA
-    // 20s FORA
+    // CICLO DO CHEFE
     // =========================================================
 
     private IEnumerator CicloDoChefe()
     {
-        // -----------------------------------------------------
-        // PATRULHA
-        // -----------------------------------------------------
-
         float tempoRestante = tempoPatrulha;
 
-        while (
-            tempoRestante > 0f &&
-            chefeAtivo
-        )
+        // CHEFE NA FASE
+        while (tempoRestante > 0f && chefeAtivo)
         {
-            AtualizarTimerUI(
-                "CHEFE EM RONDA",
-                tempoRestante
-            );
+            AtualizarTimerUI("CHEFE EM RONDA", tempoRestante);
 
             tempoRestante -= Time.deltaTime;
 
             yield return null;
         }
 
-
-        // -----------------------------------------------------
-        // SE SANDY AINDA ESTÁ SENDO TRANSPORTADA,
-        // ESPERA O TRANSPORTE TERMINAR.
-        //
-        // O tempo NÃO é reiniciado.
-        // -----------------------------------------------------
-
+        // Espera Sandy terminar de ser transportada.
         while (transportandoSandy)
         {
             yield return null;
         }
-
 
         if (!chefeAtivo)
         {
@@ -270,54 +239,37 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
             yield break;
         }
 
-
-        // -----------------------------------------------------
-        // TERMINOU A RONDA
-        // -----------------------------------------------------
-
+        // CHEFE SAI DA FASE
         chefeAtivo = false;
         podeCapturar = false;
 
-        estadoAtual =
-            EstadoChefe.Fora;
+        estadoAtual = EstadoChefe.Fora;
+
+        AtualizarIndicadorChefe();
 
         if (pontoRetornoChefe != null)
         {
-            transform.position =
-                pontoRetornoChefe.position;
+            transform.position = pontoRetornoChefe.position;
         }
 
         Debug.Log(
-            "A ronda terminou. " +
-            "A carrocinha saiu por " +
-            tempoFora +
-            " segundos."
+            "A ronda terminou. A carrocinha saiu por " +
+            tempoFora + " segundos."
         );
 
-
-        // -----------------------------------------------------
-        // 20 SEGUNDOS FORA
-        // -----------------------------------------------------
-
+        // TEMPO FORA
         tempoRestante = tempoFora;
 
         while (tempoRestante > 0f)
         {
-            AtualizarTimerUI(
-                "CHEFE FORA",
-                tempoRestante
-            );
+            AtualizarTimerUI("CHEFE FORA", tempoRestante);
 
             tempoRestante -= Time.deltaTime;
 
             yield return null;
         }
 
-
-        // -----------------------------------------------------
-        // VOLTA
-        // -----------------------------------------------------
-
+        // CHEFE RETORNA À FASE
         if (sandy == null)
         {
             cicloChefeCoroutine = null;
@@ -328,27 +280,23 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
         podeCapturar = true;
         transportandoSandy = false;
 
-        estadoAtual =
-            EstadoChefe.Patrulhando;
-
+        estadoAtual = EstadoChefe.Patrulhando;
         pontoAtual = 0;
+
+        AtualizarIndicadorChefe();
 
         if (pontoInicioRonda != null)
         {
-            transform.position =
-                pontoInicioRonda.position;
+            transform.position = pontoInicioRonda.position;
         }
 
         Debug.Log(
-            "A carrocinha voltou. " +
-            "Uma nova ronda de 20 segundos começou."
+            "A carrocinha voltou. Uma nova ronda começou."
         );
 
         cicloChefeCoroutine = null;
 
-        // Inicia novo ciclo.
-        cicloChefeCoroutine =
-            StartCoroutine(CicloDoChefe());
+        cicloChefeCoroutine = StartCoroutine(CicloDoChefe());
     }
 
 
@@ -356,17 +304,11 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
     // TIMER DA UI
     // =========================================================
 
-    private void AtualizarTimerUI(
-        string mensagem,
-        float tempo
-    )
+    private void AtualizarTimerUI(string mensagem, float tempo)
     {
         if (tutorialTimer != null)
         {
-            tutorialTimer.MostrarTimerChefe(
-                mensagem,
-                tempo
-            );
+            tutorialTimer.MostrarTimerChefe(mensagem, tempo);
         }
     }
 
@@ -377,34 +319,18 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
     private void ExecutarPatrulha()
     {
-        if (
-            pontosPatrulha == null ||
-            pontosPatrulha.Length == 0
-        )
-        {
+        if (pontosPatrulha == null || pontosPatrulha.Length == 0)
             return;
-        }
 
-        if (
-            pontoAtual < 0 ||
-            pontoAtual >= pontosPatrulha.Length
-        )
-        {
+        if (pontoAtual < 0 || pontoAtual >= pontosPatrulha.Length)
             pontoAtual = 0;
-        }
 
-        Transform destino =
-            pontosPatrulha[pontoAtual];
+        Transform destino = pontosPatrulha[pontoAtual];
 
         if (destino == null)
-        {
             return;
-        }
 
-        MoverAte(
-            destino.position,
-            velocidadePatrulha
-        );
+        MoverAte(destino.position, velocidadePatrulha);
 
         float distancia = Vector2.Distance(
             transform.position,
@@ -415,10 +341,7 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
         {
             pontoAtual++;
 
-            if (
-                pontoAtual >=
-                pontosPatrulha.Length
-            )
+            if (pontoAtual >= pontosPatrulha.Length)
             {
                 pontoAtual = 0;
             }
@@ -430,25 +353,16 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
     // VERIFICAR SANDY
     // =========================================================
 
-    private void VerificarSandy(
-        float distancia
-    )
+    private void VerificarSandy(float distancia)
     {
-        // Se Sandy está dentro da gaiola,
-        // o chefe ignora completamente.
         if (SandyEstaNaAreaSegura())
-        {
             return;
-        }
 
         if (distancia <= distanciaVisao)
         {
-            estadoAtual =
-                EstadoChefe.Perseguindo;
+            estadoAtual = EstadoChefe.Perseguindo;
 
-            Debug.Log(
-                "A carrocinha encontrou Sandy!"
-            );
+            Debug.Log("A carrocinha encontrou Sandy!");
         }
     }
 
@@ -459,10 +373,7 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
     private bool SandyEstaNaAreaSegura()
     {
-        if (sandy == null)
-            return false;
-
-        if (pontoGaiolaSandy == null)
+        if (sandy == null || pontoGaiolaSandy == null)
             return false;
 
         float distancia = Vector2.Distance(
@@ -480,34 +391,20 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
     private void VerificarCapturaPorDistancia()
     {
-        if (!chefeAtivo)
-            return;
-
-        if (!podeCapturar)
-            return;
-
-        if (transportandoSandy)
+        if (!chefeAtivo || !podeCapturar || transportandoSandy)
             return;
 
         if (sandy == null)
             return;
 
-        // Nunca captura Sandy dentro da gaiola.
         if (SandyEstaNaAreaSegura())
         {
-            estadoAtual =
-                EstadoChefe.Patrulhando;
-
+            estadoAtual = EstadoChefe.Patrulhando;
             return;
         }
 
-        if (
-            estadoAtual !=
-            EstadoChefe.Perseguindo
-        )
-        {
+        if (estadoAtual != EstadoChefe.Perseguindo)
             return;
-        }
 
         float distancia = Vector2.Distance(
             transform.position,
@@ -516,9 +413,7 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
         if (distancia <= distanciaCaptura)
         {
-            Debug.Log(
-                "A carrocinha chegou perto de Sandy!"
-            );
+            Debug.Log("A carrocinha chegou perto de Sandy!");
 
             CapturarSandy();
         }
@@ -529,42 +424,27 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
     // PERSEGUIÇÃO
     // =========================================================
 
-    private void ExecutarPerseguicao(
-        float distancia
-    )
+    private void ExecutarPerseguicao(float distancia)
     {
-        // Sandy entrou na área segura.
         if (SandyEstaNaAreaSegura())
         {
-            estadoAtual =
-                EstadoChefe.Patrulhando;
+            estadoAtual = EstadoChefe.Patrulhando;
 
-            Debug.Log(
-                "Sandy voltou para a gaiola. " +
-                "A carrocinha não pode capturá-la aqui."
-            );
+            Debug.Log("Sandy voltou para a gaiola.");
 
             return;
         }
 
-        // Sandy fugiu.
         if (distancia > distanciaPerdaVisao)
         {
-            estadoAtual =
-                EstadoChefe.Patrulhando;
+            estadoAtual = EstadoChefe.Patrulhando;
 
-            Debug.Log(
-                "Sandy escapou da visão. " +
-                "Retornando à patrulha."
-            );
+            Debug.Log("Sandy escapou da visão.");
 
             return;
         }
 
-        MoverAte(
-            sandy.position,
-            velocidadePerseguicao
-        );
+        MoverAte(sandy.position, velocidadePerseguicao);
     }
 
 
@@ -572,48 +452,31 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
     // MOVIMENTO
     // =========================================================
 
-    private void MoverAte(
-        Vector3 destino,
-        float velocidade
-    )
+    private void MoverAte(Vector3 destino, float velocidade)
     {
-        Vector3 novaPosicao =
-            Vector2.MoveTowards(
-                transform.position,
-                destino,
-                velocidade * Time.deltaTime
+        Vector3 novaPosicao = Vector2.MoveTowards(
+            transform.position,
+            destino,
+            velocidade * Time.deltaTime
+        );
+
+        transform.position = novaPosicao;
+
+        if (destino.x > transform.position.x)
+        {
+            transform.localScale = new Vector3(
+                Mathf.Abs(transform.localScale.x),
+                transform.localScale.y,
+                transform.localScale.z
             );
-
-        transform.position =
-            novaPosicao;
-
-        if (
-            destino.x >
-            transform.position.x
-        )
-        {
-            transform.localScale =
-                new Vector3(
-                    Mathf.Abs(
-                        transform.localScale.x
-                    ),
-                    transform.localScale.y,
-                    transform.localScale.z
-                );
         }
-        else if (
-            destino.x <
-            transform.position.x
-        )
+        else if (destino.x < transform.position.x)
         {
-            transform.localScale =
-                new Vector3(
-                    -Mathf.Abs(
-                        transform.localScale.x
-                    ),
-                    transform.localScale.y,
-                    transform.localScale.z
-                );
+            transform.localScale = new Vector3(
+                -Mathf.Abs(transform.localScale.x),
+                transform.localScale.y,
+                transform.localScale.z
+            );
         }
     }
 
@@ -622,41 +485,23 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
     // COLISÃO
     // =========================================================
 
-    private void OnTriggerEnter2D(
-        Collider2D outro
-    )
+    private void OnTriggerEnter2D(Collider2D outro)
     {
-        if (!chefeAtivo)
-            return;
-
-        if (!podeCapturar)
-            return;
-
-        if (transportandoSandy)
+        if (!chefeAtivo || !podeCapturar || transportandoSandy)
             return;
 
         if (
-            estadoAtual !=
-            EstadoChefe.Perseguindo &&
-            estadoAtual !=
-            EstadoChefe.Patrulhando
+            estadoAtual != EstadoChefe.Perseguindo &&
+            estadoAtual != EstadoChefe.Patrulhando
         )
-        {
             return;
-        }
 
         if (!outro.CompareTag("Player"))
             return;
 
-        // Segurança extra:
-        // nunca captura dentro da gaiola.
         if (SandyEstaNaAreaSegura())
         {
-            Debug.Log(
-                "Sandy está na área segura. " +
-                "Captura cancelada."
-            );
-
+            Debug.Log("Sandy está na área segura. Captura cancelada.");
             return;
         }
 
@@ -670,42 +515,21 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
     public void CapturarSandy()
     {
-        if (
-            !chefeAtivo ||
-            !podeCapturar ||
-            transportandoSandy
-        )
-        {
+        if (!chefeAtivo || !podeCapturar || transportandoSandy)
             return;
-        }
 
-        // Segurança extra.
         if (SandyEstaNaAreaSegura())
         {
-            Debug.Log(
-                "Captura cancelada: " +
-                "Sandy está na área segura."
-            );
-
+            Debug.Log("Captura cancelada: Sandy está na área segura.");
             return;
         }
-
-        // IMPORTANTE:
-        // NÃO paramos o CicloDoChefe aqui.
-        //
-        // O relógio da ronda continua correndo
-        // normalmente durante a captura.
 
         podeCapturar = false;
         transportandoSandy = true;
 
-        estadoAtual =
-            EstadoChefe.LevandoSandy;
+        estadoAtual = EstadoChefe.LevandoSandy;
 
-        Debug.Log(
-            "Sandy foi capturada! " +
-            "O tempo da ronda continua normalmente."
-        );
+        Debug.Log("Sandy foi capturada! O tempo da ronda continua.");
 
         if (energiaSandy != null)
         {
@@ -713,9 +537,7 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning(
-                "EnergiaSandy não foi configurada."
-            );
+            Debug.LogWarning("EnergiaSandy não foi configurada.");
         }
 
         IniciarTransporte();
@@ -730,32 +552,21 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
     {
         if (pontoGaiolaSandy == null)
         {
-            Debug.LogError(
-                "Ponto Gaiola Sandy não foi configurado."
-            );
-
+            Debug.LogError("Ponto Gaiola Sandy não foi configurado.");
             FinalizarTransporte();
-
             return;
         }
 
         if (sandy == null)
         {
-            Debug.LogError(
-                "Sandy não foi configurada."
-            );
-
+            Debug.LogError("Sandy não foi configurada.");
             FinalizarTransporte();
-
             return;
         }
 
         if (movimentoSandy == null)
         {
-            movimentoSandy =
-                sandy.GetComponent<
-                    PlayerMovement
-                >();
+            movimentoSandy = sandy.GetComponent<PlayerMovement>();
         }
 
         if (movimentoSandy != null)
@@ -763,29 +574,20 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
             movimentoSandy.enabled = false;
         }
 
-        paiOriginalSandy =
-            sandy.parent;
+        paiOriginalSandy = sandy.parent;
 
         if (pontoTransporteSandy != null)
         {
-            sandy.SetParent(
-                pontoTransporteSandy
-            );
-
-            sandy.localPosition =
-                Vector3.zero;
+            sandy.SetParent(pontoTransporteSandy);
+            sandy.localPosition = Vector3.zero;
         }
         else
         {
             sandy.SetParent(transform);
-
-            sandy.localPosition =
-                Vector3.zero;
+            sandy.localPosition = Vector3.zero;
         }
 
-        Debug.Log(
-            "Transporte da Sandy iniciado."
-        );
+        Debug.Log("Transporte da Sandy iniciado.");
     }
 
 
@@ -798,30 +600,21 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
         if (pontoGaiolaSandy == null)
         {
             FinalizarTransporte();
-
             return;
         }
 
-        float distancia =
-            Vector2.Distance(
-                transform.position,
-                pontoGaiolaSandy.position
-            );
+        float distancia = Vector2.Distance(
+            transform.position,
+            pontoGaiolaSandy.position
+        );
 
-        if (
-            distancia <=
-            distanciaGaiola
-        )
+        if (distancia <= distanciaGaiola)
         {
             FinalizarTransporte();
-
             return;
         }
 
-        MoverAte(
-            pontoGaiolaSandy.position,
-            velocidadeTransporte
-        );
+        MoverAte(pontoGaiolaSandy.position, velocidadeTransporte);
     }
 
 
@@ -835,14 +628,11 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
         if (sandy != null)
         {
-            sandy.SetParent(
-                paiOriginalSandy
-            );
+            sandy.SetParent(paiOriginalSandy);
 
             if (pontoGaiolaSandy != null)
             {
-                sandy.position =
-                    pontoGaiolaSandy.position;
+                sandy.position = pontoGaiolaSandy.position;
             }
         }
 
@@ -851,18 +641,11 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
             movimentoSandy.enabled = true;
         }
 
-        // A carrocinha NÃO sai.
-        // Ela volta imediatamente para a patrulha.
-
-        estadoAtual =
-            EstadoChefe.Patrulhando;
-
+        estadoAtual = EstadoChefe.Patrulhando;
         podeCapturar = true;
 
         Debug.Log(
-            "Sandy chegou à gaiola. " +
-            "A carrocinha voltou à patrulha " +
-            "e o tempo da ronda continua."
+            "Sandy chegou à gaiola. A carrocinha voltou à patrulha."
         );
     }
 
@@ -873,110 +656,69 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
     public void AssustarChefe()
     {
-        Debug.Log(
-            "Tentativa de assustar a carrocinha."
-        );
+        Debug.Log("Tentativa de assustar a carrocinha.");
 
         if (!chefeAtivo)
         {
-            Debug.Log(
-                "A carrocinha ainda não está ativa."
-            );
-
+            Debug.Log("A carrocinha ainda não está ativa.");
             return;
         }
 
-        if (
-            estadoAtual ==
-            EstadoChefe.LevandoSandy
-        )
-        {
+        if (estadoAtual == EstadoChefe.LevandoSandy)
             return;
-        }
 
         if (sandy == null)
         {
-            Debug.LogError(
-                "Sandy não foi configurada."
-            );
-
+            Debug.LogError("Sandy não foi configurada.");
             return;
         }
 
         if (chaveFinalPrefab == null)
         {
-            Debug.LogError(
-                "A chave final não foi configurada."
-            );
-
+            Debug.LogError("A chave final não foi configurada.");
             return;
         }
 
-        float distancia =
-            Vector2.Distance(
-                transform.position,
-                sandy.position
-            );
+        float distancia = Vector2.Distance(
+            transform.position,
+            sandy.position
+        );
 
-        if (
-            distancia >
-            distanciaVisao
-        )
+        if (distancia > distanciaVisao)
         {
-            Debug.Log(
-                "Sandy está longe demais para assustar."
-            );
-
+            Debug.Log("Sandy está longe demais para assustar.");
             return;
         }
 
-        if (
-            chavesColetadas <
-            quantidadeNecessaria
-        )
+        if (chavesColetadas < quantidadeNecessaria)
         {
             Debug.Log(
                 "Ainda faltam chaves: " +
-                chavesColetadas +
-                "/" +
-                quantidadeNecessaria
+                chavesColetadas + "/" + quantidadeNecessaria
             );
 
             return;
         }
 
-        if (
-            estadoAtual ==
-            EstadoChefe.Assustado
-        )
-        {
+        if (estadoAtual == EstadoChefe.Assustado)
             return;
-        }
 
-        estadoAtual =
-            EstadoChefe.Assustado;
+        estadoAtual = EstadoChefe.Assustado;
 
-        Debug.Log(
-            "Sandy assustou a carrocinha!"
+        Debug.Log("Sandy assustou a carrocinha!");
+
+        GameObject novaChave = Instantiate(
+            chaveFinalPrefab,
+            transform.position,
+            Quaternion.identity
         );
 
-        GameObject novaChave =
-            Instantiate(
-                chaveFinalPrefab,
-                transform.position,
-                Quaternion.identity
-            );
-
         ChaveFinalTutorial chave =
-            novaChave.GetComponent<
-                ChaveFinalTutorial
-            >();
+            novaChave.GetComponent<ChaveFinalTutorial>();
 
         if (chave != null)
         {
-            chave.SoltarChave(
-                transform.position
-            );
+            chave.SoltarChave(transform.position);
         }
         else
         {
@@ -988,14 +730,9 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
             Destroy(novaChave);
         }
 
-        CancelInvoke(
-            nameof(VoltarDaAssustado)
-        );
+        CancelInvoke(nameof(VoltarDaAssustado));
 
-        Invoke(
-            nameof(VoltarDaAssustado),
-            3f
-        );
+        Invoke(nameof(VoltarDaAssustado), 3f);
     }
 
 
@@ -1008,17 +745,15 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
         chefeAtivo = false;
         podeCapturar = false;
 
-        estadoAtual =
-            EstadoChefe.Fora;
+        estadoAtual = EstadoChefe.Fora;
+
+        AtualizarIndicadorChefe();
 
         CancelInvoke();
 
         if (cicloChefeCoroutine != null)
         {
-            StopCoroutine(
-                cicloChefeCoroutine
-            );
-
+            StopCoroutine(cicloChefeCoroutine);
             cicloChefeCoroutine = null;
         }
 
@@ -1026,13 +761,10 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
         if (pontoRetornoChefe != null)
         {
-            transform.position =
-                pontoRetornoChefe.position;
+            transform.position = pontoRetornoChefe.position;
         }
 
-        Debug.Log(
-            "A carrocinha saiu do cenário."
-        );
+        Debug.Log("A carrocinha saiu do cenário.");
     }
 
 
@@ -1045,11 +777,8 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
         if (!chefeAtivo)
             return;
 
-        estadoAtual =
-            EstadoChefe.Patrulhando;
+        estadoAtual = EstadoChefe.Patrulhando;
 
-        Debug.Log(
-            "A carrocinha voltou à patrulha."
-        );
+        Debug.Log("A carrocinha voltou à patrulha.");
     }
 }
