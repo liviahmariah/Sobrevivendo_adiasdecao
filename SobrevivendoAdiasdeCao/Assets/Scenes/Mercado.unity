@@ -3361,6 +3361,16 @@ Tilemap:
   m_GameObject: {fileID: 1585571212}
   m_Enabled: 1
   m_Tiles:
+  - first: {x: -12, y: -6, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 1
+      m_TileSpriteIndex: 1
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   - first: {x: -11, y: -6, z: 0}
     second:
       serializedVersion: 2
@@ -3806,13 +3816,19 @@ Tilemap:
   - serializedVersion: 2
     m_RefCount: 44
     m_Data: {fileID: 11400000, guid: 87390627c57f2d348bb2d4ddc8b305f8, type: 2}
+  - serializedVersion: 2
+    m_RefCount: 1
+    m_Data: {fileID: 11400000, guid: ea6aadd3755e366469043d3aeec21b61, type: 2}
   m_TileSpriteArray:
   - serializedVersion: 2
     m_RefCount: 44
     m_Data: {fileID: 21300000, guid: 6a50a30fb7e9d2c419014f4ea41d5a46, type: 3}
+  - serializedVersion: 2
+    m_RefCount: 1
+    m_Data: {fileID: -6321474001911509722, guid: 93bed145b4af72c4eab83fd792d73d9c, type: 3}
   m_TileMatrixArray:
   - serializedVersion: 2
-    m_RefCount: 44
+    m_RefCount: 45
     m_Data:
       e00: 1
       e01: 0
@@ -3832,13 +3848,13 @@ Tilemap:
       e33: 1
   m_TileColorArray:
   - serializedVersion: 2
-    m_RefCount: 44
+    m_RefCount: 45
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Origin: {x: -11, y: -6, z: 0}
-  m_Size: {x: 22, y: 11, z: 1}
+  m_Origin: {x: -12, y: -6, z: 0}
+  m_Size: {x: 23, y: 11, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -3951,6 +3967,14 @@ MonoBehaviour:
   tempoInicial: 20
   textoEstado: {fileID: 0}
   textoTimer: {fileID: 1384937589}
+  inicioPiscada: 10
+  intervaloPiscada: 0.5
+  intervaloPiscadaUrgente: 0.15
+  audioSourceBip: {fileID: 0}
+  somBip: {fileID: 0}
+  volumeMinimo: 0.15
+  volumeMaximo: 1
+  tempoParaVolumeMaximo: 10
 --- !u!1 &1615706624
 GameObject:
   m_ObjectHideFlags: 0
