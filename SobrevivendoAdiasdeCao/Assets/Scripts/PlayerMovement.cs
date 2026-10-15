@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
     public float speed = 7f;
 
     [Header("Configurações do pulo")]
-    public float jumpHeight = 3f;
+    public float jumpHeight = 1.5f;
     public float jumpDuration = 0.8f;
     public int maxJumps = 1;
 
@@ -49,24 +49,39 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 escalaOriginal;
 
     // =====================================================
+    // AWAKE - INICIALIZA A VELOCIDADE-BASE ANTES DOS STARTS
+    // =====================================================
+
+    private void Awake()
+    {
+        velocidadeBase = speed;
+    }
+
+    // =====================================================
     // START
     // =====================================================
 
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
-        velocidadeBase = speed;
-
-        // Guarda o tamanho definido no Inspector
         escalaOriginal = transform.localScale;
 
         jumpCount = 0;
 
-        rb.gravityScale = 1f;
+        if (rb != null)
+        {
+            rb.gravityScale = 1f;
+        }
+        else
+        {
+            Debug.LogError(
+                "PlayerMovement: Rigidbody2D não encontrado na Sandy.",
+                this
+            );
+        }
 
-        // Garante que a poeira não comece sozinha
         if (poeiraCorrida != null)
         {
             poeiraCorrida.Stop();
@@ -77,26 +92,20 @@ public class PlayerMovement : MonoBehaviour
     // UPDATE
     // =====================================================
 
-    void Update()
+    private void Update()
     {
         moveInput = Input.GetAxisRaw("Horizontal");
 
         VerificarChao();
 
-        // =================================================
         // ANIMAÇÃO DE MOVIMENTO
-        // =================================================
-
         if (anim != null)
         {
             anim.SetFloat("Speed", Mathf.Abs(moveInput));
             anim.SetBool("Grounded", isGrounded);
         }
 
-        // =================================================
-        // CORRIDA / ANDAR
-        // =================================================
-
+        // REGISTRO DE CORRIDA NO TUTORIAL
         if (Mathf.Abs(moveInput) > 0.1f)
         {
             if (TutorialManager.instance != null)
@@ -105,16 +114,10 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // =================================================
         // POEIRA DA CORRIDA
-        // =================================================
-
         AtualizarPoeira();
 
-        // =================================================
         // PULO
-        // =================================================
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (jumpCount < maxJumps)
@@ -123,29 +126,19 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // =================================================
-        // ATUALIZA PULO
-        // =================================================
-
+        // ATUALIZAÇÃO DO PULO
         if (isJumping)
         {
             UpdateJump();
         }
 
-        // =================================================
         // LATIDO
-        // =================================================
-
         if (Input.GetKeyDown(KeyCode.Z))
         {
             Bark();
         }
 
-        // =================================================
-        // VIRAR PERSONAGEM
-        // Mantém o tamanho original
-        // =================================================
-
+        // VIRAR PERSONAGEM, MANTENDO A ESCALA ORIGINAL
         if (moveInput > 0)
         {
             transform.localScale = new Vector3(
@@ -168,7 +161,7 @@ public class PlayerMovement : MonoBehaviour
     // POEIRA DA CORRIDA
     // =====================================================
 
-    void AtualizarPoeira()
+    private void AtualizarPoeira()
     {
         if (poeiraCorrida == null)
             return;
@@ -182,13 +175,10 @@ public class PlayerMovement : MonoBehaviour
         {
             var shape = poeiraCorrida.shape;
 
-            // Correndo para a direita
             if (moveInput > 0)
             {
                 shape.rotation = new Vector3(0f, 0f, 90f);
             }
-
-            // Correndo para a esquerda
             else if (moveInput < 0)
             {
                 shape.rotation = new Vector3(0f, 0f, -90f);
@@ -214,7 +204,7 @@ public class PlayerMovement : MonoBehaviour
     // FÍSICA
     // =====================================================
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (rb == null)
             return;
@@ -232,6 +222,13 @@ public class PlayerMovement : MonoBehaviour
     public void DefinirVelocidade(float multiplicador)
     {
         speed = velocidadeBase * multiplicador;
+
+        Debug.Log(
+            $"Velocidade-base: {velocidadeBase} | " +
+            $"Multiplicador: {multiplicador} | " +
+            $"Velocidade atual: {speed}",
+            this
+        );
     }
 
     public void RestaurarVelocidade()
@@ -248,7 +245,7 @@ public class PlayerMovement : MonoBehaviour
     // VERIFICAR CHÃO
     // =====================================================
 
-    void VerificarChao()
+    private void VerificarChao()
     {
         if (groundCheck == null)
             return;
@@ -271,15 +268,16 @@ public class PlayerMovement : MonoBehaviour
     // COMEÇAR PULO
     // =====================================================
 
-    void StartJump()
+    private void StartJump()
     {
+        if (rb == null)
+            return;
+
         isJumping = true;
 
-        // Para a poeira imediatamente ao pular
         PararPoeira();
 
         jumpTime = 0f;
-
         startY = transform.position.y;
 
         jumpCount++;
@@ -298,10 +296,6 @@ public class PlayerMovement : MonoBehaviour
             anim.SetBool("Grounded", false);
         }
 
-        // ================================================
-        // AVISA O TUTORIAL
-        // ================================================
-
         if (TutorialManager.instance != null)
         {
             TutorialManager.instance.RegistrarPulo();
@@ -312,7 +306,7 @@ public class PlayerMovement : MonoBehaviour
     // PARAR POEIRA
     // =====================================================
 
-    void PararPoeira()
+    private void PararPoeira()
     {
         if (poeiraCorrida == null)
             return;
@@ -325,8 +319,11 @@ public class PlayerMovement : MonoBehaviour
     // ATUALIZAR PULO
     // =====================================================
 
-    void UpdateJump()
+    private void UpdateJump()
     {
+        if (jumpDuration <= 0f)
+            return;
+
         jumpTime += Time.deltaTime / jumpDuration;
 
         float t = Mathf.Clamp01(jumpTime);
@@ -353,7 +350,10 @@ public class PlayerMovement : MonoBehaviour
                 transform.position.z
             );
 
-            rb.gravityScale = 1f;
+            if (rb != null)
+            {
+                rb.gravityScale = 1f;
+            }
 
             VerificarChao();
 
@@ -368,7 +368,7 @@ public class PlayerMovement : MonoBehaviour
     // LATIDO
     // =====================================================
 
-    void Bark()
+    private void Bark()
     {
         if (anim != null)
         {
@@ -409,7 +409,6 @@ public class PlayerMovement : MonoBehaviour
             if (!isJumping)
             {
                 isGrounded = true;
-
                 jumpCount = 0;
 
                 if (anim != null)
@@ -431,7 +430,6 @@ public class PlayerMovement : MonoBehaviour
             if (!isJumping)
             {
                 isGrounded = false;
-
                 PararPoeira();
 
                 if (anim != null)
