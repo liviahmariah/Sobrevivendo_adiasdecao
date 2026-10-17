@@ -1,6 +1,8 @@
+
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class EnergiaSandy : MonoBehaviour
 {
@@ -26,50 +28,53 @@ public class EnergiaSandy : MonoBehaviour
     public bool usarPenalidadeVelocidade = false;
     public PlayerMovement playerMovement;
 
+    [Header("Efeitos ao Receber Dano")]
+    public AudioSource audioDano;
+    public SpriteRenderer spriteSandy;
+    public Color corDano = Color.red;
+    public float duracaoEfeitoDano = 0.2f;
+
     private bool podePerderEnergia = true;
+    private Color corOriginal;
+    private Coroutine rotinaDano;
 
     private void Start()
     {
         energiaAtual = energiaMaxima;
 
         if (playerMovement == null)
-        {
             playerMovement = GetComponent<PlayerMovement>();
-        }
+
+        if (spriteSandy == null)
+            spriteSandy = GetComponentInChildren<SpriteRenderer>();
+
+        if (spriteSandy != null)
+            corOriginal = spriteSandy.color;
 
         podePerderEnergia = true;
 
         AtualizarBarra();
 
         if (usarPenalidadeVelocidade)
-        {
             AtualizarVelocidade();
-        }
 
         if (painelAviso != null)
-        {
             painelAviso.SetActive(false);
-        }
     }
 
     public void PerderEnergia()
     {
-        if (!podePerderEnergia)
+        if (!podePerderEnergia || energiaAtual <= 0)
             return;
 
-        energiaAtual--;
-
-        if (energiaAtual < 0)
-        {
-            energiaAtual = 0;
-        }
+        energiaAtual = Mathf.Max(0, energiaAtual - 1);
 
         AtualizarBarra();
         AtualizarVelocidade();
+        ReproduzirEfeitoDano();
 
         Debug.Log("Energia perdida! Atual: " + energiaAtual);
 
-        // Se chegou a zero
         if (energiaAtual <= 0)
         {
             if (derrotarAoZerarEnergia)
@@ -78,66 +83,64 @@ public class EnergiaSandy : MonoBehaviour
                 return;
             }
 
-            // Nas fases comuns, NÃO derrota.
             MostrarAviso("SANDY ESTÁ SEM ENERGIA!");
-
             return;
         }
 
         MostrarAviso("VOLTE PARA SUA GAIOLA!");
     }
 
+    private void ReproduzirEfeitoDano()
+    {
+        if (audioDano != null)
+            audioDano.Play();
+
+        if (spriteSandy != null)
+        {
+            if (rotinaDano != null)
+                StopCoroutine(rotinaDano);
+
+            rotinaDano = StartCoroutine(EfeitoVisualDano());
+        }
+    }
+
+    private IEnumerator EfeitoVisualDano()
+    {
+        spriteSandy.color = corDano;
+
+        yield return new WaitForSeconds(duracaoEfeitoDano);
+
+        if (spriteSandy != null)
+            spriteSandy.color = corOriginal;
+
+        rotinaDano = null;
+    }
+
     private void AtualizarBarra()
     {
         if (barraEnergia != null)
         {
-            if (energiaMaxima > 0)
-            {
-                barraEnergia.fillAmount =
-                    (float)energiaAtual / energiaMaxima;
-            }
-            else
-            {
-                barraEnergia.fillAmount = 0f;
-            }
+            barraEnergia.fillAmount = energiaMaxima > 0
+                ? (float)energiaAtual / energiaMaxima
+                : 0f;
         }
     }
 
     private void AtualizarVelocidade()
     {
-        if (!usarPenalidadeVelocidade)
+        if (!usarPenalidadeVelocidade || playerMovement == null)
             return;
 
-        if (playerMovement == null)
-            return;
-
-        float multiplicador = 1f;
+        float multiplicador;
 
         switch (energiaAtual)
         {
-            case 5:
-                multiplicador = 1f;
-                break;
-
-            case 4:
-                multiplicador = 0.9f;
-                break;
-
-            case 3:
-                multiplicador = 0.8f;
-                break;
-
-            case 2:
-                multiplicador = 0.65f;
-                break;
-
-            case 1:
-                multiplicador = 0.5f;
-                break;
-
-            case 0:
-                multiplicador = 0.4f;
-                break;
+            case 5: multiplicador = 1f; break;
+            case 4: multiplicador = 0.9f; break;
+            case 3: multiplicador = 0.8f; break;
+            case 2: multiplicador = 0.65f; break;
+            case 1: multiplicador = 0.5f; break;
+            default: multiplicador = 0.4f; break;
         }
 
         playerMovement.DefinirVelocidade(multiplicador);
@@ -146,26 +149,19 @@ public class EnergiaSandy : MonoBehaviour
     private void MostrarAviso(string mensagem)
     {
         if (painelAviso != null)
-        {
             painelAviso.SetActive(true);
-        }
 
         if (textoAviso != null)
-        {
             textoAviso.text = mensagem;
-        }
 
         CancelInvoke(nameof(EsconderAviso));
-
         Invoke(nameof(EsconderAviso), duracaoAviso);
     }
 
     private void EsconderAviso()
     {
         if (painelAviso != null)
-        {
             painelAviso.SetActive(false);
-        }
     }
 
     public void RetornarParaGaiolaPorCaptura()
@@ -200,5 +196,17 @@ public class EnergiaSandy : MonoBehaviour
                 "Não foi possível mostrar o painel de derrota."
             );
         }
+    }
+
+    private void OnDisable()
+    {
+        if (rotinaDano != null)
+        {
+            StopCoroutine(rotinaDano);
+            rotinaDano = null;
+        }
+
+        if (spriteSandy != null)
+            spriteSandy.color = corOriginal;
     }
 }

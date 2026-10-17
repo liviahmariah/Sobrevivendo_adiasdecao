@@ -368,35 +368,52 @@ public class PlayerMovement : MonoBehaviour
     // LATIDO
     // =====================================================
 
+
     private void Bark()
     {
         if (anim != null)
-        {
             anim.SetTrigger("Bark");
-        }
 
         if (audioSource != null && somLatido != null)
-        {
             audioSource.PlayOneShot(somLatido);
-        }
 
         Debug.Log("Latido!");
 
         if (TutorialManager.instance != null)
-        {
             TutorialManager.instance.RegistrarLatido();
-        }
 
         if (chefe != null)
-        {
             chefe.AssustarChefe();
-        }
 
         if (molhoChaves != null)
-        {
             molhoChaves.ReceberLatido();
+
+        // Identifica os NPCs próximos na direção em que Sandy está virada.
+        float direcaoSandy = Mathf.Sign(transform.localScale.x);
+
+        if (direcaoSandy == 0f)
+            direcaoSandy = 1f;
+
+        NPCRecurso[] npcs =
+            FindObjectsByType<NPCRecurso>(FindObjectsSortMode.None);
+
+        foreach (NPCRecurso npc in npcs)
+        {
+            if (npc == null)
+                continue;
+
+            Vector2 diferenca =
+                (Vector2)npc.transform.position -
+                (Vector2)transform.position;
+
+            // Ignora NPCs atrás da Sandy.
+            if (diferenca.x * direcaoSandy <= 0f)
+                continue;
+
+            npc.ReceberLatido();
         }
     }
+
 
     // =====================================================
     // COLISÃO COM CHÃO

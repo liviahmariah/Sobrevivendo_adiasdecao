@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class SpawnRecursosMercado : MonoBehaviour
@@ -19,43 +20,44 @@ public class SpawnRecursosMercado : MonoBehaviour
     public float chanceComidaRuim = 0.2f;
 
     private float proximoSpawn;
+    private bool spawnInicialRealizado = false;
 
     private void Start()
     {
-        SpawnQuantidadeInicial();
-
         proximoSpawn = Time.time + intervaloSpawn;
     }
 
     private void Update()
     {
+        // Só gera recursos durante a coleta do Mercado.
+        if (MercadoManager.Instance == null)
+            return;
+
+        if (!MercadoManager.Instance.PodeColetar())
+            return;
+
+        // Gera a quantidade inicial uma única vez.
+        if (!spawnInicialRealizado)
+        {
+            SpawnQuantidadeInicial();
+            spawnInicialRealizado = true;
+
+            proximoSpawn = Time.time + intervaloSpawn;
+            return;
+        }
+
+        // Gera recursos periodicamente.
         if (Time.time >= proximoSpawn)
         {
             SpawnRecurso();
-
             proximoSpawn = Time.time + intervaloSpawn;
         }
     }
 
     private void SpawnQuantidadeInicial()
     {
-        if (prefabsComida == null || prefabsComida.Length == 0)
-        {
-            Debug.LogWarning(
-                "SpawnRecursosMercado: Nenhum prefab de comida foi configurado!"
-            );
-
+        if (!ConfiguracaoValida())
             return;
-        }
-
-        if (pontosSpawn == null || pontosSpawn.Length == 0)
-        {
-            Debug.LogWarning(
-                "SpawnRecursosMercado: Nenhum ponto de spawn foi configurado!"
-            );
-
-            return;
-        }
 
         int quantidade = quantidadeInicial;
 
@@ -64,8 +66,9 @@ public class SpawnRecursosMercado : MonoBehaviour
             float multiplicador =
                 CommunityManager.instance.MultiplicadorSpawnRecursos();
 
-            quantidade = Mathf.RoundToInt(
-                quantidadeInicial * multiplicador
+            quantidade = Mathf.Max(
+                0,
+                Mathf.RoundToInt(quantidadeInicial * multiplicador)
             );
         }
 
@@ -73,14 +76,36 @@ public class SpawnRecursosMercado : MonoBehaviour
         {
             SpawnRecurso();
         }
+
+        Debug.Log(
+            "MERCADO | Spawn inicial: " + quantidade + " recursos."
+        );
+    }
+
+    private bool ConfiguracaoValida()
+    {
+        if (prefabsComida == null || prefabsComida.Length == 0)
+        {
+            Debug.LogWarning(
+                "SpawnRecursosMercado: configure os prefabs de comida!"
+            );
+            return false;
+        }
+
+        if (pontosSpawn == null || pontosSpawn.Length == 0)
+        {
+            Debug.LogWarning(
+                "SpawnRecursosMercado: configure os pontos de spawn!"
+            );
+            return false;
+        }
+
+        return true;
     }
 
     private void SpawnRecurso()
     {
-        if (prefabsComida == null || prefabsComida.Length == 0)
-            return;
-
-        if (pontosSpawn == null || pontosSpawn.Length == 0)
+        if (!ConfiguracaoValida())
             return;
 
         Transform ponto =
@@ -88,6 +113,9 @@ public class SpawnRecursosMercado : MonoBehaviour
 
         GameObject prefab =
             prefabsComida[Random.Range(0, prefabsComida.Length)];
+
+        if (ponto == null || prefab == null)
+            return;
 
         GameObject recurso = Instantiate(
             prefab,
@@ -105,6 +133,16 @@ public class SpawnRecursosMercado : MonoBehaviour
 
             componente.recursoRuim =
                 Random.value < chanceComidaRuim;
+
+            componente.AtualizarAparencia();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "SpawnRecursosMercado: o prefab " +
+                prefab.name +
+                " não possui RecursoColetavel!"
+            );
         }
     }
 }

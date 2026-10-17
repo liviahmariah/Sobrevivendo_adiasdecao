@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class RecursoColetavel : MonoBehaviour
@@ -20,10 +21,97 @@ public class RecursoColetavel : MonoBehaviour
 
     [Header("Identificação da Comida")]
     public string idComida;
-
     public Sprite imagemComida;
 
+    [Header("Aparência do Item Ruim")]
+    public Color corRecursoRuim =
+        new Color(0.55f, 0.85f, 0.55f, 1f);
+
+    [Tooltip("Encontrado automaticamente nos filhos do prefab.")]
+    [SerializeField]
+    private ParticleSystem particulasMauCheiro;
+
+    private SpriteRenderer spriteRenderer;
+    private Color corOriginal;
     private bool coletado = false;
+
+    // =====================================================
+    // INICIALIZAÇÃO
+    // =====================================================
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
+
+        if (spriteRenderer != null)
+        {
+            corOriginal = spriteRenderer.color;
+        }
+        else
+        {
+            Debug.LogWarning(
+                "RecursoColetavel: SpriteRenderer não encontrado!",
+                this
+            );
+        }
+
+        // Procura o Particle System no próprio objeto
+        // ou em qualquer um dos seus filhos.
+        if (particulasMauCheiro == null)
+        {
+            particulasMauCheiro =
+                GetComponentInChildren<ParticleSystem>(true);
+        }
+
+        // Não inicia o mau cheiro antes do sorteio do spawn.
+        if (particulasMauCheiro != null)
+        {
+            particulasMauCheiro.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmittingAndClear
+            );
+
+            particulasMauCheiro.gameObject.SetActive(false);
+        }
+
+        AtualizarAparencia();
+    }
+
+    // =====================================================
+    // ATUALIZA A APARÊNCIA
+    // =====================================================
+
+    public void AtualizarAparencia()
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = recursoRuim
+                ? corRecursoRuim
+                : corOriginal;
+        }
+
+        if (particulasMauCheiro == null)
+            return;
+
+        if (recursoRuim)
+        {
+            particulasMauCheiro.gameObject.SetActive(true);
+            particulasMauCheiro.Play(true);
+        }
+        else
+        {
+            particulasMauCheiro.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmittingAndClear
+            );
+
+            particulasMauCheiro.gameObject.SetActive(false);
+        }
+    }
+
+    // =====================================================
+    // COLETA AUTOMÁTICA
+    // =====================================================
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -36,14 +124,14 @@ public class RecursoColetavel : MonoBehaviour
         Coletar();
     }
 
+    // =====================================================
+    // COLETAR
+    // =====================================================
+
     public void Coletar()
     {
         if (coletado)
             return;
-
-        // ==========================================
-        // BLOQUEIA A COLETA QUANDO O TEMPO DA FASE ACABOU
-        // ==========================================
 
         if (FaseManager.Instance != null &&
             !FaseManager.Instance.PodeColetar())
@@ -51,15 +139,13 @@ public class RecursoColetavel : MonoBehaviour
             return;
         }
 
-        // ==========================================
-        // VERIFICA COMMUNITY MANAGER
-        // ==========================================
-
         if (CommunityManager.instance == null)
         {
             Debug.LogWarning(
-                "RecursoColetavel: CommunityManager não encontrado!"
+                "RecursoColetavel: CommunityManager não encontrado!",
+                this
             );
+
             return;
         }
 
@@ -68,79 +154,66 @@ public class RecursoColetavel : MonoBehaviour
         AplicarEfeito();
 
         Debug.Log(
-            "RECURSO COLETADO | Tipo: " +
-            tipoRecurso +
-            " | Valor: " +
-            valor +
-            " | Ruim: " +
-            recursoRuim +
-            " | ID: " +
-            idComida
+            "RECURSO COLETADO | Tipo: " + tipoRecurso +
+            " | Valor: " + valor +
+            " | Ruim: " + recursoRuim +
+            " | ID: " + idComida,
+            this
         );
 
         Destroy(gameObject);
     }
 
+    // =====================================================
+    // APLICA EFEITO
+    // =====================================================
+
     private void AplicarEfeito()
     {
         float valorFinal = recursoRuim ? -valor : valor;
 
-        // ==========================================
-        // COMIDA
-        // ==========================================
-
-        if (tipoRecurso == TipoRecurso.Comida)
+        switch (tipoRecurso)
         {
-            if (MercadoManager.Instance != null)
-            {
-                MercadoManager.Instance.AdicionarComida(
+            case TipoRecurso.Comida:
+
+                if (MercadoManager.Instance != null)
+                {
+                    MercadoManager.Instance.AdicionarComida(
+                        valorFinal
+                    );
+
+                    if (!recursoRuim)
+                    {
+                        MercadoManager.Instance.RegistrarTipoComida(
+                            idComida,
+                            imagemComida
+                        );
+                    }
+
+                    return;
+                }
+
+                CommunityManager.instance.AlterarAlimentacao(
                     valorFinal
                 );
 
-                // Só registra comidas boas.
-                if (!recursoRuim)
-                {
-                    MercadoManager.Instance.RegistrarTipoComida(
-                        idComida,
-                        imagemComida
-                    );
-                }
+                break;
 
-                return;
-            }
+            case TipoRecurso.Remedio:
 
-            // Fora do Mercado.
-            CommunityManager.instance.AlterarAlimentacao(
-                valorFinal
-            );
+                CommunityManager.instance.AlterarSaude(
+                    valorFinal
+                );
 
-            return;
-        }
+                break;
 
-        // ==========================================
-        // REMÉDIO
-        // ==========================================
+            case TipoRecurso.Diversao:
 
-        if (tipoRecurso == TipoRecurso.Remedio)
-        {
-            CommunityManager.instance.AlterarSaude(
-                valorFinal
-            );
+                CommunityManager.instance.AlterarFelicidade(
+                    valorFinal
+                );
 
-            return;
-        }
-
-        // ==========================================
-        // DIVERSÃO
-        // ==========================================
-
-        if (tipoRecurso == TipoRecurso.Diversao)
-        {
-            CommunityManager.instance.AlterarFelicidade(
-                valorFinal
-            );
-
-            return;
+                break;
         }
     }
 }
