@@ -1,11 +1,13 @@
+
 using UnityEngine;
+using System.Collections;
 
 public class MolhoChavesTutorial : MonoBehaviour
 {
     [Header("Configuração das chaves")]
     [SerializeField] private int quantidadeTotal = 8;
 
-    [Header("Prefab da chave")]
+    [Header("Prefab da chave liberada")]
     [SerializeField] private GameObject chavePrefab;
 
     [Header("Local onde a chave aparece")]
@@ -17,15 +19,40 @@ public class MolhoChavesTutorial : MonoBehaviour
     [Header("Distância necessária para latir")]
     [SerializeField] private float distanciaMaxima = 3f;
 
-    // Quantas chaves o molho já derrubou
+    [Header("Visual do molho")]
+    [SerializeField] private SpriteRenderer spriteMolho;
+
+    [Tooltip("Arraste aqui o filho visual do molho, não o objeto principal.")]
+    [SerializeField] private Transform visualBalanco;
+
+    [Tooltip("Índice 0 = molho vazio; índice 8 = molho com 8 chaves.")]
+    [SerializeField] private Sprite[] spritesPorChavesRestantes;
+
+    [Header("Animação de balanço")]
+    [SerializeField] private float duracaoBalanco = 0.35f;
+
+    [SerializeField] private float anguloBalanco = 18f;
+
+    [SerializeField] private float velocidadeBalanco = 35f;
+
     private int chavesDerrubadas = 0;
 
-    // Existe uma chave esperando ser coletada?
     private bool chaveNoChao = false;
-
-    // Sandy já coletou a chave, mas ainda não usou?
     private bool chaveEmUso = false;
 
+    private Coroutine rotinaBalanco;
+    private Quaternion rotacaoOriginal;
+
+    private void Start()
+    {
+        if (visualBalanco == null && spriteMolho != null)
+            visualBalanco = spriteMolho.transform;
+
+        if (visualBalanco != null)
+            rotacaoOriginal = visualBalanco.localRotation;
+
+        AtualizarVisualMolho();
+    }
 
     // =====================================================
     // RECEBER LATIDO
@@ -33,7 +60,8 @@ public class MolhoChavesTutorial : MonoBehaviour
 
     public void ReceberLatido()
     {
-        Debug.Log("Molho recebeu o latido.");
+        // O molho reage a cada chamada de latido.
+        AnimarBalanco();
 
         if (sandy == null)
         {
@@ -53,52 +81,23 @@ public class MolhoChavesTutorial : MonoBehaviour
             return;
         }
 
-        // -------------------------------------------------
-        // JÁ LIBEROU AS 8 CHAVES
-        // -------------------------------------------------
-
         if (chavesDerrubadas >= quantidadeTotal)
         {
-            Debug.Log(
-                "O molho já liberou todas as "
-                + quantidadeTotal
-                + " chaves."
-            );
-
+            Debug.Log("O molho já liberou todas as chaves.");
             return;
         }
-
-        // -------------------------------------------------
-        // AINDA EXISTE UMA CHAVE NO CHÃO
-        // -------------------------------------------------
 
         if (chaveNoChao)
         {
-            Debug.Log(
-                "A chave atual ainda está no chão. "
-                + "Sandy precisa coletá-la primeiro."
-            );
-
+            Debug.Log("Sandy precisa coletar a chave no chão.");
             return;
         }
-
-        // -------------------------------------------------
-        // SANDY PEGOU A CHAVE, MAS AINDA NÃO USOU
-        // -------------------------------------------------
 
         if (chaveEmUso)
         {
-            Debug.Log(
-                "Sandy ainda possui uma chave. "
-                + "Use a chave para abrir uma gaiola antes de pegar outra."
-            );
-
+            Debug.Log("Sandy precisa usar a chave na gaiola.");
             return;
         }
-
-        // -------------------------------------------------
-        // VERIFICAR DISTÂNCIA
-        // -------------------------------------------------
 
         float distancia = Vector2.Distance(
             sandy.position,
@@ -107,20 +106,82 @@ public class MolhoChavesTutorial : MonoBehaviour
 
         if (distancia > distanciaMaxima)
         {
-            Debug.Log(
-                "Sandy está longe demais do molho."
-            );
-
+            Debug.Log("Sandy está longe demais do molho.");
             return;
         }
-
-        // -------------------------------------------------
-        // PODE DERRUBAR
-        // -------------------------------------------------
 
         DerrubarChave();
     }
 
+    // =====================================================
+    // ANIMAÇÃO DO MOLHO
+    // =====================================================
+
+    private void AnimarBalanco()
+    {
+        if (visualBalanco == null)
+            return;
+
+        if (rotinaBalanco != null)
+            StopCoroutine(rotinaBalanco);
+
+        // Garante que a animação sempre comece da mesma posição.
+        visualBalanco.localRotation = rotacaoOriginal;
+
+        rotinaBalanco = StartCoroutine(ExecutarBalanco());
+    }
+
+    private IEnumerator ExecutarBalanco()
+    {
+        float tempo = 0f;
+
+        while (tempo < duracaoBalanco)
+        {
+            tempo += Time.deltaTime;
+
+            float progresso = Mathf.Clamp01(
+                tempo / duracaoBalanco
+            );
+
+            // Começa forte e termina suavemente.
+            float intensidade = 1f - progresso;
+
+            float angulo = Mathf.Sin(
+                tempo * velocidadeBalanco
+            ) * anguloBalanco * intensidade;
+
+            visualBalanco.localRotation =
+                rotacaoOriginal *
+                Quaternion.Euler(0f, 0f, angulo);
+
+            yield return null;
+        }
+
+        visualBalanco.localRotation = rotacaoOriginal;
+        rotinaBalanco = null;
+    }
+
+    // =====================================================
+    // ATUALIZAR APARÊNCIA DO MOLHO
+    // =====================================================
+
+    private void AtualizarVisualMolho()
+    {
+        if (spriteMolho == null ||
+            spritesPorChavesRestantes == null)
+            return;
+
+        int restantes = Mathf.Clamp(
+            quantidadeTotal - chavesDerrubadas,
+            0,
+            spritesPorChavesRestantes.Length - 1
+        );
+
+        Sprite novoSprite = spritesPorChavesRestantes[restantes];
+
+        if (novoSprite != null)
+            spriteMolho.sprite = novoSprite;
+    }
 
     // =====================================================
     // DERRUBAR CHAVE
@@ -140,8 +201,7 @@ public class MolhoChavesTutorial : MonoBehaviour
         if (chave == null)
         {
             Debug.LogError(
-                "O prefab precisa ter o componente " +
-                "ChaveComumTutorial."
+                "O prefab precisa ter ChaveComumTutorial."
             );
 
             Destroy(novaChave);
@@ -151,17 +211,16 @@ public class MolhoChavesTutorial : MonoBehaviour
         chave.Configurar(this);
 
         chaveNoChao = true;
-
         chavesDerrubadas++;
 
+        // Cada chave liberada muda a aparência do molho.
+        AtualizarVisualMolho();
+
         Debug.Log(
-            "Chave comum derrubada: "
-            + chavesDerrubadas
-            + "/"
-            + quantidadeTotal
+            "Chave liberada: " + chavesDerrubadas +
+            "/" + quantidadeTotal
         );
     }
-
 
     // =====================================================
     // SANDY COLETOU A CHAVE
@@ -174,14 +233,10 @@ public class MolhoChavesTutorial : MonoBehaviour
             Debug.LogWarning(
                 "Nenhuma chave está aguardando coleta."
             );
-
             return;
         }
 
         chaveNoChao = false;
-
-        // Sandy agora possui uma chave.
-        // Ela precisa usá-la antes de pegar outra.
         chaveEmUso = true;
 
         if (TutorialChavesManager.instance != null)
@@ -190,14 +245,12 @@ public class MolhoChavesTutorial : MonoBehaviour
         }
 
         Debug.Log(
-            "Sandy coletou a chave. "
-            + "Ela precisa usá-la antes de pegar outra."
+            "Sandy coletou a chave e precisa usá-la."
         );
     }
 
-
     // =====================================================
-    // CHAVE FOI USADA EM UMA GAIOLA
+    // CHAVE USADA EM UMA GAIOLA
     // =====================================================
 
     public void RegistrarUsoDaChave()
@@ -207,18 +260,15 @@ public class MolhoChavesTutorial : MonoBehaviour
             Debug.LogWarning(
                 "Não havia uma chave do molho em uso."
             );
-
             return;
         }
 
         chaveEmUso = false;
 
         Debug.Log(
-            "A chave foi usada. "
-            + "O molho pode liberar a próxima."
+            "Chave usada. O molho pode liberar outra."
         );
     }
-
 
     // =====================================================
     // INFORMAÇÕES
@@ -232,5 +282,17 @@ public class MolhoChavesTutorial : MonoBehaviour
     public bool SandyPossuiChave()
     {
         return chaveEmUso;
+    }
+
+    private void OnDisable()
+    {
+        if (rotinaBalanco != null)
+        {
+            StopCoroutine(rotinaBalanco);
+            rotinaBalanco = null;
+        }
+
+        if (visualBalanco != null)
+            visualBalanco.localRotation = rotacaoOriginal;
     }
 }

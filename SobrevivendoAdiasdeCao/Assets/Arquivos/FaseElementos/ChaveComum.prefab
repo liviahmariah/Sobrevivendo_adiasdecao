@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7050845067164868886}
   - component: {fileID: 2359678156610845308}
   - component: {fileID: 2985051596421425526}
+  - component: {fileID: 1381334412177874201}
   m_Layer: 0
   m_Name: ChaveComum
   m_TagString: Untagged
@@ -152,3 +153,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c8f5750fe07df4297af283a74b4f0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChaveComumTutorial
+--- !u!114 &1381334412177874201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6762767023498567814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 651c852a9bdbc6346bf1627d2d5ff648, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EfeitoChaveSolta
+  alturaPulo: 0.7
+  duracaoPulo: 0.45
+  rotacoes: 1.5
+  somAoSoltar: {fileID: 8300000, guid: 5514eeed230a0ff46a824724b9bdf930, type: 3}
+  volumeSom: 1

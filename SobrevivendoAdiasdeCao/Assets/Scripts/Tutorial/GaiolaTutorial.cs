@@ -1,6 +1,8 @@
+
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class GaiolaTutorial : MonoBehaviour
 {
@@ -24,31 +26,27 @@ public class GaiolaTutorial : MonoBehaviour
     public float distanciaInteracao = 2f;
     public float tempoParaAbrir = 1.5f;
 
+    [Header("Animação das grades")]
+    public float duracaoSacudida = 0.4f;
+    public float intensidadeSacudida = 0.06f;
+    public float velocidadeSacudida = 35f;
+
     private float progresso = 0f;
     private bool gaiolaAberta = false;
     private bool sandyPerto = false;
     private bool pressionando = false;
-
-    // =====================================================
-    // START
-    // =====================================================
+    private bool abrindoGaiola = false;
 
     private void Start()
     {
         if (cao != null)
-        {
             cao.SetActive(false);
-        }
 
         if (painelInteracao != null)
-        {
             painelInteracao.SetActive(false);
-        }
 
         if (fundoBarra != null)
-        {
             fundoBarra.SetActive(true);
-        }
 
         if (barraProgresso != null)
         {
@@ -57,23 +55,14 @@ public class GaiolaTutorial : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // UPDATE
-    // =====================================================
-
     private void Update()
     {
-        if (gaiolaAberta || sandy == null)
-        {
+        if (gaiolaAberta || abrindoGaiola || sandy == null)
             return;
-        }
 
-        Vector3 origemInteracao = transform.position;
-
-        if (pontoInteracao != null)
-        {
-            origemInteracao = pontoInteracao.position;
-        }
+        Vector3 origemInteracao = pontoInteracao != null
+            ? pontoInteracao.position
+            : transform.position;
 
         float distancia = Vector2.Distance(
             origemInteracao,
@@ -82,10 +71,6 @@ public class GaiolaTutorial : MonoBehaviour
 
         sandyPerto = distancia <= distanciaInteracao;
 
-        // -------------------------------------------------
-        // SANDY ESTÁ LONGE
-        // -------------------------------------------------
-
         if (!sandyPerto)
         {
             pressionando = false;
@@ -93,41 +78,23 @@ public class GaiolaTutorial : MonoBehaviour
             return;
         }
 
-        // -------------------------------------------------
-        // SANDY ESTÁ PERTO
-        // -------------------------------------------------
-
         MostrarInteracao();
 
-        // Começou a segurar o botão
         if (Input.GetMouseButtonDown(0))
         {
             pressionando = true;
             MostrarBarra();
         }
 
-        // Continua segurando
         if (Input.GetMouseButton(0) && pressionando)
-        {
             AumentarProgresso();
-        }
 
-        // Soltou o botão
         if (Input.GetMouseButtonUp(0))
-        {
             pressionando = false;
-        }
 
-        // Se não estiver segurando, a barra diminui
-        if (!pressionando)
-        {
+        if (!pressionando && !abrindoGaiola)
             DiminuirProgresso();
-        }
     }
-
-    // =====================================================
-    // MOSTRAR INTERAÇÃO
-    // =====================================================
 
     private void MostrarInteracao()
     {
@@ -138,41 +105,25 @@ public class GaiolaTutorial : MonoBehaviour
         }
 
         if (textoInteracao != null)
-        {
             textoInteracao.text = "SEGURE O CLIQUE";
-        }
     }
-
-    // =====================================================
-    // ESCONDER INTERAÇÃO
-    // =====================================================
 
     private void EsconderInteracao()
     {
         if (painelInteracao != null)
-        {
             painelInteracao.SetActive(false);
-        }
 
         progresso = 0f;
         pressionando = false;
 
         if (barraProgresso != null)
-        {
             barraProgresso.fillAmount = 0f;
-        }
     }
-
-    // =====================================================
-    // MOSTRAR BARRA
-    // =====================================================
 
     private void MostrarBarra()
     {
         if (fundoBarra != null)
-        {
             fundoBarra.SetActive(true);
-        }
 
         if (barraProgresso != null)
         {
@@ -181,10 +132,6 @@ public class GaiolaTutorial : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // AUMENTAR PROGRESSO
-    // =====================================================
-
     private void AumentarProgresso()
     {
         if (TutorialChavesManager.instance == null)
@@ -192,78 +139,46 @@ public class GaiolaTutorial : MonoBehaviour
             Debug.LogError(
                 "TutorialChavesManager não foi encontrado."
             );
-
             return;
         }
-
-        // -------------------------------------------------
-        // VERIFICA SE SANDY POSSUI UMA CHAVE
-        // -------------------------------------------------
 
         if (!TutorialChavesManager.instance.TemChaveDisponivel())
         {
             if (textoInteracao != null)
-            {
                 textoInteracao.text = "VOCÊ NÃO TEM CHAVE";
-            }
 
             return;
         }
 
-        // -------------------------------------------------
-        // AUMENTA A BARRA
-        // -------------------------------------------------
-
-        progresso += Time.deltaTime / tempoParaAbrir;
-
+        progresso += Time.deltaTime / Mathf.Max(tempoParaAbrir, 0.01f);
         progresso = Mathf.Clamp01(progresso);
 
         if (barraProgresso != null)
-        {
             barraProgresso.fillAmount = progresso;
-        }
-
-        // -------------------------------------------------
-        // COMPLETOU
-        // -------------------------------------------------
 
         if (progresso >= 1f)
-        {
             TentarAbrirGaiola();
-        }
     }
-
-    // =====================================================
-    // DIMINUIR PROGRESSO
-    // =====================================================
 
     private void DiminuirProgresso()
     {
         if (progresso <= 0f)
-        {
             return;
-        }
 
         progresso -= Time.deltaTime * 2f;
-
         progresso = Mathf.Clamp01(progresso);
 
         if (barraProgresso != null)
-        {
             barraProgresso.fillAmount = progresso;
-        }
     }
-
-    // =====================================================
-    // TENTAR ABRIR
-    // =====================================================
 
     private void TentarAbrirGaiola()
     {
-        if (gaiolaAberta)
-        {
+        if (gaiolaAberta || abrindoGaiola)
             return;
-        }
+
+        if (TutorialChavesManager.instance == null)
+            return;
 
         bool abriu =
             TutorialChavesManager.instance
@@ -274,78 +189,87 @@ public class GaiolaTutorial : MonoBehaviour
             progresso = 0f;
 
             if (barraProgresso != null)
-            {
                 barraProgresso.fillAmount = 0f;
-            }
 
             return;
         }
 
-        AbrirGaiola();
-    }
-
-    // =====================================================
-    // ABRIR GAIOLA
-    // =====================================================
-
-    private void AbrirGaiola()
-    {
-        gaiolaAberta = true;
+        abrindoGaiola = true;
         pressionando = false;
 
-        // -------------------------------------------------
-        // ESCONDE INTERAÇÃO
-        // -------------------------------------------------
-
         if (painelInteracao != null)
-        {
             painelInteracao.SetActive(false);
-        }
-
-        // -------------------------------------------------
-        // ZERA A BARRA
-        // -------------------------------------------------
 
         if (barraProgresso != null)
-        {
             barraProgresso.fillAmount = 0f;
+
+        StartCoroutine(AnimarAberturaGaiola());
+    }
+
+    private IEnumerator AnimarAberturaGaiola()
+    {
+        // Guarda as posições originais das grades.
+        Vector3[] posicoesOriginais = new Vector3[grades.Length];
+
+        for (int i = 0; i < grades.Length; i++)
+        {
+            if (grades[i] != null)
+                posicoesOriginais[i] = grades[i].transform.localPosition;
         }
 
-        // -------------------------------------------------
-        // ABRE AS GRADES
-        // -------------------------------------------------
+        float tempo = 0f;
 
-        if (grades != null)
+        // Sacode todas as grades juntas.
+        while (tempo < duracaoSacudida)
         {
-            foreach (GameObject grade in grades)
+            tempo += Time.deltaTime;
+
+            float intensidade = intensidadeSacudida *
+                (1f - Mathf.Clamp01(tempo / duracaoSacudida));
+
+            for (int i = 0; i < grades.Length; i++)
             {
-                if (grade != null)
-                {
-                    grade.SetActive(false);
-                }
+                if (grades[i] == null)
+                    continue;
+
+                float deslocamentoX = Mathf.Sin(
+                    tempo * velocidadeSacudida
+                ) * intensidade;
+
+                float deslocamentoY = Mathf.Cos(
+                    tempo * velocidadeSacudida * 0.8f
+                ) * intensidade * 0.35f;
+
+                grades[i].transform.localPosition =
+                    posicoesOriginais[i] +
+                    new Vector3(deslocamentoX, deslocamentoY, 0f);
+            }
+
+            yield return null;
+        }
+
+        // Restaura as posições antes de desativar as grades.
+        for (int i = 0; i < grades.Length; i++)
+        {
+            if (grades[i] != null)
+            {
+                grades[i].transform.localPosition =
+                    posicoesOriginais[i];
+
+                grades[i].SetActive(false);
             }
         }
 
-        // -------------------------------------------------
-        // LIBERTA O CÃO
-        // -------------------------------------------------
-
+        // Liberta o cão.
         if (cao != null)
-        {
             cao.SetActive(true);
-        }
 
-        Debug.Log(
-            "Gaiola aberta! Cão libertado."
-        );
+        gaiolaAberta = true;
+        abrindoGaiola = false;
 
-        // =================================================
-        // VERIFICAÇÃO DE VITÓRIA
-        // =================================================
+        Debug.Log("Gaiola aberta! Cão libertado.");
 
         if (TutorialManager.instance != null)
-        {
             TutorialManager.instance.VerificarVitoria();
-        }
     }
 }
