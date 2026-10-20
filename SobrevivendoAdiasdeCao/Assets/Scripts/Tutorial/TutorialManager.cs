@@ -12,6 +12,7 @@ public class TutorialManager : MonoBehaviour
     // ETAPAS DO TUTORIAL
     // =====================================================
 
+
     public enum EtapaTutorial
     {
         Introducao,
@@ -21,6 +22,46 @@ public class TutorialManager : MonoBehaviour
         Coleta,
         Finalizado
     }
+
+    private void ConfigurarMusicaFinal()
+    {
+        if (audioSourceMusicaFinal == null)
+        {
+            audioSourceMusicaFinal = GetComponent<AudioSource>();
+
+            if (audioSourceMusicaFinal == null)
+            {
+                audioSourceMusicaFinal = gameObject.AddComponent<AudioSource>();
+            }
+        }
+
+        audioSourceMusicaFinal.playOnAwake = false;
+        audioSourceMusicaFinal.loop = true;
+        audioSourceMusicaFinal.spatialBlend = 0f;
+        audioSourceMusicaFinal.Stop();
+    }
+
+    private void TocarMusicaFinal(AudioClip musica, float volume)
+    {
+        if (audioSourceMusicaFinal == null || musica == null)
+            return;
+
+        audioSourceMusicaFinal.Stop();
+        audioSourceMusicaFinal.clip = musica;
+        audioSourceMusicaFinal.volume = volume;
+        audioSourceMusicaFinal.loop = true;
+        audioSourceMusicaFinal.Play();
+    }
+
+    private void PararMusicaFinal()
+    {
+        if (audioSourceMusicaFinal == null)
+            return;
+
+        audioSourceMusicaFinal.Stop();
+        audioSourceMusicaFinal.clip = null;
+    }
+
 
     [Header("Estado")]
     public EtapaTutorial etapaAtual = EtapaTutorial.Introducao;
@@ -63,6 +104,17 @@ public class TutorialManager : MonoBehaviour
     [Header("Som do Duke")]
     public AudioSource audioSourceDuke;
     public AudioClip somLatidoDuke;
+
+    [Header("Músicas de Vitória e Derrota")]
+    [SerializeField] private AudioSource audioSourceMusicaFinal;
+    [SerializeField] private AudioClip musicaVitoria;
+    [SerializeField] private AudioClip musicaDerrota;
+
+    [Range(0f, 1f)]
+    [SerializeField] private float volumeMusicaVitoria = 0.7f;
+
+    [Range(0f, 1f)]
+    [SerializeField] private float volumeMusicaDerrota = 0.7f;
 
     // =====================================================
     // EFEITO DE TEXTO
@@ -259,6 +311,7 @@ public class TutorialManager : MonoBehaviour
             textoTitulo.text = "A FUGA";
 
         ConfigurarTextoDuke();
+        ConfigurarMusicaFinal();
 
         StartCoroutine(IniciarTutorial());
     }

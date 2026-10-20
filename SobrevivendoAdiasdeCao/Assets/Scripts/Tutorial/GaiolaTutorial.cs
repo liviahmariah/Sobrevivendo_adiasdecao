@@ -31,6 +31,13 @@ public class GaiolaTutorial : MonoBehaviour
     public float intensidadeSacudida = 0.06f;
     public float velocidadeSacudida = 35f;
 
+    [Header("Som da gaiola")]
+    [SerializeField] private AudioClip somGaiolaAbrindo;
+    [SerializeField, Range(0f, 1f)] private float volumeSom = 1f;
+    [SerializeField] private bool tocarSomAoLiberar = true;
+
+    private AudioSource audioSource;
+
     private float progresso = 0f;
     private bool gaiolaAberta = false;
     private bool sandyPerto = false;
@@ -39,6 +46,15 @@ public class GaiolaTutorial : MonoBehaviour
 
     private void Start()
     {
+        // Configura o áudio.
+        audioSource = GetComponent<AudioSource>();
+
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f;
+
         if (cao != null)
             cao.SetActive(false);
 
@@ -150,7 +166,9 @@ public class GaiolaTutorial : MonoBehaviour
             return;
         }
 
-        progresso += Time.deltaTime / Mathf.Max(tempoParaAbrir, 0.01f);
+        progresso += Time.deltaTime /
+            Mathf.Max(tempoParaAbrir, 0.01f);
+
         progresso = Mathf.Clamp01(progresso);
 
         if (barraProgresso != null)
@@ -209,12 +227,16 @@ public class GaiolaTutorial : MonoBehaviour
     private IEnumerator AnimarAberturaGaiola()
     {
         // Guarda as posições originais das grades.
-        Vector3[] posicoesOriginais = new Vector3[grades.Length];
+        Vector3[] posicoesOriginais =
+            new Vector3[grades.Length];
 
         for (int i = 0; i < grades.Length; i++)
         {
             if (grades[i] != null)
-                posicoesOriginais[i] = grades[i].transform.localPosition;
+            {
+                posicoesOriginais[i] =
+                    grades[i].transform.localPosition;
+            }
         }
 
         float tempo = 0f;
@@ -225,7 +247,9 @@ public class GaiolaTutorial : MonoBehaviour
             tempo += Time.deltaTime;
 
             float intensidade = intensidadeSacudida *
-                (1f - Mathf.Clamp01(tempo / duracaoSacudida));
+                (1f - Mathf.Clamp01(
+                    tempo / Mathf.Max(duracaoSacudida, 0.001f)
+                ));
 
             for (int i = 0; i < grades.Length; i++)
             {
@@ -242,13 +266,17 @@ public class GaiolaTutorial : MonoBehaviour
 
                 grades[i].transform.localPosition =
                     posicoesOriginais[i] +
-                    new Vector3(deslocamentoX, deslocamentoY, 0f);
+                    new Vector3(
+                        deslocamentoX,
+                        deslocamentoY,
+                        0f
+                    );
             }
 
             yield return null;
         }
 
-        // Restaura as posições antes de desativar as grades.
+        // Restaura as posições e desativa as grades.
         for (int i = 0; i < grades.Length; i++)
         {
             if (grades[i] != null)
@@ -258,6 +286,17 @@ public class GaiolaTutorial : MonoBehaviour
 
                 grades[i].SetActive(false);
             }
+        }
+
+        // Reproduz o som quando a gaiola é aberta.
+        if (tocarSomAoLiberar &&
+            somGaiolaAbrindo != null &&
+            audioSource != null)
+        {
+            audioSource.PlayOneShot(
+                somGaiolaAbrindo,
+                volumeSom
+            );
         }
 
         // Liberta o cão.
