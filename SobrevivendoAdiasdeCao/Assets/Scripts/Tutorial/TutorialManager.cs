@@ -962,6 +962,8 @@ public class TutorialManager : MonoBehaviour
 
         tutorialTerminou = true;
         etapaAtual = EtapaTutorial.Finalizado;
+        PararMusicaFinal();
+        TocarMusicaFinal(musicaVitoria, volumeMusicaVitoria);
 
         PararDica();
 
@@ -1118,6 +1120,8 @@ public class TutorialManager : MonoBehaviour
 
         tutorialTerminou = true;
         etapaAtual = EtapaTutorial.Finalizado;
+        PararMusicaFinal();
+        TocarMusicaFinal(musicaDerrota, volumeMusicaDerrota);
 
         PararDica();
 
@@ -1182,6 +1186,7 @@ public class TutorialManager : MonoBehaviour
         Debug.Log("Reiniciando o tutorial...");
 
         Time.timeScale = 1f;
+        PararMusicaFinal();
 
         Scene cenaAtual = SceneManager.GetActiveScene();
 
