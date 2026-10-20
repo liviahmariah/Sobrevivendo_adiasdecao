@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using TMPro;
 
@@ -78,29 +79,22 @@ public class TutorialChavesManager : MonoBehaviour
     {
         if (chavesDisponiveis <= 0)
         {
-            Debug.Log(
-                "Sandy não possui chaves disponíveis."
-            );
-
+            Debug.Log("Sandy não possui chaves disponíveis.");
             return false;
         }
 
         if (gaiolasAbertas >= quantidadeGaiolasTotal)
         {
-            Debug.Log(
-                "Todas as gaiolas já foram abertas."
-            );
-
+            Debug.Log("Todas as gaiolas já foram abertas.");
             return false;
         }
 
-        // Consome a chave
+        // Consome a chave.
         chavesDisponiveis--;
 
-        // Registra a gaiola aberta
+        // Registra o cão libertado.
         gaiolasAbertas++;
 
-        // Avisa o molho que a chave foi usada
         if (molhoChaves != null)
         {
             molhoChaves.RegistrarUsoDaChave();
@@ -115,19 +109,18 @@ public class TutorialChavesManager : MonoBehaviour
         AtualizarUI();
 
         Debug.Log(
-            "Gaiola aberta! Progresso: "
+            "Cão libertado! Progresso: "
             + gaiolasAbertas
-            + "/"
+            + " | "
             + quantidadeGaiolasTotal
         );
 
-        // Quando o 8º cão for libertado,
-        // avisar que falta a chave da carrocinha
+        // Após libertar os 8 primeiros cães,
+        // avisa que a última chave está com a carrocinha.
         if (gaiolasAbertas == 8 &&
             !avisoUltimaChaveMostrado)
         {
             avisoUltimaChaveMostrado = true;
-
             AvisarSobreUltimaChave();
         }
 
@@ -160,9 +153,7 @@ public class TutorialChavesManager : MonoBehaviour
 
         AtualizarUI();
 
-        Debug.Log(
-            "Chave final coletada!"
-        );
+        Debug.Log("Chave final coletada!");
     }
 
     private void AtualizarUI()
@@ -170,7 +161,10 @@ public class TutorialChavesManager : MonoBehaviour
         if (textoChaves != null)
         {
             textoChaves.text =
-                gaiolasAbertas + "/" + quantidadeGaiolasTotal;
+                "CÃES LIVRES:"
+                + gaiolasAbertas
+                + "/"
+                + quantidadeGaiolasTotal;
         }
     }
 }

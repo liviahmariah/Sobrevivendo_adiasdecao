@@ -20,8 +20,14 @@ public class SceneIntroSimple : MonoBehaviour
     [Header("Contagem Regressiva")]
     public TextMeshProUGUI countdown;
 
+    [Header("Aviso de Início")]
+    public RectTransform textoVai;
+    public float duracaoVai = 0.8f;
+    public float escalaVai = 1.6f;
+
     [Header("Informações")]
     public string fase = "MERCADO";
+    [TextArea]
     public string objetivoFase =
         "OBJETIVO: Buscar alimento para a comunidade.";
 
@@ -31,133 +37,150 @@ public class SceneIntroSimple : MonoBehaviour
 
     [Header("Configurações")]
     public float tempoExibicao = 1.4f;
+    public float duracaoNumero = 0.8f;
+    public float intervaloContagem = 0.2f;
 
-    Vector2 posNome;
-    Vector2 posObj;
+    [Header("Efeitos Sonoros")]
+    public AudioSource audioSource;
 
-    void Start()
+    public AudioClip somEntradaNome;
+    public AudioClip somEntradaObjetivo;
+    public AudioClip somContagem;
+    public AudioClip somApitoFinal;
+
+    [Range(0f, 1f)]
+    public float volumeEntrada = 0.6f;
+
+    [Range(0f, 1f)]
+    public float volumeContagem = 0.7f;
+
+    [Range(0f, 1f)]
+    public float volumeApito = 1f;
+
+    private Vector2 posNome;
+    private Vector2 posObj;
+    private Vector3 escalaOriginalVai;
+
+    private bool iniciou = false;
+
+    private void Start()
     {
         if (!ValidarReferencias())
             return;
 
-        Time.timeScale = 0;
+        Time.timeScale = 0f;
 
         textoNome.text = fase;
         textoObjetivo.text = objetivoFase;
 
         posNome = nomeFase.anchoredPosition;
         posObj = objetivo.anchoredPosition;
+        escalaOriginalVai = textoVai.localScale;
 
         nomeFase.anchoredPosition += Vector2.left * 1200;
         objetivo.anchoredPosition += Vector2.left * 1200;
 
         countdown.gameObject.SetActive(false);
+        textoVai.gameObject.SetActive(false);
 
         StartCoroutine(Intro());
     }
 
-    bool ValidarReferencias()
+    private bool ValidarReferencias()
     {
         bool valido = true;
 
-        if (background == null)
+        if (background == null ||
+            nomeFase == null ||
+            textoNome == null ||
+            objetivo == null ||
+            textoObjetivo == null ||
+            countdown == null ||
+            textoVai == null)
         {
-            Debug.LogError("SceneIntroSimple: Background não configurado!");
+            Debug.LogError(
+                "SceneIntroSimple: Configure todas as referências " +
+                "do painel, incluindo o texto VAI!"
+            );
+
             valido = false;
         }
 
-        if (nomeFase == null)
+        if (audioSource == null)
         {
-            Debug.LogError("SceneIntroSimple: NomeFase não configurado!");
-            valido = false;
-        }
-
-        if (textoNome == null)
-        {
-            Debug.LogError("SceneIntroSimple: TextoNome não configurado!");
-            valido = false;
-        }
-
-        if (objetivo == null)
-        {
-            Debug.LogError("SceneIntroSimple: Objetivo não configurado!");
-            valido = false;
-        }
-
-        if (textoObjetivo == null)
-        {
-            Debug.LogError("SceneIntroSimple: TextoObjetivo não configurado!");
-            valido = false;
-        }
-
-        if (countdown == null)
-        {
-            Debug.LogError("SceneIntroSimple: Countdown não configurado!");
-            valido = false;
+            Debug.LogWarning(
+                "SceneIntroSimple: AudioSource não configurado. " +
+                "A introdução funcionará sem os sons."
+            );
         }
 
         return valido;
     }
 
-    IEnumerator Intro()
+    private void TocarSom(AudioClip clip, float volume)
     {
-        // Preserva a cor e o Alpha do Inspector
-        Color corOriginal = background.color;
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip, volume);
+        }
+    }
 
-        float alphaOriginal = corOriginal.a;
+    private IEnumerator Intro()
+    {
+        Color corFade = background.color;
 
-        // Mantém a cor original durante a introdução
-        background.color = corOriginal;
+        yield return new WaitForSecondsRealtime(0.3f);
 
-        yield return new WaitForSecondsRealtime(.3f);
+        // Nome da fase
+        TocarSom(somEntradaNome, volumeEntrada);
 
-        // Entrada do nome
         yield return StartCoroutine(
             Mover(nomeFase, posNome)
         );
 
-        yield return new WaitForSecondsRealtime(.15f);
+        yield return new WaitForSecondsRealtime(0.15f);
 
-        // Entrada do objetivo
+        // Objetivo da fase
+        TocarSom(somEntradaObjetivo, volumeEntrada);
+
         yield return StartCoroutine(
             Mover(objetivo, posObj)
         );
 
-        // Mantém o painel durante a introdução
         yield return new WaitForSecondsRealtime(tempoExibicao);
 
-        // Saída do nome
-        yield return StartCoroutine(
-            SairDireita(nomeFase)
-        );
+        // Saída dos textos
+        yield return StartCoroutine(SairDireita(nomeFase));
+        yield return StartCoroutine(SairDireita(objetivo));
 
-        // Saída do objetivo
-        yield return StartCoroutine(
-            SairDireita(objetivo)
-        );
-
-        // Contagem regressiva
+        // Contagem: 3, 2, 1
         yield return StartCoroutine(Contagem());
 
-        // Fade final: altera somente o Alpha
-        Color corFade = background.color;
+        // Aviso separado: VAI!
+        yield return StartCoroutine(MostrarVai());
 
-        while (corFade.a > 0)
+        // Fade do fundo
+        corFade = background.color;
+
+        while (corFade.a > 0f)
         {
-            corFade.a -= Time.unscaledDeltaTime * 2f;
-            corFade.a = Mathf.Max(corFade.a, 0);
+            corFade.a = Mathf.MoveTowards(
+                corFade.a,
+                0f,
+                Time.unscaledDeltaTime * 2f
+            );
 
             background.color = corFade;
 
             yield return null;
         }
 
-        gameObject.SetActive(false);
+        Time.timeScale = 1f;
 
-        Time.timeScale = 1;
+        gameObject.SetActive(false);
     }
 
-    IEnumerator Mover(
+    private IEnumerator Mover(
         RectTransform alvo,
         Vector2 destino
     )
@@ -166,7 +189,7 @@ public class SceneIntroSimple : MonoBehaviour
             Vector2.Distance(
                 alvo.anchoredPosition,
                 destino
-            ) > 1
+            ) > 1f
         )
         {
             alvo.anchoredPosition = Vector2.Lerp(
@@ -181,16 +204,16 @@ public class SceneIntroSimple : MonoBehaviour
         alvo.anchoredPosition = destino;
     }
 
-    IEnumerator SairDireita(RectTransform alvo)
+    private IEnumerator SairDireita(RectTransform alvo)
     {
         Vector2 destino =
-            alvo.anchoredPosition + Vector2.right * 1800;
+            alvo.anchoredPosition + Vector2.right * 1800f;
 
         while (
             Vector2.Distance(
                 alvo.anchoredPosition,
                 destino
-            ) > 5
+            ) > 5f
         )
         {
             alvo.anchoredPosition = Vector2.Lerp(
@@ -205,49 +228,94 @@ public class SceneIntroSimple : MonoBehaviour
         alvo.gameObject.SetActive(false);
     }
 
-    IEnumerator Contagem()
+    private IEnumerator Contagem()
     {
         countdown.gameObject.SetActive(true);
 
-        string[] numeros =
-        {
-            "3",
-            "2",
-            "1",
-            "VAI!"
-        };
+        string[] numeros = { "3", "2", "1" };
 
         foreach (string numero in numeros)
         {
             countdown.text = numero;
 
             countdown.transform.localScale =
-                Vector3.one * 2f;
+                Vector3.one * 1.8f;
 
-            float tempo = 0;
+            TocarSom(somContagem, volumeContagem);
 
-            while (tempo < 1)
+            float tempo = 0f;
+
+            while (tempo < duracaoNumero)
             {
-                tempo += Time.unscaledDeltaTime * 6;
+                tempo += Time.unscaledDeltaTime;
+
+                float progresso = duracaoNumero > 0f
+                    ? Mathf.Clamp01(tempo / duracaoNumero)
+                    : 1f;
+
+                // Começa grande e termina no tamanho normal.
+                float escala = Mathf.Lerp(
+                    1.8f,
+                    1f,
+                    Mathf.SmoothStep(0f, 1f, progresso)
+                );
 
                 countdown.transform.localScale =
-                    Vector3.Lerp(
-                        Vector3.one * 2f,
-                        Vector3.one,
-                        tempo
-                    );
+                    Vector3.one * escala;
 
                 yield return null;
             }
 
-            yield return new WaitForSecondsRealtime(.6f);
+            countdown.transform.localScale = Vector3.one;
+
+            if (intervaloContagem > 0f)
+            {
+                yield return new WaitForSecondsRealtime(
+                    intervaloContagem
+                );
+            }
         }
 
         countdown.gameObject.SetActive(false);
     }
 
-    void OnDisable()
+    private IEnumerator MostrarVai()
     {
-        Time.timeScale = 1;
+        textoVai.gameObject.SetActive(true);
+        textoVai.localScale = escalaOriginalVai * escalaVai;
+
+        // Apito marcando o início da fase.
+        TocarSom(somApitoFinal, volumeApito);
+
+        float tempo = 0f;
+
+        while (tempo < duracaoVai)
+        {
+            tempo += Time.unscaledDeltaTime;
+
+            float progresso = duracaoVai > 0f
+                ? Mathf.Clamp01(tempo / duracaoVai)
+                : 1f;
+
+            float escala = Mathf.Lerp(
+                escalaVai,
+                1f,
+                Mathf.SmoothStep(0f, 1f, progresso)
+            );
+
+            textoVai.localScale =
+                escalaOriginalVai * escala;
+
+            yield return null;
+        }
+
+        textoVai.localScale = escalaOriginalVai;
+
+        textoVai.gameObject.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        Time.timeScale = 1f;
     }
 }

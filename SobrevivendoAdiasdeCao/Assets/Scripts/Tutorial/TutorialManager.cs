@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using TMPro;
 using System.Collections;
@@ -81,15 +82,52 @@ public class TutorialManager : MonoBehaviour
     public TextMeshProUGUI textoVitoria;
 
     // =====================================================
+    // IMAGEM ANIMADA DA VITÓRIA
+    // =====================================================
+
+    [Header("Imagem Animada da Vitória")]
+    [Tooltip("Imagem que desliza e ocupa a tela ao vencer.")]
+    public RectTransform imagemVitoriaAnimada;
+
+    [Tooltip("Distância inicial da imagem fora da tela, em unidades de UI.")]
+    public float distanciaEntradaVitoria = 1920f;
+
+    [Tooltip("Duração do deslizamento da imagem.")]
+    public float duracaoEntradaVitoria = 0.9f;
+
+    [Tooltip("Tempo que a imagem permanece na tela após a entrada.")]
+    public float tempoImagemVitoria = 0.5f;
+
+    private Vector2 posicaoFinalVitoria;
+    private Vector2 posicaoInicialVitoria;
+    private Coroutine rotinaVitoria;
+
+    // =====================================================
     // CONFETES DA VITÓRIA
     // =====================================================
 
     [Header("Confetes da Vitória")]
-    [Tooltip("Primeiro efeito de confetes.")]
     public ParticleSystem confetesVitoria1;
-
-    [Tooltip("Segundo efeito de confetes.")]
     public ParticleSystem confetesVitoria2;
+
+    // =====================================================
+    // SONS DA VITÓRIA
+    // =====================================================
+
+    [Header("Sons da Vitória")]
+    public AudioSource audioSourceVitoria;
+
+    [Tooltip("Som tocado enquanto a imagem de vitória entra.")]
+    public AudioClip somEntradaVitoria;
+
+    [Tooltip("Som tocado quando os confetes são ativados.")]
+    public AudioClip somConfetesVitoria;
+
+    [Range(0f, 1f)]
+    public float volumeEntradaVitoria = 0.8f;
+
+    [Range(0f, 1f)]
+    public float volumeConfetesVitoria = 1f;
 
     // =====================================================
     // PAINEL DE DERROTA
@@ -198,7 +236,23 @@ public class TutorialManager : MonoBehaviour
         if (painelDerrota != null)
             painelDerrota.SetActive(false);
 
-        // Os dois confetes não devem aparecer no início.
+        // A imagem de vitória começa escondida.
+        if (imagemVitoriaAnimada != null)
+        {
+            posicaoFinalVitoria =
+                imagemVitoriaAnimada.anchoredPosition;
+
+            posicaoInicialVitoria =
+                posicaoFinalVitoria
+                + Vector2.left * distanciaEntradaVitoria;
+
+            imagemVitoriaAnimada.anchoredPosition =
+                posicaoInicialVitoria;
+
+            imagemVitoriaAnimada.gameObject.SetActive(false);
+        }
+
+        // Os efeitos não aparecem antes da vitória.
         PararConfetes();
 
         if (textoTitulo != null)
@@ -234,7 +288,6 @@ public class TutorialManager : MonoBehaviour
 
     void ReproduzirConfetes()
     {
-        // Limpa e reproduz o primeiro efeito.
         if (confetesVitoria1 != null)
         {
             confetesVitoria1.Stop(
@@ -242,10 +295,9 @@ public class TutorialManager : MonoBehaviour
                 ParticleSystemStopBehavior.StopEmittingAndClear
             );
 
-            confetesVitoria1.Play();
+            confetesVitoria1.Play(true);
         }
 
-        // Limpa e reproduz o segundo efeito.
         if (confetesVitoria2 != null)
         {
             confetesVitoria2.Stop(
@@ -253,7 +305,19 @@ public class TutorialManager : MonoBehaviour
                 ParticleSystemStopBehavior.StopEmittingAndClear
             );
 
-            confetesVitoria2.Play();
+            confetesVitoria2.Play(true);
+        }
+    }
+
+    // =====================================================
+    // SOM DA VITÓRIA
+    // =====================================================
+
+    void TocarSomVitoria(AudioClip clip, float volume)
+    {
+        if (audioSourceVitoria != null && clip != null)
+        {
+            audioSourceVitoria.PlayOneShot(clip, volume);
         }
     }
 
@@ -288,6 +352,9 @@ public class TutorialManager : MonoBehaviour
 
         yield return StartCoroutine(MostrarDialogosIntroducao());
 
+        if (tutorialTerminou)
+            yield break;
+
         tutorialIniciado = true;
 
         ComecarCorrida();
@@ -301,6 +368,9 @@ public class TutorialManager : MonoBehaviour
     {
         for (int i = 0; i < falasIntroducao.Length; i++)
         {
+            if (tutorialTerminou)
+                yield break;
+
             yield return StartCoroutine(
                 MostrarFalaEEsperar(falasIntroducao[i])
             );
@@ -380,6 +450,9 @@ public class TutorialManager : MonoBehaviour
 
         for (int i = 0; i <= quantidadeCaracteres; i++)
         {
+            if (tutorialTerminou)
+                yield break;
+
             textoDuke.maxVisibleCharacters = i;
 
             if (i < quantidadeCaracteres)
@@ -389,7 +462,9 @@ public class TutorialManager : MonoBehaviour
                 if (i < mensagem.Length)
                     caractere = mensagem[i];
 
-                if (caractere == '.' || caractere == '!' || caractere == '?')
+                if (caractere == '.' ||
+                    caractere == '!' ||
+                    caractere == '?')
                 {
                     yield return new WaitForSeconds(pausaPontuacao);
                 }
@@ -438,7 +513,9 @@ public class TutorialManager : MonoBehaviour
         {
             tempo += Time.deltaTime;
 
-            float progresso = tempo / tempoEntradaBalao;
+            float progresso = tempoEntradaBalao > 0f
+                ? Mathf.Clamp01(tempo / tempoEntradaBalao)
+                : 1f;
 
             balãoAnimado.localScale =
                 Vector3.Lerp(inicio, meio, progresso);
@@ -448,11 +525,15 @@ public class TutorialManager : MonoBehaviour
 
         tempo = 0f;
 
-        while (tempo < tempoEntradaBalao * 0.4f)
+        float duracaoPop = tempoEntradaBalao * 0.4f;
+
+        while (tempo < duracaoPop)
         {
             tempo += Time.deltaTime;
 
-            float progresso = tempo / (tempoEntradaBalao * 0.4f);
+            float progresso = duracaoPop > 0f
+                ? Mathf.Clamp01(tempo / duracaoPop)
+                : 1f;
 
             balãoAnimado.localScale =
                 Vector3.Lerp(meio, fim, progresso);
@@ -511,6 +592,9 @@ public class TutorialManager : MonoBehaviour
 
     public void MostrarFalaTemporaria(string mensagem)
     {
+        if (tutorialTerminou)
+            return;
+
         if (rotinaFala != null)
             StopCoroutine(rotinaFala);
 
@@ -520,6 +604,9 @@ public class TutorialManager : MonoBehaviour
     IEnumerator FalaTemporaria(string mensagem)
     {
         yield return StartCoroutine(MostrarFalaAnimada(mensagem));
+
+        if (tutorialTerminou)
+            yield break;
 
         yield return new WaitForSeconds(tempoExibicaoFala);
 
@@ -543,8 +630,11 @@ public class TutorialManager : MonoBehaviour
     {
         yield return new WaitForSeconds(tempoParaDica);
 
-        if (etapaAtual == EtapaTutorial.Finalizado)
+        if (etapaAtual == EtapaTutorial.Finalizado ||
+            tutorialTerminou)
+        {
             yield break;
+        }
 
         MostrarFalaTemporaria(mensagem);
 
@@ -584,7 +674,8 @@ public class TutorialManager : MonoBehaviour
 
     public void RegistrarCorrida()
     {
-        if (tutorialTerminou || etapaAtual != EtapaTutorial.Corrida)
+        if (tutorialTerminou ||
+            etapaAtual != EtapaTutorial.Corrida)
             return;
 
         PararDica();
@@ -622,7 +713,8 @@ public class TutorialManager : MonoBehaviour
 
     public void RegistrarPulo()
     {
-        if (tutorialTerminou || etapaAtual != EtapaTutorial.Pulo)
+        if (tutorialTerminou ||
+            etapaAtual != EtapaTutorial.Pulo)
             return;
 
         PararDica();
@@ -660,7 +752,8 @@ public class TutorialManager : MonoBehaviour
 
     public void RegistrarLatido()
     {
-        if (tutorialTerminou || etapaAtual != EtapaTutorial.Latido)
+        if (tutorialTerminou ||
+            etapaAtual != EtapaTutorial.Latido)
             return;
 
         PararDica();
@@ -734,7 +827,7 @@ public class TutorialManager : MonoBehaviour
     }
 
     // =====================================================
-    // MÉTODO PARA OUTROS SCRIPTS ALTERAREM O OBJETIVO
+    // ALTERAR OBJETIVO EXTERNAMENTE
     // =====================================================
 
     public void MostrarObjetivoExterno(string mensagem)
@@ -781,7 +874,7 @@ public class TutorialManager : MonoBehaviour
     }
 
     // =====================================================
-    // VITÓRIA
+    // VERIFICAR VITÓRIA
     // =====================================================
 
     public void VerificarVitoria()
@@ -805,6 +898,10 @@ public class TutorialManager : MonoBehaviour
             Vitoria();
     }
 
+    // =====================================================
+    // VITÓRIA
+    // =====================================================
+
     public void Vitoria()
     {
         if (tutorialTerminou)
@@ -821,6 +918,14 @@ public class TutorialManager : MonoBehaviour
             rotinaFala = null;
         }
 
+        if (rotinaAnimacaoBalao != null)
+        {
+            StopCoroutine(rotinaAnimacaoBalao);
+            rotinaAnimacaoBalao = null;
+        }
+
+        textoSendoEscrito = false;
+
         if (tutorialTimer != null)
             tutorialTimer.PararTimer();
 
@@ -833,11 +938,11 @@ public class TutorialManager : MonoBehaviour
         if (painelDialogo != null)
             painelDialogo.SetActive(false);
 
-        if (painelVitoria != null)
-            painelVitoria.SetActive(true);
+        if (tituloFase != null)
+            tituloFase.SetActive(false);
 
-        // Reproduz os dois efeitos de confetes na vitória.
-        ReproduzirConfetes();
+        if (painelDerrota != null)
+            painelDerrota.SetActive(false);
 
         if (textoVitoria != null)
         {
@@ -846,7 +951,107 @@ public class TutorialManager : MonoBehaviour
                 "Todos os cães foram libertados!";
         }
 
+        // O painel de vitória tradicional fica escondido
+        // quando usamos a imagem animada.
+        if (painelVitoria != null)
+            painelVitoria.SetActive(false);
+
+        // Garante que os confetes estejam parados.
+        PararConfetes();
+
+        if (rotinaVitoria != null)
+            StopCoroutine(rotinaVitoria);
+
+        rotinaVitoria = StartCoroutine(
+            AnimarSequenciaVitoria()
+        );
+
         Debug.Log("VITÓRIA! Sandy libertou os 9 cães.");
+    }
+
+    // =====================================================
+    // ANIMAÇÃO DA SEQUÊNCIA DE VITÓRIA
+    // =====================================================
+
+    IEnumerator AnimarSequenciaVitoria()
+    {
+        // 1. A imagem entra na tela.
+        if (imagemVitoriaAnimada != null)
+        {
+            imagemVitoriaAnimada.gameObject.SetActive(true);
+
+            imagemVitoriaAnimada.anchoredPosition =
+                posicaoInicialVitoria;
+
+            TocarSomVitoria(
+                somEntradaVitoria,
+                volumeEntradaVitoria
+            );
+
+            float duracao = Mathf.Max(
+                0.01f,
+                duracaoEntradaVitoria
+            );
+
+            float tempo = 0f;
+
+            while (tempo < duracao)
+            {
+                tempo += Time.unscaledDeltaTime;
+
+                float progresso = Mathf.Clamp01(
+                    tempo / duracao
+                );
+
+                float suavizado = Mathf.SmoothStep(
+                    0f,
+                    1f,
+                    progresso
+                );
+
+                imagemVitoriaAnimada.anchoredPosition =
+                    Vector2.Lerp(
+                        posicaoInicialVitoria,
+                        posicaoFinalVitoria,
+                        suavizado
+                    );
+
+                yield return null;
+            }
+
+            // Garante que pare exatamente na posição final.
+            imagemVitoriaAnimada.anchoredPosition =
+                posicaoFinalVitoria;
+        }
+        else
+        {
+            Debug.LogWarning(
+                "ImagemVitoriaAnimada não foi configurada. " +
+                "Os confetes serão reproduzidos sem a animação da imagem."
+            );
+        }
+
+        // 2. A imagem já parou.
+        if (tempoImagemVitoria > 0f)
+        {
+            yield return new WaitForSecondsRealtime(
+                tempoImagemVitoria
+            );
+        }
+
+        // 3. Só agora os confetes e o som são ativados.
+        ReproduzirConfetes();
+
+        TocarSomVitoria(
+            somConfetesVitoria,
+            volumeConfetesVitoria
+        );
+
+        Debug.Log(
+            "Imagem de vitória exibida. Confetes e som ativados."
+        );
+
+        rotinaVitoria = null;
     }
 
     // =====================================================
@@ -869,6 +1074,12 @@ public class TutorialManager : MonoBehaviour
             rotinaFala = null;
         }
 
+        if (rotinaAnimacaoBalao != null)
+        {
+            StopCoroutine(rotinaAnimacaoBalao);
+            rotinaAnimacaoBalao = null;
+        }
+
         if (tutorialTimer != null)
             tutorialTimer.PararTimer();
 
@@ -881,10 +1092,22 @@ public class TutorialManager : MonoBehaviour
         if (painelDialogo != null)
             painelDialogo.SetActive(false);
 
+        // Cancela uma eventual sequência de vitória.
+        if (rotinaVitoria != null)
+        {
+            StopCoroutine(rotinaVitoria);
+            rotinaVitoria = null;
+        }
+
+        if (imagemVitoriaAnimada != null)
+            imagemVitoriaAnimada.gameObject.SetActive(false);
+
+        if (painelVitoria != null)
+            painelVitoria.SetActive(false);
+
         if (painelDerrota != null)
             painelDerrota.SetActive(true);
 
-        // Os confetes não devem aparecer na derrota.
         PararConfetes();
 
         if (textoDerrota != null)
@@ -913,7 +1136,7 @@ public class TutorialManager : MonoBehaviour
     }
 
     // =====================================================
-    // FINAL
+    // FINALIZAR TUTORIAL
     // =====================================================
 
     public void FinalizarTutorial()
@@ -939,8 +1162,12 @@ public class TutorialManager : MonoBehaviour
 
         if (textoDuke != null)
         {
-            textoDuke.geometrySortingOrder = VertexSortingOrder.Reverse;
-            textoDuke.text = "Conseguimos! Vamos libertar todos!";
+            textoDuke.geometrySortingOrder =
+                VertexSortingOrder.Reverse;
+
+            textoDuke.text =
+                "Conseguimos! Vamos libertar todos!";
+
             textoDuke.ForceMeshUpdate();
             textoDuke.maxVisibleCharacters = int.MaxValue;
         }
@@ -968,5 +1195,15 @@ public class TutorialManager : MonoBehaviour
     public bool EstaNaEtapa(EtapaTutorial etapa)
     {
         return etapaAtual == etapa;
+    }
+
+    // =====================================================
+    // LIMPEZA
+    // =====================================================
+
+    void OnDestroy()
+    {
+        if (instance == this)
+            instance = null;
     }
 }
