@@ -29,8 +29,9 @@ public class IntroManager : MonoBehaviour
     public float tempoFadeEntrada = 0.8f;
     public float tempoFadeSaida = 0.6f;
 
-    [Header("Pausa entre falas")]
-    public float pausaEntreQuadros = 0.5f;
+    [Header("Tempo de exibição de cada quadro")]
+    [Min(0f)]
+    public float tempoExibicaoQuadro = 8f;
 
     [Header("Ampliação das imagens")]
     public float escalaNormal = 1f;
@@ -192,8 +193,7 @@ public class IntroManager : MonoBehaviour
             if (pulou)
                 yield break;
 
-            // Mantém a fala na tela antes da próxima transição.
-            yield return new WaitForSeconds(pausaEntreQuadros);
+            yield return new WaitForSeconds(tempoExibicaoQuadro);
         }
 
         // Faz a última fala desaparecer.

@@ -996,8 +996,9 @@ public class TutorialManager : MonoBehaviour
         if (tituloFase != null)
             tituloFase.SetActive(false);
 
-        if (painelDerrota != null)
-            painelDerrota.SetActive(false);
+        // Ativa o painel de vitória
+        if (painelVitoria != null)
+            painelVitoria.SetActive(true);
 
         if (textoVitoria != null)
         {
@@ -1158,9 +1159,6 @@ public class TutorialManager : MonoBehaviour
 
         if (imagemVitoriaAnimada != null)
             imagemVitoriaAnimada.gameObject.SetActive(false);
-
-        if (painelVitoria != null)
-            painelVitoria.SetActive(false);
 
         if (painelDerrota != null)
             painelDerrota.SetActive(true);
