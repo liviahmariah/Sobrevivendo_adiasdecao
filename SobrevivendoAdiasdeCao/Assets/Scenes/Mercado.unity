@@ -11309,7 +11309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnergiaSandy
   energiaMaxima: 5
-  energiaAtual: 0
+  energiaAtual: 5
   derrotarAoZerarEnergia: 0
   imagensEnergia:
   - {fileID: 318693788}
