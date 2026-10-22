@@ -955,6 +955,7 @@ public class TutorialManager : MonoBehaviour
     // VITÓRIA
     // =====================================================
 
+
     public void Vitoria()
     {
         if (tutorialTerminou)
@@ -962,6 +963,7 @@ public class TutorialManager : MonoBehaviour
 
         tutorialTerminou = true;
         etapaAtual = EtapaTutorial.Finalizado;
+
         PararMusicaFinal();
         TocarMusicaFinal(musicaVitoria, volumeMusicaVitoria);
 
@@ -996,106 +998,127 @@ public class TutorialManager : MonoBehaviour
         if (tituloFase != null)
             tituloFase.SetActive(false);
 
-        // Ativa o painel de vitória
-        if (painelVitoria != null)
-            painelVitoria.SetActive(true);
-
-        if (textoVitoria != null)
-        {
-            textoVitoria.text =
-                "VOCÊ CONSEGUIU!\n" +
-                "Todos os cães foram libertados!";
-        }
-
-        // O painel de vitória tradicional fica escondido
-        // quando usamos a imagem animada.
+        // Não mostrar painel ou texto de vitória.
         if (painelVitoria != null)
             painelVitoria.SetActive(false);
 
-        // Garante que os confetes estejam parados.
+        if (painelDerrota != null)
+            painelDerrota.SetActive(false);
+
+        // Esconder a imagem até a animação começar.
+        if (imagemVitoriaAnimada != null)
+            imagemVitoriaAnimada.gameObject.SetActive(false);
+        else
+            Debug.LogError(
+                "ERRO: imagemVitoriaAnimada não foi configurada no Inspector!"
+            );
+
         PararConfetes();
 
         if (rotinaVitoria != null)
             StopCoroutine(rotinaVitoria);
 
-        rotinaVitoria = StartCoroutine(
-            AnimarSequenciaVitoria()
-        );
+        rotinaVitoria = StartCoroutine(AnimarSequenciaVitoria());
 
-        Debug.Log("VITÓRIA! Sandy libertou os 9 cães.");
+        Debug.Log("VITÓRIA: iniciando animação da imagem.");
     }
+
 
     // =====================================================
     // ANIMAÇÃO DA SEQUÊNCIA DE VITÓRIA
     // =====================================================
 
+
     IEnumerator AnimarSequenciaVitoria()
     {
-        // 1. A imagem entra na tela.
-        if (imagemVitoriaAnimada != null)
+        Debug.Log("VITÓRIA: coroutine da imagem iniciada.");
+
+        if (imagemVitoriaAnimada == null)
         {
-            imagemVitoriaAnimada.gameObject.SetActive(true);
-
-            imagemVitoriaAnimada.anchoredPosition =
-                posicaoInicialVitoria;
-
-            TocarSomVitoria(
-                somEntradaVitoria,
-                volumeEntradaVitoria
+            Debug.LogError(
+                "VITÓRIA: o campo Imagem Vitoria Animada está vazio no Inspector!"
             );
+            yield break;
+        }
 
-            float duracao = Mathf.Max(
-                0.01f,
-                duracaoEntradaVitoria
+        GameObject objetoImagem = imagemVitoriaAnimada.gameObject;
+
+        // Ativa a imagem.
+        objetoImagem.SetActive(true);
+
+        // Coloca a imagem acima dos elementos irmãos.
+        imagemVitoriaAnimada.SetAsLastSibling();
+
+        // Verifica se a imagem possui um Canvas ativo.
+        Canvas canvas = objetoImagem.GetComponentInParent<Canvas>();
+
+        Debug.Log(
+            "VITÓRIA: imagem ativa = " + objetoImagem.activeSelf +
+            " | ativa na hierarquia = " + objetoImagem.activeInHierarchy
+        );
+
+        Debug.Log(
+            "VITÓRIA: posição = " + imagemVitoriaAnimada.anchoredPosition +
+            " | tamanho = " + imagemVitoriaAnimada.rect.size
+        );
+
+        if (canvas == null)
+        {
+            Debug.LogError(
+                "VITÓRIA: a imagem não está dentro de nenhum Canvas!"
             );
-
-            float tempo = 0f;
-
-            while (tempo < duracao)
-            {
-                tempo += Time.unscaledDeltaTime;
-
-                float progresso = Mathf.Clamp01(
-                    tempo / duracao
-                );
-
-                float suavizado = Mathf.SmoothStep(
-                    0f,
-                    1f,
-                    progresso
-                );
-
-                imagemVitoriaAnimada.anchoredPosition =
-                    Vector2.Lerp(
-                        posicaoInicialVitoria,
-                        posicaoFinalVitoria,
-                        suavizado
-                    );
-
-                yield return null;
-            }
-
-            // Garante que pare exatamente na posição final.
-            imagemVitoriaAnimada.anchoredPosition =
-                posicaoFinalVitoria;
         }
         else
         {
-            Debug.LogWarning(
-                "ImagemVitoriaAnimada não foi configurada. " +
-                "Os confetes serão reproduzidos sem a animação da imagem."
+            Debug.Log(
+                "VITÓRIA: Canvas encontrado: " + canvas.name +
+                " | ativo = " + canvas.isActiveAndEnabled
             );
         }
 
-        // 2. A imagem já parou.
-        if (tempoImagemVitoria > 0f)
+        if (!objetoImagem.activeInHierarchy)
         {
-            yield return new WaitForSecondsRealtime(
-                tempoImagemVitoria
+            Debug.LogError(
+                "VITÓRIA: a imagem está ativa, mas algum objeto pai está desativado!"
             );
+            yield break;
         }
 
-        // 3. Só agora os confetes e o som são ativados.
+        // Posiciona a imagem fora da tela, à esquerda.
+        imagemVitoriaAnimada.anchoredPosition = posicaoInicialVitoria;
+
+        TocarSomVitoria(
+            somEntradaVitoria,
+            volumeEntradaVitoria
+        );
+
+        // Anima a entrada.
+        float duracao = Mathf.Max(0.01f, duracaoEntradaVitoria);
+        float tempo = 0f;
+
+        while (tempo < duracao)
+        {
+            tempo += Time.unscaledDeltaTime;
+
+            float progresso = Mathf.Clamp01(tempo / duracao);
+            float suavizado = Mathf.SmoothStep(0f, 1f, progresso);
+
+            imagemVitoriaAnimada.anchoredPosition = Vector2.Lerp(
+                posicaoInicialVitoria,
+                posicaoFinalVitoria,
+                suavizado
+            );
+
+            yield return null;
+        }
+
+        imagemVitoriaAnimada.anchoredPosition = posicaoFinalVitoria;
+
+        Debug.Log("VITÓRIA: imagem chegou à posição final.");
+
+        if (tempoImagemVitoria > 0f)
+            yield return new WaitForSecondsRealtime(tempoImagemVitoria);
+
         ReproduzirConfetes();
 
         TocarSomVitoria(
@@ -1103,12 +1126,9 @@ public class TutorialManager : MonoBehaviour
             volumeConfetesVitoria
         );
 
-        Debug.Log(
-            "Imagem de vitória exibida. Confetes e som ativados."
-        );
-
         rotinaVitoria = null;
     }
+
 
     // =====================================================
     // DERROTA
