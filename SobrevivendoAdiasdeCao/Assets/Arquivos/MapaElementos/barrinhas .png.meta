@@ -1,0 +1,304 @@
+fileFormatVersion: 2
+guid: 0701c24f7db9618439e052d4e203f206
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3701824728226283251
+    second: barrinhas _0
+  - first:
+      213: 7555747623624549979
+    second: barrinhas _1
+  - first:
+      213: -9139482928047832757
+    second: barrinhas _2
+  - first:
+      213: 3131836523693073638
+    second: barrinhas _3
+  - first:
+      213: -2211000628790506480
+    second: barrinhas _4
+  - first:
+      213: 1914655022909235695
+    second: barrinhas _5
+  - first:
+      213: -2994115246645007843
+    second: barrinhas _6
+  - first:
+      213: -5366164091260361756
+    second: barrinhas _7
+  - first:
+      213: -1117932674128039550
+    second: barrinhas _8
+  - first:
+      213: 5390371876352189207
+    second: barrinhas _9
+  - first:
+      213: 6218399263865786035
+    second: barrinhas _10
+  - first:
+      213: -8324413175352785538
+    second: barrinhas _11
+  - first:
+      213: 1682550265041898909
+    second: barrinhas _12
+  - first:
+      213: -5912728205810219355
+    second: barrinhas _13
+  - first:
+      213: 3535430387626779967
+    second: barrinhas _14
+  - first:
+      213: -6985032207328570685
+    second: barrinhas _15
+  - first:
+      213: 3792782516830046431
+    second: barrinhas _16
+  - first:
+      213: -1827716599751639715
+    second: barrinhas _17
+  - first:
+      213: -7355474850577224832
+    second: barrinhas _18
+  - first:
+      213: 3044019919023372850
+    second: barrinhas _19
+  - first:
+      213: -2834521652145486991
+    second: barrinhas _20
+  - first:
+      213: 1074819751283992892
+    second: barrinhas _21
+  - first:
+      213: 2938158650481200190
+    second: barrinhas _22
+  - first:
+      213: -7888009444589834586
+    second: barrinhas _23
+  - first:
+      213: 5931230748018496985
+    second: barrinhas _24
+  - first:
+      213: 8898444680047911303
+    second: barrinhas _25
+  - first:
+      213: -7004997587461816323
+    second: barrinhas _26
+  - first:
+      213: -3362747105212010607
+    second: barrinhas _27
+  - first:
+      213: -8773018464178716929
+    second: barrinhas _28
+  - first:
+      213: 2419348038799573294
+    second: barrinhas _29
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: barrinhas _0
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 117
+        width: 102
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d01c055d50a70acc0800000000000000
+      internalID: -3701824728226283251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: barrinhas _1
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 98
+        width: 104
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b56a4ae7e686bd860800000000000000
+      internalID: 7555747623624549979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: barrinhas _2
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 75
+        width: 103
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4146f233b80a2180800000000000000
+      internalID: -9139482928047832757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8ceb8cc017ec6654fa9e3b0745b81277
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      barrinhas _0: -3701824728226283251
+      barrinhas _1: 7555747623624549979
+      barrinhas _10: 6218399263865786035
+      barrinhas _11: -8324413175352785538
+      barrinhas _12: 1682550265041898909
+      barrinhas _13: -5912728205810219355
+      barrinhas _14: 3535430387626779967
+      barrinhas _15: -6985032207328570685
+      barrinhas _16: 3792782516830046431
+      barrinhas _17: -1827716599751639715
+      barrinhas _18: -7355474850577224832
+      barrinhas _19: 3044019919023372850
+      barrinhas _2: -9139482928047832757
+      barrinhas _20: -2834521652145486991
+      barrinhas _21: 1074819751283992892
+      barrinhas _22: 2938158650481200190
+      barrinhas _23: -7888009444589834586
+      barrinhas _24: 5931230748018496985
+      barrinhas _25: 8898444680047911303
+      barrinhas _26: -7004997587461816323
+      barrinhas _27: -3362747105212010607
+      barrinhas _28: -8773018464178716929
+      barrinhas _29: 2419348038799573294
+      barrinhas _3: 3131836523693073638
+      barrinhas _30: 569558590
+      barrinhas _4: -2211000628790506480
+      barrinhas _5: 1914655022909235695
+      barrinhas _6: -2994115246645007843
+      barrinhas _7: -5366164091260361756
+      barrinhas _8: -1117932674128039550
+      barrinhas _9: 5390371876352189207
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
