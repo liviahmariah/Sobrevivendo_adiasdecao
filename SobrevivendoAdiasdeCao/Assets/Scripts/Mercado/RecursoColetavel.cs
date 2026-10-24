@@ -174,16 +174,25 @@ public class RecursoColetavel : MonoBehaviour
 
         switch (tipoRecurso)
         {
-            case TipoRecurso.Comida:
 
+            case TipoRecurso.Comida:
                 if (MercadoManager.Instance != null)
                 {
-                    MercadoManager.Instance.AdicionarComida(
-                        valorFinal
-                    );
+                    // Atualiza a quantidade numérica de comida.
+                    MercadoManager.Instance.AdicionarComida(valorFinal);
 
-                    if (!recursoRuim)
+                    if (recursoRuim)
                     {
+                        // Comida ruim remove apenas um ícone da caixa.
+                        if (CaixaComidasUI.Instance != null)
+                        {
+                            CaixaComidasUI.Instance.RemoverUmaComida();
+                        }
+                    }
+                    else
+                    {
+                        // Cada comida boa adiciona um ícone,
+                        // mesmo que seu ID já tenha aparecido.
                         MercadoManager.Instance.RegistrarTipoComida(
                             idComida,
                             imagemComida
@@ -192,6 +201,10 @@ public class RecursoColetavel : MonoBehaviour
 
                     return;
                 }
+
+                CommunityManager.instance.AlterarAlimentacao(valorFinal);
+                break;
+
 
                 CommunityManager.instance.AlterarAlimentacao(
                     valorFinal

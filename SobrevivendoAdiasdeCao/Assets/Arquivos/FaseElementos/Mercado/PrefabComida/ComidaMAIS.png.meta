@@ -1,0 +1,481 @@
+fileFormatVersion: 2
+guid: 496cf0dbe36364149b8c717f3703525b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1608021947977879239
+    second: ComidaMAIS_0
+  - first:
+      213: 8895002211183268076
+    second: ComidaMAIS_1
+  - first:
+      213: -2515565771839886807
+    second: ComidaMAIS_2
+  - first:
+      213: -4067073901672653054
+    second: ComidaMAIS_3
+  - first:
+      213: 7845771568827504486
+    second: ComidaMAIS_4
+  - first:
+      213: 8147189168557747905
+    second: ComidaMAIS_5
+  - first:
+      213: -7804914362840913848
+    second: ComidaMAIS_6
+  - first:
+      213: -1239030091852309162
+    second: ComidaMAIS_7
+  - first:
+      213: -6146041913583271058
+    second: ComidaMAIS_8
+  - first:
+      213: -2112990373199930788
+    second: ComidaMAIS_9
+  - first:
+      213: 999675718657748486
+    second: ComidaMAIS_10
+  - first:
+      213: -5053771826764039949
+    second: ComidaMAIS_11
+  - first:
+      213: 8948633294912356005
+    second: ComidaMAIS_12
+  - first:
+      213: 1370762415829849772
+    second: ComidaMAIS_13
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ComidaMAIS_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 6
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9313fb7de882fa9e0800000000000000
+      internalID: -1608021947977879239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_1
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 6
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce094e12265617b70800000000000000
+      internalID: 8895002211183268076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_2
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 5
+        width: 26
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92a2a50324ae61dd0800000000000000
+      internalID: -2515565771839886807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_3
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 5
+        width: 18
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20f1a8fa5d9de87c0800000000000000
+      internalID: -4067073901672653054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_4
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 3
+        width: 22
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66792d45ca7c1ec60800000000000000
+      internalID: 7845771568827504486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_5
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 1
+        width: 33
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ce6bc51261a01170800000000000000
+      internalID: 8147189168557747905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_6
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 4
+        width: 22
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 848e58c3dbf5fa390800000000000000
+      internalID: -7804914362840913848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_7
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 3
+        width: 23
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65d9f1532b41ecee0800000000000000
+      internalID: -1239030091852309162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_8
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 3
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e630536517fd4baa0800000000000000
+      internalID: -6146041913583271058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_9
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 5
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5a199f53762da2e0800000000000000
+      internalID: -2112990373199930788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_10
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 1
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60ead2505cf8fdd00800000000000000
+      internalID: 999675718657748486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_11
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 7
+        width: 27
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f83ad1bc456dd9b0800000000000000
+      internalID: -5053771826764039949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_12
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 1
+        width: 20
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5aefb70e19eef2c70800000000000000
+      internalID: 8948633294912356005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ComidaMAIS_13
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 3
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca69ef2972de50310800000000000000
+      internalID: 1370762415829849772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ComidaMAIS_0: -1608021947977879239
+      ComidaMAIS_1: 8895002211183268076
+      ComidaMAIS_10: 999675718657748486
+      ComidaMAIS_11: -5053771826764039949
+      ComidaMAIS_12: 8948633294912356005
+      ComidaMAIS_13: 1370762415829849772
+      ComidaMAIS_2: -2515565771839886807
+      ComidaMAIS_3: -4067073901672653054
+      ComidaMAIS_4: 7845771568827504486
+      ComidaMAIS_5: 8147189168557747905
+      ComidaMAIS_6: -7804914362840913848
+      ComidaMAIS_7: -1239030091852309162
+      ComidaMAIS_8: -6146041913583271058
+      ComidaMAIS_9: -2112990373199930788
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

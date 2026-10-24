@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class CarrocinhaMercado : MonoBehaviour
@@ -8,6 +9,10 @@ public class CarrocinhaMercado : MonoBehaviour
     [Header("Alvo")]
     public Transform player;
 
+    [Header("Altura do chão")]
+    [Tooltip("Altura fixa que a carrocinha deve manter.")]
+    public float alturaDoChao;
+
     private Rigidbody2D rb;
 
     private bool perseguindo = false;
@@ -16,14 +21,23 @@ public class CarrocinhaMercado : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        if (rb != null)
+        {
+            // Impede a rotação causada pelas colisões.
+            rb.constraints |= RigidbodyConstraints2D.FreezeRotation;
+        }
     }
 
     private void Start()
     {
-        // A carrocinha começa parada.
+        // Guarda a altura inicial como referência do chão.
+        alturaDoChao = rb != null
+            ? rb.position.y
+            : transform.position.y;
+
         Desativar();
 
-        // Procura Sandy automaticamente.
         if (player == null)
         {
             GameObject objetoPlayer =
@@ -44,20 +58,19 @@ public class CarrocinhaMercado : MonoBehaviour
 
     private void Update()
     {
-        if (!perseguindo)
-            return;
-
-        if (player == null)
+        if (!perseguindo || player == null)
             return;
     }
 
     private void FixedUpdate()
     {
-        if (!perseguindo)
+        if (rb == null)
             return;
 
-        if (player == null)
+        if (!perseguindo || player == null)
+        {
             return;
+        }
 
         PerseguirSandy();
     }
@@ -67,9 +80,7 @@ public class CarrocinhaMercado : MonoBehaviour
         perseguindo = true;
         capturou = false;
 
-        Debug.Log(
-            "CARROCINHA DO MERCADO ATIVADA!"
-        );
+        Debug.Log("CARROCINHA DO MERCADO ATIVADA!");
     }
 
     public void Desativar()
@@ -84,19 +95,32 @@ public class CarrocinhaMercado : MonoBehaviour
 
     private void PerseguirSandy()
     {
-        Vector2 direcao =
-            (player.position - transform.position).normalized;
+        // Persegue somente na horizontal.
+        float direcaoX =
+            Mathf.Sign(player.position.x - rb.position.x);
 
-        rb.linearVelocity =
-            direcao * velocidade;
+        // Se Sandy estiver exatamente na mesma posição X,
+        // não aplica movimento horizontal.
+        if (Mathf.Abs(player.position.x - rb.position.x) < 0.05f)
+        {
+            direcaoX = 0f;
+        }
+
+        rb.linearVelocity = new Vector2(
+            direcaoX * velocidade,
+            0f
+        );
+
+        // Mantém a carrocinha na altura inicial.
+        rb.position = new Vector2(
+            rb.position.x,
+            alturaDoChao
+        );
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!perseguindo)
-            return;
-
-        if (capturou)
+        if (!perseguindo || capturou)
             return;
 
         if (!collision.gameObject.CompareTag("Player"))
@@ -123,7 +147,6 @@ public class CarrocinhaMercado : MonoBehaviour
         Debug.Log("SANDY FOI PEGA!");
         Debug.Log("=================================");
 
-        // A derrota agora é controlada pelo FaseManager/MercadoManager.
         if (MercadoManager.Instance != null)
         {
             MercadoManager.Instance.Derrota();

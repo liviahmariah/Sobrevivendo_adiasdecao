@@ -1,4 +1,5 @@
 
+using System.Collections;
 using UnityEngine;
 
 public class SpawnRecursosMercado : MonoBehaviour
@@ -19,6 +20,17 @@ public class SpawnRecursosMercado : MonoBehaviour
     [Range(0f, 1f)]
     public float chanceComidaRuim = 0.2f;
 
+    [Header("Animação de Spawn")]
+    public float duracaoEntrada = 0.35f;
+    public float alturaPulo = 0.65f;
+    public float duracaoPulo = 0.4f;
+    public float escalaInicial = 0.2f;
+
+    [Header("Flutuação")]
+    public bool flutuarDepoisDoSpawn = true;
+    public float alturaFlutuacao = 0.08f;
+    public float velocidadeFlutuacao = 2.5f;
+
     private float proximoSpawn;
     private bool spawnInicialRealizado = false;
 
@@ -29,14 +41,12 @@ public class SpawnRecursosMercado : MonoBehaviour
 
     private void Update()
     {
-        // Só gera recursos durante a coleta do Mercado.
         if (MercadoManager.Instance == null)
             return;
 
         if (!MercadoManager.Instance.PodeColetar())
             return;
 
-        // Gera a quantidade inicial uma única vez.
         if (!spawnInicialRealizado)
         {
             SpawnQuantidadeInicial();
@@ -46,7 +56,6 @@ public class SpawnRecursosMercado : MonoBehaviour
             return;
         }
 
-        // Gera recursos periodicamente.
         if (Time.time >= proximoSpawn)
         {
             SpawnRecurso();
@@ -117,9 +126,11 @@ public class SpawnRecursosMercado : MonoBehaviour
         if (ponto == null || prefab == null)
             return;
 
+        Vector3 posicaoFinal = ponto.position;
+
         GameObject recurso = Instantiate(
             prefab,
-            ponto.position,
+            posicaoFinal,
             Quaternion.identity
         );
 
@@ -143,6 +154,111 @@ public class SpawnRecursosMercado : MonoBehaviour
                 prefab.name +
                 " não possui RecursoColetavel!"
             );
+        }
+
+        StartCoroutine(AnimarSpawn(recurso, posicaoFinal));
+    }
+
+    private IEnumerator AnimarSpawn(
+        GameObject recurso,
+        Vector3 posicaoFinal)
+    {
+        if (recurso == null)
+            yield break;
+
+        Transform visual = recurso.transform;
+
+        Vector3 escalaFinal = visual.localScale;
+
+        // Começa pequeno, como se estivesse aparecendo magicamente.
+        visual.localScale = escalaFinal * escalaInicial;
+
+        float tempo = 0f;
+
+        while (tempo < duracaoEntrada)
+        {
+            if (recurso == null)
+                yield break;
+
+            tempo += Time.deltaTime;
+
+            float progresso = Mathf.Clamp01(
+                tempo / duracaoEntrada
+            );
+
+            // EaseOutBack: cria uma pequena sensação de elasticidade.
+            float t = 1f - progresso;
+            float elasticidade =
+                1f + 2.2f * Mathf.Pow(t, 3f)
+                + 1.2f * Mathf.Pow(t, 2f) * -1f;
+
+            visual.localScale = Vector3.LerpUnclamped(
+                escalaFinal * escalaInicial,
+                escalaFinal,
+                Mathf.Clamp01(progresso)
+            );
+
+            // Mantém a entrada suave e termina no tamanho original.
+            visual.localScale = Vector3.Lerp(
+                escalaFinal * escalaInicial,
+                escalaFinal,
+                Mathf.SmoothStep(0f, 1f, progresso)
+            );
+
+            yield return null;
+        }
+
+        if (recurso == null)
+            yield break;
+
+        visual.localScale = escalaFinal;
+
+        // Pulo curto de aterrissagem.
+        tempo = 0f;
+
+        while (tempo < duracaoPulo)
+        {
+            if (recurso == null)
+                yield break;
+
+            tempo += Time.deltaTime;
+
+            float progresso = Mathf.Clamp01(
+                tempo / duracaoPulo
+            );
+
+            float altura =
+                Mathf.Sin(progresso * Mathf.PI) * alturaPulo;
+
+            visual.position = posicaoFinal
+                + Vector3.up * altura;
+
+            yield return null;
+        }
+
+        if (recurso == null)
+            yield break;
+
+        visual.position = posicaoFinal;
+
+        // Flutuação contínua depois que o recurso aparece.
+        if (flutuarDepoisDoSpawn)
+        {
+            float faseInicial = Random.Range(0f, Mathf.PI * 2f);
+
+            while (recurso != null)
+            {
+                float deslocamento =
+                    Mathf.Sin(
+                        Time.time * velocidadeFlutuacao
+                        + faseInicial
+                    ) * alturaFlutuacao;
+
+                visual.position = posicaoFinal
+                    + Vector3.up * deslocamento;
+
+                yield return null;
+            }
         }
     }
 }

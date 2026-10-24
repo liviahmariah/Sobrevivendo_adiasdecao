@@ -103,6 +103,7 @@ public class MercadoManager : FaseManager
         );
     }
 
+
     public bool RegistrarTipoComida(
         string idComida,
         Sprite imagemComida)
@@ -119,13 +120,12 @@ public class MercadoManager : FaseManager
             return false;
         }
 
-        if (tiposDeComidaConseguidos.Contains(idComida))
-        {
-            return false;
-        }
+        // Continua registrando os tipos únicos para consultas.
+        bool novoTipo =
+            tiposDeComidaConseguidos.Add(idComida);
 
-        tiposDeComidaConseguidos.Add(idComida);
-
+        // A caixa recebe um ícone para CADA coleta,
+        // mesmo quando o ID já foi registrado.
         if (CaixaComidasUI.Instance != null)
         {
             CaixaComidasUI.Instance.AdicionarComida(
@@ -134,8 +134,9 @@ public class MercadoManager : FaseManager
             );
         }
 
-        return true;
+        return novoTipo;
     }
+
 
     public bool JaConseguiuComida(string idComida)
     {

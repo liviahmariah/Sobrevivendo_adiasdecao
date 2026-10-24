@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -17,8 +18,14 @@ public class CaixaComidasUI : MonoBehaviour
     [Header("Variação dos itens")]
     public float variacaoRotacao = 12f;
 
-    private Dictionary<string, ItemComidaUI> itens =
-        new Dictionary<string, ItemComidaUI>();
+    private class EntradaComida
+    {
+        public string idComida;
+        public ItemComidaUI item;
+    }
+
+    private readonly List<EntradaComida> itens =
+        new List<EntradaComida>();
 
     private void Awake()
     {
@@ -32,20 +39,12 @@ public class CaixaComidasUI : MonoBehaviour
         }
     }
 
-    public void AdicionarComida(
-        string idComida,
-        Sprite imagemComida)
+    public void AdicionarComida(string idComida, Sprite imagemComida)
     {
-        // Impede comida do mesmo tipo de aparecer duas vezes
-        if (itens.ContainsKey(idComida))
-        {
-            return;
-        }
-
         if (itemComidaPrefab == null)
         {
             Debug.LogError(
-                "CaixaComidasUI: Item Comida Prefab não foi configurado!"
+                "CaixaComidasUI: ItemComidaPrefab não configurado!"
             );
             return;
         }
@@ -53,12 +52,11 @@ public class CaixaComidasUI : MonoBehaviour
         if (conteudo == null)
         {
             Debug.LogError(
-                "CaixaComidasUI: Conteudo não foi configurado!"
+                "CaixaComidasUI: Conteudo não configurado!"
             );
             return;
         }
 
-        // Cria o novo item dentro da caixa
         GameObject novoObjeto = Instantiate(
             itemComidaPrefab,
             conteudo
@@ -70,80 +68,124 @@ public class CaixaComidasUI : MonoBehaviour
         if (item == null)
         {
             Debug.LogError(
-                "CaixaComidasUI: ItemComidaUI não foi encontrado no prefab!"
+                "CaixaComidasUI: ItemComidaUI não encontrado no prefab!"
             );
 
             Destroy(novoObjeto);
             return;
         }
 
-        // Define uma posição aleatória dentro da caixa
         RectTransform rect =
             novoObjeto.GetComponent<RectTransform>();
 
         if (rect != null)
         {
-            float larguraCaixa = conteudo.rect.width;
-            float alturaCaixa = conteudo.rect.height;
+            float largura = conteudo.rect.width;
+            float altura = conteudo.rect.height;
 
             float metadeLargura = rect.rect.width / 2f;
             float metadeAltura = rect.rect.height / 2f;
 
             float xMin =
-                -larguraCaixa / 2f +
-                metadeLargura +
-                margem;
+                -largura / 2f + metadeLargura + margem;
 
             float xMax =
-                larguraCaixa / 2f -
-                metadeLargura -
-                margem;
+                largura / 2f - metadeLargura - margem;
 
             float yMin =
-                -alturaCaixa / 2f +
-                metadeAltura +
-                margem;
+                -altura / 2f + metadeAltura + margem;
 
             float yMax =
-                alturaCaixa / 2f -
-                metadeAltura -
-                margem;
+                altura / 2f - metadeAltura - margem;
 
-            float x = Random.Range(xMin, xMax);
-            float y = Random.Range(yMin, yMax);
+            // Evita erro caso a caixa seja pequena.
+            if (xMin > xMax)
+            {
+                xMin = 0f;
+                xMax = 0f;
+            }
 
-            rect.anchoredPosition =
-                new Vector2(x, y);
+            if (yMin > yMax)
+            {
+                yMin = 0f;
+                yMax = 0f;
+            }
 
-            // Pequena rotação para parecer comida empilhada
-            float rotacao =
-                Random.Range(
-                    -variacaoRotacao,
-                    variacaoRotacao
-                );
+            rect.anchoredPosition = new Vector2(
+                Random.Range(xMin, xMax),
+                Random.Range(yMin, yMax)
+            );
+
+            float rotacao = Random.Range(
+                -variacaoRotacao,
+                variacaoRotacao
+            );
 
             rect.localRotation =
-                Quaternion.Euler(
-                    0f,
-                    0f,
-                    rotacao
-                );
+                Quaternion.Euler(0f, 0f, rotacao);
         }
 
-        // Coloca a imagem e inicia a animação
         item.ColocarImagem(imagemComida);
 
-        // Registra o tipo de comida
-        itens.Add(idComida, item);
+        // Cada coleta gera uma entrada, mesmo com ID repetido.
+        EntradaComida entrada = new EntradaComida();
+        entrada.idComida = idComida;
+        entrada.item = item;
+
+        itens.Add(entrada);
 
         Debug.Log(
-            "CAIXA | Nova comida adicionada: " +
-            idComida
+            "CAIXA | Comida adicionada. Total de ícones: "
+            + itens.Count
         );
+    }
+
+    public bool RemoverUmaComida()
+    {
+        if (itens.Count == 0)
+        {
+            Debug.Log(
+                "CAIXA | Não há comidas para remover."
+            );
+
+            return false;
+        }
+
+        // Remove o último ícone adicionado.
+        int ultimoIndice = itens.Count - 1;
+
+        EntradaComida entrada = itens[ultimoIndice];
+
+        itens.RemoveAt(ultimoIndice);
+
+        if (entrada.item != null)
+        {
+            Destroy(entrada.item.gameObject);
+        }
+
+        Debug.Log(
+            "CAIXA | Uma comida removida. Total de ícones: "
+            + itens.Count
+        );
+
+        return true;
     }
 
     public bool PossuiComida(string idComida)
     {
-        return itens.ContainsKey(idComida);
+        foreach (EntradaComida entrada in itens)
+        {
+            if (entrada.idComida == idComida)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public int ObterQuantidadeComidas()
+    {
+        return itens.Count;
     }
 }
