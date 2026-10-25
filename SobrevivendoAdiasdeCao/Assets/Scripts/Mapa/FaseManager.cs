@@ -1,5 +1,5 @@
+
 using UnityEngine;
-using System.Collections;
 
 public class FaseManager : MonoBehaviour
 {
@@ -39,12 +39,29 @@ public class FaseManager : MonoBehaviour
     [Header("UI do Resultado")]
     public GameObject painelResultado;
     public TMPro.TextMeshProUGUI textoResultado;
+    public TMPro.TextMeshProUGUI textoRecado;
+    public TMPro.TextMeshProUGUI textoItensBons;
+    public TMPro.TextMeshProUGUI textoItensRuins;
+    public TMPro.TextMeshProUGUI textoSaldoFinal;
+    public TMPro.TextMeshProUGUI textoEntregaComunidade;
+    public TMPro.TextMeshProUGUI textoContinuar;
+
+    [Header("Áudio do Resultado")]
+    public AudioSource audioResultado;
+    public AudioClip audioVitoria;
+    public AudioClip audioDerrota;
+
+    [Header("Confetes da Vitória")]
+    public GameObject confetesVitoriaA;
+    public GameObject confetesVitoriaB;
 
     [Header("Resultado")]
-    public float tempoTelaResultado = 2.5f;
+    public bool resultadoFoiVitoria = false;
 
     protected float tempoRestante;
     protected float tempoFugaRestante;
+
+    private bool aguardandoContinuar = false;
 
     protected virtual void Awake()
     {
@@ -65,8 +82,17 @@ public class FaseManager : MonoBehaviour
 
     protected virtual void Update()
     {
+        // Depois do resultado, só permite continuar com Espaço.
         if (faseFinalizada)
+        {
+            if (aguardandoContinuar &&
+                Input.GetKeyDown(KeyCode.Space))
+            {
+                ContinuarParaMapa();
+            }
+
             return;
+        }
 
         if (coletaAtiva)
         {
@@ -78,10 +104,6 @@ public class FaseManager : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // INÍCIO DA FASE
-    // ==========================================
-
     protected virtual void IniciarFase()
     {
         tempoRestante = CalcularTempoDaFase();
@@ -91,46 +113,32 @@ public class FaseManager : MonoBehaviour
         coletaAtiva = true;
         fugaAtiva = false;
         faseFinalizada = false;
+        resultadoFoiVitoria = false;
+        aguardandoContinuar = false;
 
         if (carrocinha != null)
-        {
             carrocinha.Desativar();
-        }
 
         if (painelFuga != null)
-        {
             painelFuga.SetActive(false);
-        }
 
         if (painelResultado != null)
-        {
             painelResultado.SetActive(false);
-        }
 
-        Debug.Log(
-            "FASE INICIADA: " +
-            tipoFase
-        );
+        if (confetesVitoriaA != null)
+            confetesVitoriaA.SetActive(false);
 
-        Debug.Log(
-            "Tempo de coleta: " +
-            tempoRestante.ToString("F1") +
-            " segundos"
-        );
+        if (confetesVitoriaB != null)
+            confetesVitoriaB.SetActive(false);
+
+        Debug.Log("FASE INICIADA: " + tipoFase);
+        Debug.Log("Tempo de coleta: " + tempoRestante.ToString("F1") + " segundos");
     }
 
     protected virtual float CalcularTempoDaFase()
     {
-        return Mathf.Clamp(
-            tempoMaximo,
-            tempoMinimo,
-            tempoMaximo
-        );
+        return Mathf.Clamp(tempoMaximo, tempoMinimo, tempoMaximo);
     }
-
-    // ==========================================
-    // TIMER DE COLETA
-    // ==========================================
 
     protected virtual void AtualizarTimerColeta()
     {
@@ -139,14 +147,9 @@ public class FaseManager : MonoBehaviour
         if (tempoRestante <= 0f)
         {
             tempoRestante = 0f;
-
             IniciarFuga();
         }
     }
-
-    // ==========================================
-    // INÍCIO DA FUGA
-    // ==========================================
 
     protected virtual void IniciarFuga()
     {
@@ -155,126 +158,102 @@ public class FaseManager : MonoBehaviour
 
         coletaAtiva = false;
         fugaAtiva = true;
-
         tempoFugaRestante = tempoFuga;
 
         if (painelFuga != null)
-        {
             painelFuga.SetActive(true);
-        }
 
         if (textoAviso != null)
-        {
-            textoAviso.text =
-                "FUJA DA CARROCINHA!";
-        }
+            textoAviso.text = "FUJA DA CARROCINHA!";
 
         AtualizarTextoFuga();
 
         if (carrocinha != null)
-        {
             carrocinha.Ativar();
-        }
 
-        Debug.Log(
-            "FASE: CARROCINHA ATIVADA!"
-        );
+        Debug.Log("FASE: CARROCINHA ATIVADA!");
     }
-
-    // ==========================================
-    // TIMER DE FUGA
-    // ==========================================
 
     protected virtual void AtualizarTimerFuga()
     {
         tempoFugaRestante -= Time.deltaTime;
 
         if (tempoFugaRestante < 0f)
-        {
             tempoFugaRestante = 0f;
-        }
 
         AtualizarTextoFuga();
 
         if (tempoFugaRestante <= 0f)
-        {
             Vitoria();
-        }
     }
 
     protected void AtualizarTextoFuga()
     {
         if (textoContador != null)
         {
-            int segundos =
-                Mathf.CeilToInt(
-                    tempoFugaRestante
-                );
-
-            textoContador.text =
-                segundos + "s";
+            int segundos = Mathf.CeilToInt(tempoFugaRestante);
+            textoContador.text = segundos + "s";
         }
     }
-
-    // ==========================================
-    // VITÓRIA
-    // ==========================================
 
     protected virtual void Vitoria()
     {
         if (faseFinalizada)
             return;
 
-        Debug.Log(
-            "FASE: VITÓRIA!"
-        );
+        resultadoFoiVitoria = true;
+
+        Debug.Log("FASE: VITÓRIA!");
 
         if (carrocinha != null)
-        {
             carrocinha.Desativar();
-        }
 
         if (painelFuga != null)
-        {
             painelFuga.SetActive(false);
-        }
 
-        MostrarResultado(
-            "VITÓRIA!"
-        );
+        MostrarResultado("VITÓRIA!");
     }
-
-    // ==========================================
-    // DERROTA
-    // ==========================================
 
     public virtual void Derrota()
     {
         if (faseFinalizada)
             return;
 
-        Debug.Log(
-            "FASE: DERROTA!"
-        );
+        resultadoFoiVitoria = false;
+
+        Debug.Log("FASE: DERROTA!");
 
         if (carrocinha != null)
-        {
             carrocinha.Desativar();
-        }
 
         if (painelFuga != null)
-        {
             painelFuga.SetActive(false);
-        }
 
-        MostrarResultado(
-            "DERROTA!"
-        );
+        MostrarResultado("DERROTA!");
     }
 
-    // ==========================================
-    // RESULTADO
-    // ==========================================
+    protected virtual void AtualizarEstatisticasResultado()
+    {
+        if (textoRecado != null)
+        {
+            textoRecado.text = resultadoFoiVitoria
+                ? "Missão concluída!"
+                : "Missão não concluída.";
+            textoRecado.gameObject.SetActive(true);
+        }
+
+        if (textoItensBons != null)
+            textoItensBons.gameObject.SetActive(false);
+
+        if (textoItensRuins != null)
+            textoItensRuins.gameObject.SetActive(false);
+
+        if (textoSaldoFinal != null)
+            textoSaldoFinal.gameObject.SetActive(false);
+
+        if (textoEntregaComunidade != null)
+            textoEntregaComunidade.gameObject.SetActive(false);
+    }
 
     protected void MostrarResultado(string resultado)
     {
@@ -282,27 +261,70 @@ public class FaseManager : MonoBehaviour
         faseAtiva = false;
         coletaAtiva = false;
         fugaAtiva = false;
+        aguardandoContinuar = true;
 
         if (painelResultado != null)
-        {
             painelResultado.SetActive(true);
-        }
 
         if (textoResultado != null)
-        {
             textoResultado.text = resultado;
+
+        if (textoContinuar != null)
+        {
+            textoContinuar.text = "APERTE ESPAÇO PARA CONTINUAR";
+            textoContinuar.gameObject.SetActive(true);
         }
 
-        StartCoroutine(
-            VoltarAoMapaDepoisDoResultado()
-        );
+        AtualizarEstatisticasResultado();
+        TocarAudioResultado();
+        AtualizarConfetesResultado();
     }
 
-    private IEnumerator VoltarAoMapaDepoisDoResultado()
+    private void TocarAudioResultado()
     {
-        yield return new WaitForSeconds(
-            tempoTelaResultado
-        );
+        if (audioResultado == null)
+        {
+            Debug.LogWarning("FaseManager: AudioSource do resultado não conectado.");
+            return;
+        }
+
+        AudioClip clip = resultadoFoiVitoria ? audioVitoria : audioDerrota;
+
+        if (clip != null)
+        {
+            audioResultado.Stop();
+            audioResultado.PlayOneShot(clip);
+        }
+        else
+        {
+            Debug.LogWarning("FaseManager: áudio do resultado não conectado.");
+        }
+    }
+
+    private void AtualizarConfetesResultado()
+    {
+        if (confetesVitoriaA != null)
+            confetesVitoriaA.SetActive(resultadoFoiVitoria);
+
+        if (confetesVitoriaB != null)
+            confetesVitoriaB.SetActive(resultadoFoiVitoria);
+    }
+
+    private void ContinuarParaMapa()
+    {
+        if (!aguardandoContinuar)
+            return;
+
+        aguardandoContinuar = false;
+
+        if (painelResultado != null)
+            painelResultado.SetActive(false);
+
+        if (confetesVitoriaA != null)
+            confetesVitoriaA.SetActive(false);
+
+        if (confetesVitoriaB != null)
+            confetesVitoriaB.SetActive(false);
 
         if (PhaseManager.Instance != null)
         {
@@ -310,15 +332,9 @@ public class FaseManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning(
-                "FaseManager: PhaseManager não encontrado!"
-            );
+            Debug.LogWarning("FaseManager: PhaseManager não encontrado!");
         }
     }
-
-    // ==========================================
-    // ACESSO AO TIMER
-    // ==========================================
 
     public float ObterTempoRestante()
     {
@@ -335,13 +351,11 @@ public class FaseManager : MonoBehaviour
 
     public bool PodeColetar()
     {
-        return coletaAtiva &&
-               !faseFinalizada;
+        return coletaAtiva && !faseFinalizada;
     }
 
     public bool EstaEmFuga()
     {
-        return fugaAtiva &&
-               !faseFinalizada;
+        return fugaAtiva && !faseFinalizada;
     }
 }

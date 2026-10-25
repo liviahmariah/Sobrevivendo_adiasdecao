@@ -4992,10 +4992,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RecursoColetavel
   tipoRecurso: 0
-  valor: 7
+  valor: 2
   recursoRuim: 0
   idComida: laranja
   imagemComida: {fileID: 25836906298586930, guid: 007d013b4f507424dbda0e5e824e8ee0, type: 3}
+  categoriaComida: 0
+  somComidaComum: {fileID: 8300000, guid: ed069ad54608afd4baad2351adfb3288, type: 3}
+  somComidaValiosa: {fileID: 8300000, guid: 8124fce2554050c46b72d11c1ae5b532, type: 3}
+  somComidaPodre: {fileID: 8300000, guid: 708ff4d557c534e48a44cacaffc21497, type: 3}
+  volumeSom: 1
   corRecursoRuim: {r: 0.55, g: 0.85, b: 0.55, a: 1}
   particulasMauCheiro: {fileID: 0}
 --- !u!114 &6320420772970029413

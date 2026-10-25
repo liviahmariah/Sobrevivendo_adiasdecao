@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class RecursoColetavel : MonoBehaviour
@@ -10,20 +9,39 @@ public class RecursoColetavel : MonoBehaviour
         Diversao
     }
 
+    public enum CategoriaComida
+    {
+        Comum,
+        Valiosa
+    }
+
     [Header("Tipo do Recurso")]
     public TipoRecurso tipoRecurso;
 
-    [Header("Valor")]
-    public float valor = 10f;
+    [Header("Valor da coleta")]
+    [Min(0f)]
+    public float valor = 3f;
 
-    [Header("Recurso ruim?")]
+    [Header("Comida podre?")]
     public bool recursoRuim = false;
 
     [Header("Identificação da Comida")]
     public string idComida;
     public Sprite imagemComida;
 
-    [Header("Aparência do Item Ruim")]
+    [Header("Categoria da comida")]
+    public CategoriaComida categoriaComida =
+        CategoriaComida.Comum;
+
+    [Header("Sons de coleta")]
+    public AudioClip somComidaComum;
+    public AudioClip somComidaValiosa;
+    public AudioClip somComidaPodre;
+
+    [Range(0f, 1f)]
+    public float volumeSom = 1f;
+
+    [Header("Aparência do Item Podre")]
     public Color corRecursoRuim =
         new Color(0.55f, 0.85f, 0.55f, 1f);
 
@@ -35,35 +53,24 @@ public class RecursoColetavel : MonoBehaviour
     private Color corOriginal;
     private bool coletado = false;
 
-    // =====================================================
-    // INICIALIZAÇÃO
-    // =====================================================
-
     private void Awake()
     {
         spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
 
         if (spriteRenderer != null)
-        {
             corOriginal = spriteRenderer.color;
-        }
         else
-        {
             Debug.LogWarning(
                 "RecursoColetavel: SpriteRenderer não encontrado!",
                 this
             );
-        }
 
-        // Procura o Particle System no próprio objeto
-        // ou em qualquer um dos seus filhos.
         if (particulasMauCheiro == null)
         {
             particulasMauCheiro =
                 GetComponentInChildren<ParticleSystem>(true);
         }
 
-        // Não inicia o mau cheiro antes do sorteio do spawn.
         if (particulasMauCheiro != null)
         {
             particulasMauCheiro.Stop(
@@ -76,10 +83,6 @@ public class RecursoColetavel : MonoBehaviour
 
         AtualizarAparencia();
     }
-
-    // =====================================================
-    // ATUALIZA A APARÊNCIA
-    // =====================================================
 
     public void AtualizarAparencia()
     {
@@ -109,10 +112,6 @@ public class RecursoColetavel : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // COLETA AUTOMÁTICA
-    // =====================================================
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (coletado)
@@ -123,10 +122,6 @@ public class RecursoColetavel : MonoBehaviour
 
         Coletar();
     }
-
-    // =====================================================
-    // COLETAR
-    // =====================================================
 
     public void Coletar()
     {
@@ -151,12 +146,47 @@ public class RecursoColetavel : MonoBehaviour
 
         coletado = true;
 
+        float valorFinal = recursoRuim ? -valor : valor;
+        if (tipoRecurso == TipoRecurso.Comida &&
+    MercadoManager.Instance != null)
+        {
+            MercadoManager.Instance.RegistrarColetaComida(
+                valor,
+                recursoRuim
+            );
+
+            PontuacaoSandyUI pontuacaoUI =
+                FindFirstObjectByType<PontuacaoSandyUI>();
+
+            if (pontuacaoUI != null)
+            {
+                pontuacaoUI.AtualizarPontuacao();
+            }
+        }
+
+        // Toca o som correspondente à coleta.
+        if (tipoRecurso == TipoRecurso.Comida)
+            TocarSomColeta();
+
+        // Aplica o efeito original na comunidade.
         AplicarEfeito();
+
+        // Mostra o balão de comentário.
+        if (tipoRecurso == TipoRecurso.Comida &&
+            ComentarioColetaUI.Instance != null)
+        {
+            ComentarioColetaUI.Instance.MostrarComentario(
+                idComida,
+                valorFinal,
+                recursoRuim
+            );
+        }
 
         Debug.Log(
             "RECURSO COLETADO | Tipo: " + tipoRecurso +
-            " | Valor: " + valor +
-            " | Ruim: " + recursoRuim +
+            " | Valor: " + valorFinal +
+            " | Categoria: " + categoriaComida +
+            " | Podre: " + recursoRuim +
             " | ID: " + idComida,
             this
         );
@@ -164,9 +194,32 @@ public class RecursoColetavel : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // =====================================================
-    // APLICA EFEITO
-    // =====================================================
+    private void TocarSomColeta()
+    {
+        AudioClip somEscolhido;
+
+        if (recursoRuim)
+        {
+            somEscolhido = somComidaPodre;
+        }
+        else if (categoriaComida == CategoriaComida.Valiosa)
+        {
+            somEscolhido = somComidaValiosa;
+        }
+        else
+        {
+            somEscolhido = somComidaComum;
+        }
+
+        if (somEscolhido != null)
+        {
+            AudioSource.PlayClipAtPoint(
+                somEscolhido,
+                transform.position,
+                volumeSom
+            );
+        }
+    }
 
     private void AplicarEfeito()
     {
@@ -174,16 +227,16 @@ public class RecursoColetavel : MonoBehaviour
 
         switch (tipoRecurso)
         {
-
             case TipoRecurso.Comida:
+
                 if (MercadoManager.Instance != null)
                 {
-                    // Atualiza a quantidade numérica de comida.
-                    MercadoManager.Instance.AdicionarComida(valorFinal);
+                    MercadoManager.Instance.AdicionarComida(
+                        valorFinal
+                    );
 
                     if (recursoRuim)
                     {
-                        // Comida ruim remove apenas um ícone da caixa.
                         if (CaixaComidasUI.Instance != null)
                         {
                             CaixaComidasUI.Instance.RemoverUmaComida();
@@ -191,8 +244,6 @@ public class RecursoColetavel : MonoBehaviour
                     }
                     else
                     {
-                        // Cada comida boa adiciona um ícone,
-                        // mesmo que seu ID já tenha aparecido.
                         MercadoManager.Instance.RegistrarTipoComida(
                             idComida,
                             imagemComida
@@ -201,10 +252,6 @@ public class RecursoColetavel : MonoBehaviour
 
                     return;
                 }
-
-                CommunityManager.instance.AlterarAlimentacao(valorFinal);
-                break;
-
 
                 CommunityManager.instance.AlterarAlimentacao(
                     valorFinal

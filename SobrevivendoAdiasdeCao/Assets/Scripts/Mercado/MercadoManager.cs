@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -7,6 +8,19 @@ public class MercadoManager : FaseManager
 
     [Header("Comida conseguida nesta fase")]
     public float comidaConseguida = 0f;
+
+    [Header("Pontuação da Sandy")]
+    public float pontosSandy = 0f;
+
+    [Header("Estatísticas da coleta")]
+    public int quantidadeItensBons = 0;
+    public int quantidadeItensRuins = 0;
+
+    public float pontosBons = 0f;
+    public float pontosRuins = 0f;
+
+    [Header("Alimento bom disponível para entrega")]
+    public float comidaBoaConseguida = 0f;
 
     [Header("Penalidade por ser pega")]
     public float perdaFelicidadeAoSerPega = 10f;
@@ -30,19 +44,20 @@ public class MercadoManager : FaseManager
 
     protected override void Start()
     {
-        // Configuração específica do Mercado
         tipoFase = TipoFase.Mercado;
 
         comidaConseguida = 0f;
+        pontosSandy = 0f;
+        quantidadeItensBons = 0;
+        quantidadeItensRuins = 0;
+        pontosBons = 0f;
+        pontosRuins = 0f;
+        comidaBoaConseguida = 0f;
 
         tiposDeComidaConseguidos.Clear();
 
         base.Start();
     }
-
-    // ==========================================
-    // TEMPO ESPECÍFICO DO MERCADO
-    // ==========================================
 
     protected override float CalcularTempoDaFase()
     {
@@ -55,27 +70,18 @@ public class MercadoManager : FaseManager
             return tempoMaximo;
         }
 
-        float alimentacao =
-            CommunityManager.instance.alimentacao;
+        float alimentacao = CommunityManager.instance.alimentacao;
+        alimentacao = Mathf.Clamp(alimentacao, 0f, 100f);
 
-        alimentacao =
-            Mathf.Clamp(alimentacao, 0f, 100f);
+        float percentual = alimentacao / 100f;
 
-        float percentual =
-            alimentacao / 100f;
-
-        float tempo =
-            Mathf.Lerp(
-                tempoMinimo,
-                tempoMaximo,
-                percentual
-            );
-
-        return Mathf.Clamp(
-            tempo,
+        float tempo = Mathf.Lerp(
             tempoMinimo,
-            tempoMaximo
+            tempoMaximo,
+            percentual
         );
+
+        return Mathf.Clamp(tempo, tempoMinimo, tempoMaximo);
     }
 
     // ==========================================
@@ -84,25 +90,19 @@ public class MercadoManager : FaseManager
 
     public void AdicionarComida(float valor)
     {
-        if (faseFinalizada)
-            return;
-
-        if (!coletaAtiva)
+        if (faseFinalizada || !coletaAtiva)
             return;
 
         comidaConseguida += valor;
 
         if (comidaConseguida < 0f)
-        {
             comidaConseguida = 0f;
-        }
 
         Debug.Log(
             "MERCADO | Comida conseguida: " +
             comidaConseguida
         );
     }
-
 
     public bool RegistrarTipoComida(
         string idComida,
@@ -120,12 +120,8 @@ public class MercadoManager : FaseManager
             return false;
         }
 
-        // Continua registrando os tipos únicos para consultas.
-        bool novoTipo =
-            tiposDeComidaConseguidos.Add(idComida);
+        bool novoTipo = tiposDeComidaConseguidos.Add(idComida);
 
-        // A caixa recebe um ícone para CADA coleta,
-        // mesmo quando o ID já foi registrado.
         if (CaixaComidasUI.Instance != null)
         {
             CaixaComidasUI.Instance.AdicionarComida(
@@ -137,12 +133,9 @@ public class MercadoManager : FaseManager
         return novoTipo;
     }
 
-
     public bool JaConseguiuComida(string idComida)
     {
-        return tiposDeComidaConseguidos.Contains(
-            idComida
-        );
+        return tiposDeComidaConseguidos.Contains(idComida);
     }
 
     public float ObterComidaConseguida()
@@ -161,17 +154,14 @@ public class MercadoManager : FaseManager
 
         Debug.Log("=================================");
         Debug.Log("MERCADO: VITÓRIA!");
-        Debug.Log(
-            "Comida entregue: " +
-            comidaConseguida
-        );
+        Debug.Log("Alimento bom para entrega: " + comidaBoaConseguida);
         Debug.Log("=================================");
 
-        // A comida vai para a comunidade.
+        // Apenas alimentos bons são entregues.
         if (CommunityManager.instance != null)
         {
             CommunityManager.instance.AlterarAlimentacao(
-                comidaConseguida
+                comidaBoaConseguida
             );
         }
 
@@ -189,12 +179,8 @@ public class MercadoManager : FaseManager
 
         Debug.Log("=================================");
         Debug.Log("MERCADO: DERROTA!");
-        Debug.Log(
-            "Comida perdida: " +
-            comidaConseguida
-        );
+        Debug.Log("Comida perdida: " + comidaConseguida);
 
-        // Perde felicidade.
         if (CommunityManager.instance != null)
         {
             CommunityManager.instance.AlterarFelicidade(
@@ -207,11 +193,111 @@ public class MercadoManager : FaseManager
             );
         }
 
-        // Não adicionamos comida.
-        // Portanto, a comida coletada é perdida.
-
+        // Na derrota, nenhum alimento é entregue.
+        Debug.Log("Alimento entregue: 0");
         Debug.Log("=================================");
 
         base.Derrota();
+    }
+
+    // ==========================================
+    // REGISTRO DOS ITENS COLETADOS
+    // ==========================================
+
+    public void RegistrarColetaComida(
+        float valor,
+        bool comidaRuim)
+    {
+        if (faseFinalizada)
+            return;
+
+        if (comidaRuim)
+        {
+            quantidadeItensRuins++;
+            pontosRuins += valor;
+            pontosSandy -= valor;
+        }
+        else
+        {
+            quantidadeItensBons++;
+            pontosBons += valor;
+            pontosSandy += valor;
+
+            comidaBoaConseguida += valor;
+        }
+
+        Debug.Log(
+            "ESTATÍSTICAS DA COLETA\n" +
+            "Itens bons: " + quantidadeItensBons +
+            " | Pontos bons: " + pontosBons + "\n" +
+            "Itens ruins: " + quantidadeItensRuins +
+            " | Pontos ruins: " + pontosRuins + "\n" +
+            "Saldo: " + pontosSandy + "\n" +
+            "Alimento bom para entrega: " + comidaBoaConseguida
+        );
+    }
+
+    // ==========================================
+    // TELA DE RESULTADO
+    // ==========================================
+
+    protected override void AtualizarEstatisticasResultado()
+    {
+        base.AtualizarEstatisticasResultado();
+
+        if (textoRecado != null)
+        {
+            if (resultadoFoiVitoria)
+            {
+                textoRecado.text =
+                    "Voce conseguiu escapar! Os alimentos bons " +
+                    "foram entregues para a comunidade.";
+            }
+            else
+            {
+                textoRecado.text =
+                    "A carrocinha pegou a Sandy! Os alimentos " +
+                    "coletados foram perdidos e a comunidade " +
+                    "nao recebeu comida nesta missao.";
+            }
+
+            textoRecado.gameObject.SetActive(true);
+        }
+
+        float alimentoEntregue = resultadoFoiVitoria
+            ? comidaBoaConseguida
+            : 0f;
+
+        if (textoItensBons != null)
+        {
+            textoItensBons.gameObject.SetActive(true);
+            textoItensBons.text =
+                "Itens bons: " + quantidadeItensBons +
+                " | +" + pontosBons.ToString("0.##") + " pontos";
+        }
+
+        if (textoItensRuins != null)
+        {
+            textoItensRuins.gameObject.SetActive(true);
+            textoItensRuins.text =
+                "Itens ruins: " + quantidadeItensRuins +
+                " | -" + pontosRuins.ToString("0.##") + " pontos";
+        }
+
+        if (textoSaldoFinal != null)
+        {
+            textoSaldoFinal.gameObject.SetActive(true);
+            textoSaldoFinal.text =
+                "Saldo final: " + pontosSandy.ToString("0.##") +
+                " pontos";
+        }
+
+        if (textoEntregaComunidade != null)
+        {
+            textoEntregaComunidade.gameObject.SetActive(true);
+            textoEntregaComunidade.text =
+                "Alimento entregue: " +
+                alimentoEntregue.ToString("0.##");
+        }
     }
 }
