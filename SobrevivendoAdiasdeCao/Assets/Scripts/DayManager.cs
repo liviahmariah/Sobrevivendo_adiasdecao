@@ -1,4 +1,6 @@
+
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DayManager : MonoBehaviour
 {
@@ -15,48 +17,43 @@ public class DayManager : MonoBehaviour
     [Header("Histórico dos Dias")]
     public float[] mediasDosDias;
 
-    private bool[] diasRegistrados;
-
     [Header("Resultado Final")]
     public float mediaFinal;
     public string resultadoFinal;
 
+    private bool[] diasRegistrados;
     private bool diaAtivo = true;
+    private bool fimDoDiaPendente;
+    private bool transicaoEmAndamento;
+    private bool jogoFinalizado;
 
     private void Awake()
     {
-        // Impede outro DayManager de existir
         if (Instance != null && Instance != this)
         {
-            Debug.LogWarning(
-                "DayManager duplicado! Destruindo este objeto."
-            );
-
             Destroy(gameObject);
             return;
         }
 
         Instance = this;
-
         DontDestroyOnLoad(gameObject);
 
-        // Inicializa apenas uma vez
-        tempoRestante = duracaoDia;
+        if (totalDias < 1)
+            totalDias = 15;
 
+        if (duracaoDia <= 0f)
+            duracaoDia = 90f;
+
+        tempoRestante = duracaoDia;
         mediasDosDias = new float[totalDias];
         diasRegistrados = new bool[totalDias];
 
-        Debug.Log(
-            "DAY MANAGER INICIADO | Dia: " +
-            diaAtual +
-            " | Tempo: " +
-            tempoRestante
-        );
+        Debug.Log("DayManager iniciado. Dia " + diaAtual);
     }
 
     private void Update()
     {
-        if (!diaAtivo)
+        if (!diaAtivo || jogoFinalizado)
             return;
 
         tempoRestante -= Time.deltaTime;
@@ -64,47 +61,89 @@ public class DayManager : MonoBehaviour
         if (tempoRestante <= 0f)
         {
             tempoRestante = 0f;
+            diaAtivo = false;
 
-            FinalizarDia();
+            PrepararFimDoDia();
         }
     }
 
-    // =====================================================
-    // FINALIZAR DIA
-    // =====================================================
-
-    private void FinalizarDia()
+    private void PrepararFimDoDia()
     {
-        Debug.Log(
-            "FINALIZANDO DIA " + diaAtual
-        );
+        if (fimDoDiaPendente || jogoFinalizado)
+            return;
 
-        // Primeiro registra o estado da comunidade
+        fimDoDiaPendente = true;
+
         RegistrarMediaDoDia();
 
-        // Depois verifica se ainda existem dias
-        if (diaAtual < totalDias)
-        {
-            diaAtual++;
+        Debug.Log(
+            "Fim do dia " + diaAtual +
+            ". Aguardando momento seguro para a transição."
+        );
 
-            tempoRestante = duracaoDia;
-
-            Debug.Log(
-                "NOVO DIA: " +
-                diaAtual +
-                " | Tempo: " +
-                tempoRestante
-            );
-        }
-        else
-        {
-            FinalizarJogo();
-        }
+        TentarIniciarTransicaoPendente();
     }
 
-    // =====================================================
-    // REGISTRAR MÉDIA DO DIA
-    // =====================================================
+    public void TentarIniciarTransicaoPendente()
+    {
+        if (!fimDoDiaPendente ||
+            transicaoEmAndamento ||
+            jogoFinalizado)
+            return;
+
+        // A transição só começa no mapa.
+        if (SceneManager.GetActiveScene().name != "Mapa")
+            return;
+
+        if (PhaseManager.Instance != null &&
+            PhaseManager.Instance.EstaEmFase())
+            return;
+
+        // Inclui objetos inativos na busca.
+        TransicaoDiaUI transicao =
+            FindObjectOfType<TransicaoDiaUI>(true);
+
+        if (transicao == null)
+        {
+            Debug.LogError(
+                "DayManager: TransicaoDiaUI não encontrada na cena Mapa."
+            );
+            return;
+        }
+
+        transicaoEmAndamento = true;
+
+        Debug.Log("Iniciando transição do dia " + diaAtual);
+
+        transicao.IniciarTransicao(ConcluirTransicao);
+    }
+
+    private void ConcluirTransicao()
+    {
+        if (jogoFinalizado)
+            return;
+
+        Debug.Log("Transição do dia " + diaAtual + " concluída.");
+
+        transicaoEmAndamento = false;
+        fimDoDiaPendente = false;
+
+        // O último dia termina sem criar um dia 16.
+        if (diaAtual >= totalDias)
+        {
+            FinalizarJogo();
+            return;
+        }
+
+        diaAtual++;
+        tempoRestante = duracaoDia;
+        diaAtivo = true;
+
+        Debug.Log(
+            "Novo dia: " + diaAtual +
+            " | Tempo: " + tempoRestante
+        );
+    }
 
     private void RegistrarMediaDoDia()
     {
@@ -113,63 +152,42 @@ public class DayManager : MonoBehaviour
             Debug.LogWarning(
                 "DayManager: CommunityManager não encontrado."
             );
-
             return;
         }
 
-        float media =
-            CommunityManager.instance.MediaComunidade();
-
+        float media = CommunityManager.instance.MediaComunidade();
         int indice = diaAtual - 1;
 
-        if (indice >= 0 && indice < mediasDosDias.Length)
-        {
-            mediasDosDias[indice] = media;
-            diasRegistrados[indice] = true;
+        if (indice < 0 || indice >= mediasDosDias.Length)
+            return;
 
-            Debug.Log(
-                "DIA " +
-                diaAtual +
-                " REGISTRADO | " +
-                "Alimentação: " +
-                CommunityManager.instance.alimentacao.ToString("F1") +
-                " | Saúde: " +
-                CommunityManager.instance.saude.ToString("F1") +
-                " | Felicidade: " +
-                CommunityManager.instance.felicidade.ToString("F1") +
-                " | MÉDIA: " +
-                media.ToString("F1")
-            );
-        }
+        mediasDosDias[indice] = media;
+        diasRegistrados[indice] = true;
+
+        Debug.Log(
+            "Dia " + diaAtual + " registrado. " +
+            "Alimentação: " +
+            CommunityManager.instance.alimentacao.ToString("F1") +
+            " | Saúde: " +
+            CommunityManager.instance.saude.ToString("F1") +
+            " | Felicidade: " +
+            CommunityManager.instance.felicidade.ToString("F1") +
+            " | Média: " + media.ToString("F1")
+        );
     }
-
-    // =====================================================
-    // FINAL DO JOGO
-    // =====================================================
 
     private void FinalizarJogo()
     {
         diaAtivo = false;
+        jogoFinalizado = true;
 
         mediaFinal = CalcularMediaFinal();
         resultadoFinal = DeterminarResultadoFinal();
 
-        Debug.Log("=================================");
         Debug.Log("JOGO FINALIZADO");
-        Debug.Log(
-            "MÉDIA FINAL: " +
-            mediaFinal.ToString("F1")
-        );
-        Debug.Log(
-            "RESULTADO: " +
-            resultadoFinal
-        );
-        Debug.Log("=================================");
+        Debug.Log("Média final: " + mediaFinal.ToString("F1"));
+        Debug.Log("Resultado: " + resultadoFinal);
     }
-
-    // =====================================================
-    // CALCULAR MÉDIA DOS DIAS
-    // =====================================================
 
     private float CalcularMediaFinal()
     {
@@ -178,47 +196,25 @@ public class DayManager : MonoBehaviour
 
         for (int i = 0; i < mediasDosDias.Length; i++)
         {
-            if (diasRegistrados[i])
-            {
-                soma += mediasDosDias[i];
-                quantidadeDias++;
-            }
+            if (!diasRegistrados[i])
+                continue;
+
+            soma += mediasDosDias[i];
+            quantidadeDias++;
         }
 
-        if (quantidadeDias == 0)
-            return 0f;
-
-        return soma / quantidadeDias;
+        return quantidadeDias == 0 ? 0f : soma / quantidadeDias;
     }
-
-    // =====================================================
-    // RESULTADO FINAL
-    // =====================================================
 
     private string DeterminarResultadoFinal()
     {
-        if (mediaFinal > 75f)
-            return "Final Bom";
-
-        if (mediaFinal >= 45f)
-            return "Final Médio";
-
+        if (mediaFinal > 75f) return "Final Bom";
+        if (mediaFinal >= 45f) return "Final Médio";
         return "Final Ruim";
     }
 
-    // =====================================================
-    // ACESSO
-    // =====================================================
-
-    public float ObterTempoRestante()
-    {
-        return tempoRestante;
-    }
-
-    public bool DiaEstaAtivo()
-    {
-        return diaAtivo;
-    }
+    public float ObterTempoRestante() => tempoRestante;
+    public bool DiaEstaAtivo() => diaAtivo;
 
     public float ObterMediaDoDia(int numeroDoDia)
     {
@@ -227,9 +223,8 @@ public class DayManager : MonoBehaviour
         if (indice < 0 || indice >= mediasDosDias.Length)
             return 0f;
 
-        if (!diasRegistrados[indice])
-            return 0f;
-
-        return mediasDosDias[indice];
+        return diasRegistrados[indice]
+            ? mediasDosDias[indice]
+            : 0f;
     }
 }

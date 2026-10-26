@@ -102,11 +102,10 @@ public class PhaseManager : MonoBehaviour
     // DETECTAR CENA CARREGADA
     // =====================================================
 
+
     private void AoCarregarCena(Scene cena, LoadSceneMode modo)
     {
-        Debug.Log(
-            "PhaseManager: Cena carregada = " + cena.name
-        );
+        Debug.Log("PhaseManager: Cena carregada = " + cena.name);
 
         if (cena.name == cenaMercado ||
             cena.name == cenaPraca ||
@@ -115,9 +114,7 @@ public class PhaseManager : MonoBehaviour
             emFase = true;
             faseAtual = cena.name;
 
-            Debug.Log(
-                "PhaseManager: Fase detectada = " + faseAtual
-            );
+            Debug.Log("PhaseManager: Fase detectada = " + faseAtual);
         }
 
         if (cena.name == "Mapa")
@@ -125,11 +122,15 @@ public class PhaseManager : MonoBehaviour
             emFase = false;
             faseAtual = "";
 
-            Debug.Log(
-                "PhaseManager: Voltamos para o Mapa."
-            );
+            Debug.Log("PhaseManager: Voltamos para o Mapa.");
+
+            if (DayManager.Instance != null)
+            {
+                DayManager.Instance.TentarIniciarTransicaoPendente();
+            }
         }
     }
+
 
     // =====================================================
     // CONSULTAS

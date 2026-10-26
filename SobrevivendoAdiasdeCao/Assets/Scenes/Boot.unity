@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DayManager
   totalDias: 15
-  duracaoDia: 90
+  duracaoDia: 10
   diaAtual: 1
   tempoRestante: 0
   mediasDosDias: []
