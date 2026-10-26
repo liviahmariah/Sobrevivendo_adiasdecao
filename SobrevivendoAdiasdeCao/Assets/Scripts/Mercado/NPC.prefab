@@ -114,7 +114,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 0.74156475, b: 0.36320752, a: 1}
@@ -143,6 +143,11 @@ MonoBehaviour:
   pontoDeSolta: {fileID: 5407803131280646770}
   distanciaInteracao: 1.5
   distanciaAFrente: 1
+  animatorNPC: {fileID: 0}
+  triggerSoltarRecurso: SoltarRecurso
+  duracaoLancamento: 0.35
+  alturaLancamento: 0.6
+  escalaInicial: 0.65
 --- !u!114 &3588257102566105457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,7 +175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCAgressivoMercado
   eAgressivo: 0
-  imagemAgressividade: {fileID: 3008444675184977600, guid: dc0142799c7435e4796f1fe2836d6f52, type: 3}
+  imagemAgressividade: {fileID: 3056784757471533493, guid: 3594f78c88465ff408312045a01810a9, type: 3}
   deslocamentoImagem: {x: 0, y: 1.2, z: 0}
   tamanhoImagem: {x: 0.6, y: 0.6}
   danoPorContato: 1

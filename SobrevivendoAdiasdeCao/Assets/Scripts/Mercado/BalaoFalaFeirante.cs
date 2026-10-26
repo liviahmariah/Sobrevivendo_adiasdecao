@@ -1,11 +1,10 @@
-
+using System.Collections;
 using UnityEngine;
 using TMPro;
 
 public class BalaoFalaFeirante : MonoBehaviour
 {
     [Header("Referências")]
-    public GameObject painel;
     public TMP_Text texto;
 
     [Header("Falas raivosas")]
@@ -19,136 +18,113 @@ public class BalaoFalaFeirante : MonoBehaviour
         "PARE AGORA MESMO!"
     };
 
-    [Header("Tamanho do balão")]
-    [Min(50f)]
-    public float larguraMaxima = 250f;
-
-    [Min(0f)]
-    public float margemHorizontal = 12f;
-
-    [Min(0f)]
-    public float margemVertical = 8f;
-
-    [Header("Tempo")]
+    [Header("Animação")]
+    public float alturaSubida = 0.5f;
+    public float duracaoSubida = 0.25f;
     public float duracaoFala = 1.5f;
 
-    private RectTransform painelRect;
     private RectTransform textoRect;
-    private float tempoParaEsconder;
-    private bool escondendoPorTempo;
+    private Vector3 posicaoInicial;
+    private Coroutine rotinaFala;
 
     private void Awake()
     {
-        if (painel != null)
-        {
-            painelRect = painel.GetComponent<RectTransform>();
-            painel.SetActive(false);
-        }
+        if (texto == null)
+            texto = GetComponentInChildren<TMP_Text>(true);
 
-        if (texto != null)
+        if (texto == null)
         {
-            textoRect = texto.GetComponent<RectTransform>();
-            texto.enableWordWrapping = true;
-            texto.overflowMode = TextOverflowModes.Overflow;
-        }
-    }
-
-    private void Update()
-    {
-        if (!escondendoPorTempo)
+            Debug.LogWarning("BalaoFalaFeirante: Texto não configurado!", this);
             return;
-
-        tempoParaEsconder -= Time.deltaTime;
-
-        if (tempoParaEsconder <= 0f)
-        {
-            escondendoPorTempo = false;
-            EsconderFala();
         }
+
+        textoRect = texto.rectTransform;
+        posicaoInicial = textoRect.localPosition;
+
+        texto.alignment = TextAlignmentOptions.Center;
+        texto.enableWordWrapping = true;
+        texto.text = "";
+        texto.gameObject.SetActive(false);
     }
 
     public void MostrarFala()
     {
-        if (painel == null || texto == null)
+        Debug.Log("MOSTRAR FALA DO FEIRANTE", this);
+
+        if (texto == null || textoRect == null)
         {
-            Debug.LogWarning(
-                "BalaoFalaFeirante: configure o painel e o texto.",
-                this
-            );
+            Debug.LogWarning("Texto do feirante não configurado!", this);
             return;
         }
 
         if (falas == null || falas.Length == 0)
             return;
 
-        string fala = falas[Random.Range(0, falas.Length)];
+        if (rotinaFala != null)
+            StopCoroutine(rotinaFala);
 
-        painel.SetActive(true);
-        texto.text = fala;
+        texto.text = falas[Random.Range(0, falas.Length)];
+        texto.alpha = 1f;
+        textoRect.localPosition = posicaoInicial;
+        texto.gameObject.SetActive(true);
 
-        AjustarTamanho();
-
-        tempoParaEsconder = duracaoFala;
-        escondendoPorTempo = true;
+        rotinaFala = StartCoroutine(AnimarFala());
     }
 
-    private void AjustarTamanho()
+    private IEnumerator AnimarFala()
     {
-        if (painelRect == null || textoRect == null)
-            return;
+        Vector3 inicio = posicaoInicial;
+        Vector3 destino = inicio + Vector3.up * alturaSubida;
+        float tempo = 0f;
 
-        // Impede o painel de controlar o tamanho do texto.
-        texto.enableWordWrapping = true;
+        while (tempo < duracaoSubida)
+        {
+            tempo += Time.deltaTime;
 
-        // Mede a fala respeitando a largura máxima.
-        Vector2 tamanhoTexto = texto.GetPreferredValues(
-            texto.text,
-            larguraMaxima,
-            0f
-        );
+            float t = Mathf.Clamp01(tempo / duracaoSubida);
+            float suave = 1f - Mathf.Pow(1f - t, 3f);
 
-        float larguraTexto = Mathf.Min(
-            tamanhoTexto.x,
-            larguraMaxima
-        );
+            textoRect.localPosition = Vector3.Lerp(inicio, destino, suave);
 
-        // Mede novamente com a largura final para calcular
-        // a altura necessária quando o texto quebra de linha.
-        tamanhoTexto = texto.GetPreferredValues(
-            texto.text,
-            larguraTexto,
-            0f
-        );
+            yield return null;
+        }
 
-        float larguraPainel = larguraTexto + margemHorizontal * 2f;
-        float alturaPainel = tamanhoTexto.y + margemVertical * 2f;
+        textoRect.localPosition = destino;
 
-        painelRect.SetSizeWithCurrentAnchors(
-            RectTransform.Axis.Horizontal,
-            larguraPainel
-        );
+        yield return new WaitForSeconds(duracaoFala);
 
-        painelRect.SetSizeWithCurrentAnchors(
-            RectTransform.Axis.Vertical,
-            alturaPainel
-        );
+        tempo = 0f;
 
-        textoRect.SetSizeWithCurrentAnchors(
-            RectTransform.Axis.Horizontal,
-            larguraTexto
-        );
+        while (tempo < 0.2f)
+        {
+            tempo += Time.deltaTime;
+            texto.alpha = 1f - Mathf.Clamp01(tempo / 0.2f);
 
-        textoRect.SetSizeWithCurrentAnchors(
-            RectTransform.Axis.Vertical,
-            tamanhoTexto.y
-        );
+            yield return null;
+        }
+
+        texto.gameObject.SetActive(false);
+        textoRect.localPosition = posicaoInicial;
+        texto.alpha = 1f;
+        rotinaFala = null;
     }
 
     public void EsconderFala()
     {
-        escondendoPorTempo = false;
+        if (rotinaFala != null)
+        {
+            StopCoroutine(rotinaFala);
+            rotinaFala = null;
+        }
 
-        if (painel != null)
-            painel.SetActive(false);
+        if (texto != null)
+        {
+            texto.text = "";
+            texto.alpha = 1f;
+            texto.gameObject.SetActive(false);
+        }
+
+        if (textoRect != null)
+            textoRect.localPosition = posicaoInicial;
     }
 }
