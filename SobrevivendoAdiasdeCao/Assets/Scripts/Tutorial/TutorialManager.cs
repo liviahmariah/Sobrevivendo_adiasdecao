@@ -73,6 +73,12 @@ public class TutorialManager : MonoBehaviour
     [Header("UI do Tutorial")]
     public GameObject painelDialogo;
     public TextMeshProUGUI textoDuke;
+    [Header("Aparição do Duke")]
+    public GameObject dukeVisual;
+    public float duracaoAparicaoDuke = 0.5f;
+    private SpriteRenderer[] spritesDuke;
+    private Color[] coresOriginaisDuke;
+    private bool dukeJaApareceu = false;
 
     public GameObject tituloFase;
     public TextMeshProUGUI textoTitulo;
@@ -104,6 +110,7 @@ public class TutorialManager : MonoBehaviour
     [Header("Som do Duke")]
     public AudioSource audioSourceDuke;
     public AudioClip somLatidoDuke;
+    public Animator animatorDuke;
 
     [Header("Músicas de Vitória e Derrota")]
     [SerializeField] private AudioSource audioSourceMusicaFinal;
@@ -265,6 +272,19 @@ public class TutorialManager : MonoBehaviour
         tutorialIniciado = false;
         chefeLiberado = false;
         tutorialTerminou = false;
+        if (dukeVisual != null)
+        {
+            spritesDuke = dukeVisual
+                .GetComponentsInChildren<SpriteRenderer>(true);
+
+            coresOriginaisDuke = new Color[spritesDuke.Length];
+
+            for (int i = 0; i < spritesDuke.Length; i++)
+            {
+                coresOriginaisDuke[i] = spritesDuke[i].color;
+                spritesDuke[i].enabled = false;
+            }
+        }
 
         if (balãoAnimado != null)
         {
@@ -499,6 +519,11 @@ public class TutorialManager : MonoBehaviour
 
         rotinaAnimacaoBalao = StartCoroutine(AnimarEntradaBalao());
 
+        if (!dukeJaApareceu)
+        {
+            yield return StartCoroutine(AnimarAparicaoDuke());
+        }
+
         TocarLatidoDuke();
 
         for (int i = 0; i <= quantidadeCaracteres; i++)
@@ -543,8 +568,25 @@ public class TutorialManager : MonoBehaviour
 
     void TocarLatidoDuke()
     {
+        Debug.Log("Tentando ativar o latido do Duke!");
+
+        if (animatorDuke == null)
+        {
+            Debug.LogError("Animator do Duke está NULL!");
+            return;
+        }
+
+        Debug.Log("Animator encontrado: " + animatorDuke.gameObject.name);
+
+        animatorDuke.ResetTrigger("Latir");
+        animatorDuke.SetTrigger("Latir");
+
+        Debug.Log("Trigger Latir enviado!");
+
         if (audioSourceDuke != null && somLatidoDuke != null)
+        {
             audioSourceDuke.PlayOneShot(somLatidoDuke);
+        }
     }
 
     // =====================================================
@@ -1281,5 +1323,54 @@ public class TutorialManager : MonoBehaviour
     {
         if (instance == this)
             instance = null;
+    }
+
+    IEnumerator AnimarAparicaoDuke()
+    {
+        if (spritesDuke == null || spritesDuke.Length == 0)
+            yield break;
+
+        dukeJaApareceu = true;
+
+        // Torna os sprites visíveis, inicialmente transparentes.
+        for (int i = 0; i < spritesDuke.Length; i++)
+        {
+            if (spritesDuke[i] == null)
+                continue;
+
+            spritesDuke[i].enabled = true;
+
+            Color cor = coresOriginaisDuke[i];
+            cor.a = 0f;
+            spritesDuke[i].color = cor;
+        }
+
+        float duracao = Mathf.Max(0.01f, duracaoAparicaoDuke);
+        float tempo = 0f;
+
+        while (tempo < duracao)
+        {
+            tempo += Time.deltaTime;
+            float progresso = Mathf.Clamp01(tempo / duracao);
+
+            for (int i = 0; i < spritesDuke.Length; i++)
+            {
+                if (spritesDuke[i] == null)
+                    continue;
+
+                Color cor = coresOriginaisDuke[i];
+                cor.a = Mathf.Lerp(0f, coresOriginaisDuke[i].a, progresso);
+                spritesDuke[i].color = cor;
+            }
+
+            yield return null;
+        }
+
+        // Garante que as cores originais sejam restauradas.
+        for (int i = 0; i < spritesDuke.Length; i++)
+        {
+            if (spritesDuke[i] != null)
+                spritesDuke[i].color = coresOriginaisDuke[i];
+        }
     }
 }
