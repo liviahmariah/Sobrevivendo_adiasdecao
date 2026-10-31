@@ -16,13 +16,10 @@ EditorBuildSettings:
     guid: 7b87102dd86bd124e85767e6cba6b0b3
   - enabled: 1
     path: Assets/Scenes/Intro2.unity
-    guid: dceceb43c0899f34892dd49867413714
+    guid: e513df7fa454e864c95b1db1a6b84696
   - enabled: 1
     path: Assets/Scenes/Tutorial.unity
     guid: 78550517db9cca9449d36b182184bf66
-  - enabled: 1
-    path: Assets/Scenes/Tutorial1.unity
-    guid: f28207b541b0583469a770d5edf173b7
   - enabled: 1
     path: Assets/Scenes/Mapa.unity
     guid: 2d62e89f9b275234d873f823849d4cf3
@@ -31,9 +28,9 @@ EditorBuildSettings:
     guid: 7d255c6fedc8b8744952bdae79dcf4df
   - enabled: 1
     path: Assets/Scenes/Praca.unity
-    guid: cc0db2f82ff812e4bb579050b80c8ac4
+    guid: dfafd9daaafeda94380f11d73e78a473
   - enabled: 1
     path: Assets/Scenes/Hospital.unity
-    guid: 8796ff241a2f01441a86901d0a434e78
+    guid: a32b93804adbe2448bdf39203a5351fe
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

@@ -73,6 +73,8 @@ public class TutorialManager : MonoBehaviour
     [Header("UI do Tutorial")]
     public GameObject painelDialogo;
     public TextMeshProUGUI textoDuke;
+    [Header("Identificação do Duke")]
+    public TextMeshProUGUI textoIdentificacaoDuke;
     [Header("Aparição do Duke")]
     public GameObject dukeVisual;
     public float duracaoAparicaoDuke = 0.5f;
@@ -243,7 +245,7 @@ public class TutorialManager : MonoBehaviour
         "<mark=#FFFFFFFF padding=\"5,5,3,3\">Precisamos libertar todos antes que ele termine a ronda!</mark>",
         "<mark=#FFFFFFFF padding=\"5,5,3,3\">Cuidado, Sandy! Se a carrocinha conseguir pegar você, você perderá 1 ponto de energia.</mark>",
         "<mark=#FFFFFFFF padding=\"5,5,3,3\">Você começa com 3 pontos de energia. Se sua energia chegar a zero, terá que recomeçar o tutorial.</mark>",
-        "<mark=#FFFFFFFF padding=\"5,5,3,3\">Você precisa coletar as 8 chaves do molho. A última está com a carrocinha!</mark>"
+        "<mark=#FFFFFFFF padding=\"5,5,3,3\">Você precisa coletar as 8 chaves do molho, uma de cada vez. A última está com a carrocinha!</mark>"
     };
 
     // =====================================================
@@ -267,6 +269,13 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
+
+        if (textoIdentificacaoDuke != null)
+        {
+            textoIdentificacaoDuke.text =
+                "DUKYE - LÍDER DA REVOLTA CANINA";
+        }
+
         etapaAtual = EtapaTutorial.Introducao;
 
         tutorialIniciado = false;
@@ -451,7 +460,7 @@ public class TutorialManager : MonoBehaviour
             yield return new WaitForSeconds(tempoEntreFalase);
         }
 
-        EsconderDialogo();
+        yield return StartCoroutine(EsconderDialogoAnimado());
     }
 
     // =====================================================
@@ -484,10 +493,7 @@ public class TutorialManager : MonoBehaviour
 
         if (balãoAnimado != null)
         {
-            if (rotinaAnimacaoBalao != null)
-                StopCoroutine(rotinaAnimacaoBalao);
-
-            rotinaAnimacaoBalao = StartCoroutine(AnimarEntradaBalao());
+           
         }
 
         TocarLatidoDuke();
@@ -589,8 +595,35 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
+
     // =====================================================
-    // ENTRADA DO BALÃO
+    // MOSTRAR BALÃO
+    // =====================================================
+
+    void MostrarBalao()
+    {
+        if (painelDialogo != null)
+            painelDialogo.SetActive(true);
+
+        if (balãoAnimado == null)
+            return;
+
+        // Cancela qualquer animação anterior.
+        if (rotinaAnimacaoBalao != null)
+            StopCoroutine(rotinaAnimacaoBalao);
+
+        // Restaura a posição original.
+        balãoAnimado.anchoredPosition = posicaoOriginalBalao;
+
+        // Começa escondido e executa a entrada.
+        balãoAnimado.localScale = Vector3.zero;
+
+        rotinaAnimacaoBalao =
+            StartCoroutine(AnimarEntradaBalao());
+    }
+
+    // =====================================================
+    // ANIMAÇÃO DE ENTRADA
     // =====================================================
 
     IEnumerator AnimarEntradaBalao()
@@ -598,47 +631,124 @@ public class TutorialManager : MonoBehaviour
         if (balãoAnimado == null)
             yield break;
 
-        Vector3 inicio = Vector3.zero;
-        Vector3 meio = escalaOriginalBalao * escalaPop;
-        Vector3 fim = escalaOriginalBalao;
+        Vector3 escondido = Vector3.zero;
+        Vector3 aumentado = escalaOriginalBalao * escalaPop;
+        Vector3 normal = escalaOriginalBalao;
 
         float tempo = 0f;
 
+        // Cresce até ultrapassar um pouquinho o tamanho normal.
         while (tempo < tempoEntradaBalao)
         {
             tempo += Time.deltaTime;
 
-            float progresso = tempoEntradaBalao > 0f
-                ? Mathf.Clamp01(tempo / tempoEntradaBalao)
-                : 1f;
+            float progresso = Mathf.Clamp01(
+                tempo / tempoEntradaBalao
+            );
 
-            balãoAnimado.localScale =
-                Vector3.Lerp(inicio, meio, progresso);
+            progresso = Mathf.SmoothStep(0f, 1f, progresso);
+
+            balãoAnimado.localScale = Vector3.Lerp(
+                escondido,
+                aumentado,
+                progresso
+            );
 
             yield return null;
         }
 
+        // Volta suavemente ao tamanho normal.
         tempo = 0f;
 
-        float duracaoPop = tempoEntradaBalao * 0.4f;
+        float duracaoPop = tempoEntradaBalao * 0.35f;
 
         while (tempo < duracaoPop)
         {
             tempo += Time.deltaTime;
 
-            float progresso = duracaoPop > 0f
-                ? Mathf.Clamp01(tempo / duracaoPop)
-                : 1f;
+            float progresso = Mathf.Clamp01(
+                tempo / duracaoPop
+            );
 
-            balãoAnimado.localScale =
-                Vector3.Lerp(meio, fim, progresso);
+            balãoAnimado.localScale = Vector3.Lerp(
+                aumentado,
+                normal,
+                Mathf.SmoothStep(0f, 1f, progresso)
+            );
 
             yield return null;
         }
 
         balãoAnimado.localScale = escalaOriginalBalao;
+
         rotinaAnimacaoBalao = null;
     }
+
+    // =====================================================
+    // ANIMAÇÃO DE SAÍDA
+    // =====================================================
+
+    IEnumerator AnimarSaidaBalao()
+    {
+        if (balãoAnimado == null)
+        {
+            if (painelDialogo != null)
+                painelDialogo.SetActive(false);
+
+            yield break;
+        }
+
+        Vector3 escalaInicial = balãoAnimado.localScale;
+
+        float tempo = 0f;
+
+        while (tempo < tempoSaidaBalao)
+        {
+            tempo += Time.deltaTime;
+
+            float progresso = Mathf.Clamp01(
+                tempo / tempoSaidaBalao
+            );
+
+            progresso = Mathf.SmoothStep(0f, 1f, progresso);
+
+            balãoAnimado.localScale = Vector3.Lerp(
+                escalaInicial,
+                Vector3.zero,
+                progresso
+            );
+
+            yield return null;
+        }
+
+        balãoAnimado.localScale = Vector3.zero;
+
+        balãoAnimado.anchoredPosition =
+            posicaoOriginalBalao;
+
+        if (painelDialogo != null)
+            painelDialogo.SetActive(false);
+
+        rotinaAnimacaoBalao = null;
+    }
+
+    // =====================================================
+    // ESCONDER BALÃO
+    // =====================================================
+
+    IEnumerator EsconderDialogoAnimado()
+    {
+        if (rotinaAnimacaoBalao != null)
+            StopCoroutine(rotinaAnimacaoBalao);
+
+        rotinaAnimacaoBalao =
+            StartCoroutine(AnimarSaidaBalao());
+
+        yield return rotinaAnimacaoBalao;
+    }
+
+
+
 
     // =====================================================
     // FLUTUAÇÃO DO BALÃO
@@ -659,27 +769,6 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // ESCONDER BALÃO
-    // =====================================================
-
-    void EsconderDialogo()
-    {
-        if (painelDialogo != null)
-            painelDialogo.SetActive(false);
-
-        if (balãoAnimado != null)
-        {
-            balãoAnimado.localScale = escalaOriginalBalao;
-            balãoAnimado.anchoredPosition = posicaoOriginalBalao;
-        }
-
-        if (textoDuke != null)
-        {
-            textoDuke.geometrySortingOrder = VertexSortingOrder.Reverse;
-            textoDuke.maxVisibleCharacters = int.MaxValue;
-        }
-    }
 
     // =====================================================
     // FALA TEMPORÁRIA
@@ -705,7 +794,7 @@ public class TutorialManager : MonoBehaviour
 
         yield return new WaitForSeconds(tempoExibicaoFala);
 
-        EsconderDialogo();
+        yield return StartCoroutine(EsconderDialogoAnimado());
 
         rotinaFala = null;
     }
@@ -1275,8 +1364,7 @@ public class TutorialManager : MonoBehaviour
         if (objetivo != null)
             objetivo.SetActive(false);
 
-        if (painelDialogo != null)
-            painelDialogo.SetActive(true);
+        MostrarBalao();
 
         if (textoDuke != null)
         {

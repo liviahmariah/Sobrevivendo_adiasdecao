@@ -28,11 +28,15 @@ public class MolhoChavesTutorial : MonoBehaviour
     [Tooltip("Índice 0 = molho vazio; índice 8 = molho com 8 chaves.")]
     [SerializeField] private Sprite[] spritesPorChavesRestantes;
 
+    [Header("Chave na boca da Sandy")]
+    [SerializeField] private GameObject visualChaveNaBoca;
+
+    [Header("Mensagens do tutorial")]
+    [SerializeField] private TutorialManager tutorialManager;
+
     [Header("Animação de balanço")]
     [SerializeField] private float duracaoBalanco = 0.35f;
-
     [SerializeField] private float anguloBalanco = 18f;
-
     [SerializeField] private float velocidadeBalanco = 35f;
 
     private int chavesDerrubadas = 0;
@@ -51,6 +55,10 @@ public class MolhoChavesTutorial : MonoBehaviour
         if (visualBalanco != null)
             rotacaoOriginal = visualBalanco.localRotation;
 
+        // A chave começa escondida na boca da Sandy.
+        if (visualChaveNaBoca != null)
+            visualChaveNaBoca.SetActive(false);
+
         AtualizarVisualMolho();
     }
 
@@ -60,7 +68,6 @@ public class MolhoChavesTutorial : MonoBehaviour
 
     public void ReceberLatido()
     {
-        // O molho reage a cada chamada de latido.
         AnimarBalanco();
 
         if (sandy == null)
@@ -93,9 +100,16 @@ public class MolhoChavesTutorial : MonoBehaviour
             return;
         }
 
+        // Sandy precisa usar a chave antes de pegar outra.
         if (chaveEmUso)
         {
-            Debug.Log("Sandy precisa usar a chave na gaiola.");
+            if (tutorialManager != null)
+            {
+                tutorialManager.MostrarFalaTemporaria(
+                    "Sandy precisa usar a chave na gaiola antes de pegar outra!"
+                );
+            }
+
             return;
         }
 
@@ -125,7 +139,6 @@ public class MolhoChavesTutorial : MonoBehaviour
         if (rotinaBalanco != null)
             StopCoroutine(rotinaBalanco);
 
-        // Garante que a animação sempre comece da mesma posição.
         visualBalanco.localRotation = rotacaoOriginal;
 
         rotinaBalanco = StartCoroutine(ExecutarBalanco());
@@ -143,7 +156,6 @@ public class MolhoChavesTutorial : MonoBehaviour
                 tempo / duracaoBalanco
             );
 
-            // Começa forte e termina suavemente.
             float intensidade = 1f - progresso;
 
             float angulo = Mathf.Sin(
@@ -213,7 +225,6 @@ public class MolhoChavesTutorial : MonoBehaviour
         chaveNoChao = true;
         chavesDerrubadas++;
 
-        // Cada chave liberada muda a aparência do molho.
         AtualizarVisualMolho();
 
         Debug.Log(
@@ -238,6 +249,10 @@ public class MolhoChavesTutorial : MonoBehaviour
 
         chaveNoChao = false;
         chaveEmUso = true;
+
+        // Mostra a chave na boca da Sandy.
+        if (visualChaveNaBoca != null)
+            visualChaveNaBoca.SetActive(true);
 
         if (TutorialChavesManager.instance != null)
         {
@@ -265,6 +280,10 @@ public class MolhoChavesTutorial : MonoBehaviour
 
         chaveEmUso = false;
 
+        // Esconde a chave da boca depois de abrir a gaiola.
+        if (visualChaveNaBoca != null)
+            visualChaveNaBoca.SetActive(false);
+
         Debug.Log(
             "Chave usada. O molho pode liberar outra."
         );
@@ -283,6 +302,10 @@ public class MolhoChavesTutorial : MonoBehaviour
     {
         return chaveEmUso;
     }
+
+    // =====================================================
+    // DESATIVAR
+    // =====================================================
 
     private void OnDisable()
     {

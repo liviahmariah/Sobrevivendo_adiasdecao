@@ -217,11 +217,11 @@ MonoBehaviour:
   alimentacao: 100
   saude: 100
   felicidade: 100
-  consumoAlimentacaoNormal: 0.8
-  multiplicadorConsumoSaudeAtencao: 1.5
-  multiplicadorConsumoSaudeCritica: 2
-  perdaSaudeFomeAtencao: 1
-  perdaSaudeFomeCritica: 2
+  consumoAlimentacaoNormal: 0.1
+  multiplicadorConsumoSaudeAtencao: 0.5
+  multiplicadorConsumoSaudeCritica: 1
+  perdaSaudeFomeAtencao: 0.5
+  perdaSaudeFomeCritica: 1
   perdaFelicidadeFome: 0.5
   perdaFelicidadeSaude: 0.5
   perdaFelicidadeSaudeCritica: 1
