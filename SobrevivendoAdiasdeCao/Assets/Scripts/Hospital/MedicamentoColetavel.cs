@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class MedicamentoColetavel : MonoBehaviour
@@ -29,12 +30,22 @@ public class MedicamentoColetavel : MonoBehaviour
         spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
 
         if (spriteRenderer != null)
-        {
             corOriginal = spriteRenderer.color;
 
-            if (medicamentoRuim)
-                spriteRenderer.color = corMedicamentoRuim;
-        }
+        AtualizarAparencia();
+    }
+
+    public void AtualizarAparencia()
+    {
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
+
+        if (spriteRenderer == null)
+            return;
+
+        spriteRenderer.color = medicamentoRuim
+            ? corMedicamentoRuim
+            : corOriginal;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -79,6 +90,27 @@ public class MedicamentoColetavel : MonoBehaviour
             valor,
             medicamentoRuim
         );
+
+        if (ComentarioMedicamentoUI.Instance != null)
+        {
+            bool valioso =
+                categoria == RecursoColetavel.CategoriaComida.Valiosa;
+
+            float multiplicador = medicamentoRuim
+                ? 1f
+                : HospitalManager.Instance.ObterMultiplicadorMedicamento(
+                    idMedicamento
+                );
+
+            float valorFinal = valor * multiplicador;
+
+            ComentarioMedicamentoUI.Instance.MostrarComentario(
+                idMedicamento,
+                valorFinal,
+                medicamentoRuim,
+                valioso
+            );
+        }
 
         PontuacaoSandyUI pontuacaoUI =
             FindFirstObjectByType<PontuacaoSandyUI>();

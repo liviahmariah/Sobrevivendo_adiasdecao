@@ -451,7 +451,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhaseManager
   cenaMercado: Mercado
-  cenaPraca: Praca
+  cenaPraca: "Pra\xE7a"
   cenaHospital: Hospital
   faseAtual: 
   emFase: 0

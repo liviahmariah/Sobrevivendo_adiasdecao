@@ -1,3 +1,4 @@
+
 using TMPro;
 using UnityEngine;
 
@@ -16,13 +17,22 @@ public class PontuacaoSandyUI : MonoBehaviour
         if (textoPontos == null)
             return;
 
-        if (MercadoManager.Instance == null)
-        {
-            textoPontos.text = "Pontos: 0";
-            return;
-        }
+        float pontos = 0f;
 
-        float pontos = MercadoManager.Instance.pontosSandy;
+        // Hospital
+        if (HospitalManager.Instance != null)
+        {
+            pontos = HospitalManager.Instance.pontosSandy;
+        }
+        // Mercado
+        else if (MercadoManager.Instance != null)
+        {
+            pontos = MercadoManager.Instance.pontosSandy;
+        }
+        else
+        {
+            pontos = 0f;
+        }
 
         textoPontos.text = "Pontos: " + pontos.ToString("0.##");
     }

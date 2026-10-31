@@ -1,11 +1,13 @@
 
 using System.Collections;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class NPCRecurso : MonoBehaviour
 {
-    [Header("Recurso que o NPC está segurando")]
-    public GameObject recursoPrefab;
+    [Header("Recursos que o NPC pode soltar")]
+    [Tooltip("Cadastre aqui os prefabs que este NPC poderá sortear.")]
+    public GameObject[] recursosDisponiveis;
 
     [Header("Ponto onde o recurso será solto")]
     public Transform pontoDeSolta;
@@ -68,8 +70,9 @@ public class NPCRecurso : MonoBehaviour
         if (recursoSolto || player == null)
             return;
 
-        if (MercadoManager.Instance == null ||
-            !MercadoManager.Instance.PodeColetar())
+        // Verifica se existe uma fase ativa e se a coleta está liberada.
+        if (FaseManager.Instance == null ||
+            !FaseManager.Instance.PodeColetar())
             return;
 
         float distancia = Vector2.Distance(
@@ -101,14 +104,39 @@ public class NPCRecurso : MonoBehaviour
         if (recursoSolto)
             return;
 
-        if (recursoPrefab == null)
+        // Verifica se o NPC possui itens cadastrados.
+        if (recursosDisponiveis == null ||
+            recursosDisponiveis.Length == 0)
         {
             Debug.LogWarning(
-                "NPCRecurso: configure o prefab do recurso.",
+                "NPCRecurso: cadastre pelo menos um recurso no Inspector.",
                 this
             );
             return;
         }
+
+        // Cria uma lista apenas com os prefabs válidos.
+        List<GameObject> recursosValidos = new List<GameObject>();
+
+        foreach (GameObject prefab in recursosDisponiveis)
+        {
+            if (prefab != null)
+                recursosValidos.Add(prefab);
+        }
+
+        if (recursosValidos.Count == 0)
+        {
+            Debug.LogWarning(
+                "NPCRecurso: todos os recursos cadastrados estão vazios.",
+                this
+            );
+            return;
+        }
+
+        // Sorteia um dos recursos cadastrados para este NPC.
+        int indiceAleatorio = Random.Range(0, recursosValidos.Count);
+
+        GameObject recursoEscolhido = recursosValidos[indiceAleatorio];
 
         // Anima o NPC, se o Animator estiver configurado.
         if (animatorNPC != null &&
@@ -137,20 +165,29 @@ public class NPCRecurso : MonoBehaviour
                 Vector3.right * distanciaAFrente;
         }
 
-        // Cria o recurso no ponto em que o NPC o segura.
+        // Instancia o recurso sorteado.
         GameObject recurso = Instantiate(
-            recursoPrefab,
+            recursoEscolhido,
             posicaoInicial,
             Quaternion.identity
         );
 
-        RecursoColetavel coletavel =
-            recurso.GetComponent<RecursoColetavel>();
+        // Marca o item como solto pelo latido de Sandy.
+        ItemSoltoPorLatido marcador =
+            recurso.GetComponent<ItemSoltoPorLatido>();
 
-        if (coletavel == null)
+        if (marcador == null)
+            marcador = recurso.AddComponent<ItemSoltoPorLatido>();
+
+        // Verifica se o prefab possui um coletável de alguma das fases.
+        bool possuiColetavel =
+            recurso.GetComponent<RecursoColetavel>() != null ||
+            recurso.GetComponent<MedicamentoColetavel>() != null;
+
+        if (!possuiColetavel)
         {
             Debug.LogWarning(
-                "O prefab solto não possui RecursoColetavel.",
+                "O prefab precisa possuir RecursoColetavel ou MedicamentoColetavel.",
                 recurso
             );
         }
@@ -162,7 +199,7 @@ public class NPCRecurso : MonoBehaviour
         );
 
         Debug.Log(
-            "NPC soltou o recurso com animação: " + recurso.name,
+            "NPC soltou recurso pelo latido: " + recurso.name,
             recurso
         );
     }
@@ -180,6 +217,7 @@ public class NPCRecurso : MonoBehaviour
 
         // Evita que a física interfira no movimento animado.
         Rigidbody2D rb = recurso.GetComponent<Rigidbody2D>();
+
         bool tinhaFisicaAtiva = rb != null && rb.simulated;
 
         if (tinhaFisicaAtiva)

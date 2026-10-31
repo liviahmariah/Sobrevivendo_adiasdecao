@@ -124,7 +124,7 @@ public class HospitalManager : FaseManager
         medicamentoSolicitado = "";
     }
 
-    private float ObterMultiplicadorMedicamento(string idMedicamento)
+    public float ObterMultiplicadorMedicamento(string idMedicamento)
     {
         // Sem solicitação específica: todos os medicamentos
         // bons possuem seu valor integral.

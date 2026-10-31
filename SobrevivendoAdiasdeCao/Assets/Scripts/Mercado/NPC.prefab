@@ -139,7 +139,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ec04c467447813489c67461a67ee47f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCRecurso
-  recursoPrefab: {fileID: 2542177938076737072, guid: e3cf6dd197c1eef48a83dc67d79eb0e5, type: 3}
+  recursosDisponiveis:
+  - {fileID: 304463512766694883, guid: 1a5a58b123f968e4eb52d04e5abf9d9f, type: 3}
+  - {fileID: 5102202676882518293, guid: ef3ffc6dfe031a2479c302c3584e6238, type: 3}
+  - {fileID: 4888439060188566577, guid: 11ecd759fe12bea408edefae7ccf0da7, type: 3}
+  - {fileID: 8373719785374138499, guid: c53939b9d3434a64bbc8637cbeafa8a2, type: 3}
+  - {fileID: 4910679575538964303, guid: 37c1dd2c732c50a4c900f854aef2744c, type: 3}
+  - {fileID: 4741564105414993585, guid: 0fbed6d0923509944b0398bbff1a7d17, type: 3}
+  - {fileID: 3966929811928957934, guid: d8135f69508a30a4ea13a3acf635a92b, type: 3}
+  - {fileID: 3334683145811756300, guid: 99a1b43e97cf4e14ba0e6c26adcf92bd, type: 3}
+  - {fileID: 3966929811928957934, guid: d8135f69508a30a4ea13a3acf635a92b, type: 3}
+  - {fileID: 2156575890166693913, guid: ad3fe6552dad4b4418dc93c9676fd70a, type: 3}
+  - {fileID: 2156575890166693913, guid: b23d006b58344304f8e146e9ab9f80d3, type: 3}
+  - {fileID: 2156575890166693913, guid: de8719f4af5a5ff4d89ea23fb30ac56c, type: 3}
+  - {fileID: 2156575890166693913, guid: 9815962bbe4a4084d85f78af04b0ebd8, type: 3}
+  - {fileID: 2156575890166693913, guid: 85e17a4d9c08d2e4b8c494c70c620d7b, type: 3}
   pontoDeSolta: {fileID: 5407803131280646770}
   distanciaInteracao: 1.5
   distanciaAFrente: 1

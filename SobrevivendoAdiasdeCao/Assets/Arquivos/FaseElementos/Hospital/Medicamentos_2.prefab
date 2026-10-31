@@ -107,7 +107,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MedicamentoColetavel
   idMedicamento: antisseptico
-  valor: 3
+  valor: 2
   medicamentoRuim: 0
   categoria: 0
   corMedicamentoRuim: {r: 0.55, g: 0.85, b: 0.55, a: 1}

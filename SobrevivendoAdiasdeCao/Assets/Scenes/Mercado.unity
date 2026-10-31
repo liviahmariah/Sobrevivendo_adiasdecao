@@ -18945,8 +18945,8 @@ MonoBehaviour:
   entradaDireita: {fileID: 563872035}
   saidaEsquerda: {fileID: 754384379}
   intervaloMinimo: 3
-  intervaloMaximo: 7
-  maximoNPCsAtivos: 4
+  intervaloMaximo: 5
+  maximoNPCsAtivos: 5
   chanceNPCagressivo: 10
 --- !u!1 &1745447144
 GameObject:

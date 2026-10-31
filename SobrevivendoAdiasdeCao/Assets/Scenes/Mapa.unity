@@ -2428,6 +2428,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &553779105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 553779107}
+  - component: {fileID: 553779106}
+  m_Layer: 0
+  m_Name: ' BotaoEntrarFase (1)'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &553779106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553779105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1266f0bd66f1f6b4a8543f2848d842ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotaoEntrarFase
+  fase: 1
+--- !u!4 &553779107
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553779105}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.42842, y: -0.15648, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &566176904
 GameObject:
   m_ObjectHideFlags: 0
@@ -4432,6 +4477,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 280384579}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 89.984}
+--- !u!1 &840292899
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 840292901}
+  - component: {fileID: 840292900}
+  m_Layer: 0
+  m_Name: ' BotaoEntrarFase (2)'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &840292900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840292899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1266f0bd66f1f6b4a8543f2848d842ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotaoEntrarFase
+  fase: 2
+--- !u!4 &840292901
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840292899}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.42842, y: -0.15648, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &858637288
 GameObject:
   m_ObjectHideFlags: 0
@@ -7728,9 +7818,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 257825924}
-        m_TargetAssemblyTypeName: PhaseManager, Assembly-CSharp
-        m_MethodName: EntrarNoHospital
+      - m_Target: {fileID: 840292900}
+        m_TargetAssemblyTypeName: BotaoEntrarFase, Assembly-CSharp
+        m_MethodName: Entrar
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11824,9 +11914,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 257825924}
-        m_TargetAssemblyTypeName: PhaseManager, Assembly-CSharp
-        m_MethodName: EntrarNaPraca
+      - m_Target: {fileID: 553779106}
+        m_TargetAssemblyTypeName: BotaoEntrarFase, Assembly-CSharp
+        m_MethodName: Entrar
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18323,6 +18413,8 @@ SceneRoots:
   - {fileID: 566176907}
   - {fileID: 1604284867}
   - {fileID: 1084467374}
+  - {fileID: 553779107}
+  - {fileID: 840292901}
   - {fileID: 2099640553}
   - {fileID: 541740423}
   - {fileID: 287428229}
