@@ -200,9 +200,10 @@ public class HospitalManager : FaseManager
     // ==========================================
 
     public void RegistrarColetaMedicamento(
-        string idMedicamento,
-        float valor,
-        bool medicamentoRuim)
+     string idMedicamento,
+     float valor,
+     bool medicamentoRuim,
+     float multiplicadorBonusPontuacao = 1f)
     {
         if (faseFinalizada || !coletaAtiva)
             return;
@@ -223,15 +224,23 @@ public class HospitalManager : FaseManager
         {
             quantidadeItensBons++;
 
+            // Compatibilidade original do medicamento.
             float multiplicador =
                 ObterMultiplicadorMedicamento(idMedicamento);
 
+            // Valor que continua sendo contabilizado para a comunidade.
             float valorEfetivo = valor * multiplicador;
 
-            pontosBons += valorEfetivo;
-            pontosSandy += valorEfetivo;
+            // Bônus adicional exclusivo da pontuação da Sandy.
+            float pontosRecebidos =
+                valorEfetivo * multiplicadorBonusPontuacao;
 
-            medicamentosBonsConseguidos += valorEfetivo;
+            pontosBons += pontosRecebidos;
+            pontosSandy += pontosRecebidos;
+
+            // Preserva a regra original de entrega à comunidade.
+            medicamentosBonsConseguidos +=
+    valorEfetivo * multiplicadorBonusPontuacao;
 
             medicamentosConseguidos += valor;
 
@@ -240,7 +249,9 @@ public class HospitalManager : FaseManager
             Debug.Log(
                 "Medicamento: " + idMedicamento +
                 " | Valor original: " + valor +
-                " | Multiplicador: " + multiplicador +
+                " | Compatibilidade: " + multiplicador +
+                " | Bônus de pontuação: " + multiplicadorBonusPontuacao +
+                " | Pontuação recebida: " + pontosRecebidos +
                 " | Valor para comunidade: " + valorEfetivo
             );
         }

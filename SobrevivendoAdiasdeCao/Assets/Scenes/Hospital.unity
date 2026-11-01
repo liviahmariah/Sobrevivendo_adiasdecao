@@ -12306,8 +12306,8 @@ MonoBehaviour:
   - {fileID: 2046477156}
   - {fileID: 1200901197}
   - {fileID: 424364469}
-  quantidadeInicial: 1
-  intervaloSpawn: 2
+  quantidadeInicial: 3
+  intervaloSpawn: 1
   chanceComidaRuim: 0.53
   duracaoEntrada: 0.35
   alturaPulo: 0.65
@@ -13160,6 +13160,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 813193148}
   m_CullTransparentMesh: 1
+--- !u!1 &823441470
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 823441471}
+  - component: {fileID: 823441474}
+  - component: {fileID: 823441473}
+  m_Layer: 5
+  m_Name: EfeitoVisaoTurva
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &823441471
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823441470}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1997425793}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -0.000061035, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &823441473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823441470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.6961997, g: 0.990566, b: 0.7256363, a: 0.22745098}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &823441474
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823441470}
+  m_CullTransparentMesh: 1
 --- !u!1 &824320472
 GameObject:
   m_ObjectHideFlags: 0
@@ -13558,7 +13633,7 @@ GameObject:
   m_Component:
   - component: {fileID: 913475818}
   - component: {fileID: 913475817}
-  - component: {fileID: 913475816}
+  - component: {fileID: 913475819}
   m_Layer: 0
   m_Name: Feirante (1)
   m_TagString: Untagged
@@ -13566,33 +13641,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &913475816
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 913475815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4252cea8e1cbe524bb8fc47e17dcab2b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AtaqueFeirante1
-  spriteRenderer: {fileID: 913475817}
-  pontoDisparo: {fileID: 1181681365}
-  projetilPrefab: {fileID: 8742227803235644788, guid: ab6e2acaa2e09e142a569daf51478868, type: 3}
-  balaoFala: {fileID: 211218601}
-  tempoAmeaca: 1.2
-  alcanceVisao: 7
-  anguloVisao: 21
-  obstaculos:
-    serializedVersion: 2
-    m_Bits: 0
-  distanciaMinimaProjetil: 2.5
-  intervaloProjetil: 2
-  distanciaAtaque: 1.5
-  intervaloAtaque: 2
-  comecaViradoParaDireita: 0
 --- !u!212 &913475817
 SpriteRenderer:
   serializedVersion: 3
@@ -13672,6 +13720,25 @@ Transform:
   - {fileID: 211218600}
   m_Father: {fileID: 1760709912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &913475819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913475815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d475590963a278459330535175619d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnfermeiraAgressiva
+  sandy: {fileID: 1772009079}
+  distanciaPercepcao: 5
+  prefabProjetil: {fileID: 5758187747585115680, guid: 0b7978848fde4a24ab61f68ecab39a3a, type: 3}
+  pontoLancamento: {fileID: 1181681365}
+  intervaloAtaques: 5
+  energiaSandy: {fileID: 2066973224}
+  efeitoOndulacao: {fileID: 2085112266}
 --- !u!1 &976889398
 GameObject:
   m_ObjectHideFlags: 0
@@ -16359,8 +16426,8 @@ MonoBehaviour:
   textoVai: {fileID: 1545593536}
   duracaoVai: 0.8
   escalaVai: 1.6
-  fase: "Mercado P\xFAblico"
-  objetivoFase: Busque alimento para comunidade
+  fase: Hospital
+  objetivoFase: "Busque rem\xE9dios para comunidade"
   velocidadeEntrada: 8
   velocidadeSaida: 10
   tempoExibicao: 1.4
@@ -17253,6 +17320,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1545593535}
   m_CullTransparentMesh: 1
+--- !u!1 &1553617331
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1553617332}
+  - component: {fileID: 1553617333}
+  m_Layer: 5
+  m_Name: ControladorVisaoTurva
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1553617332
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553617331}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1997425793}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1553617333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553617331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62225f4fdac6483499ae8661207c2473, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EfeitoVisaoTurva
+  imagemEfeito: {fileID: 823441473}
+  duracaoEfeito: 5
+  intensidadeMinima: 0.12
+  intensidadeMaxima: 0.38
+  velocidadeOscilacao: 2
+  intensidadeMovimento: 15
 --- !u!1 &1583056514
 GameObject:
   m_ObjectHideFlags: 0
@@ -19428,7 +19549,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1823105266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24809,6 +24930,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2064021243}
+  - {fileID: 823441471}
+  - {fileID: 1553617332}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -25160,6 +25283,7 @@ GameObject:
   - component: {fileID: 2085112263}
   - component: {fileID: 2085112262}
   - component: {fileID: 2085112265}
+  - component: {fileID: 2085112266}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -25287,6 +25411,22 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &2085112266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085112261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f1398727aebe1a4b88df7dfbfddeac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OndulacaoCamera
+  shaderOndulacao: {fileID: 4800000, guid: 16931570a4af00242b3b98013c10509b, type: 3}
+  duracao: 5
+  intensidade: 0.05
+  velocidade: 3
 --- !u!1 &2131619673
 GameObject:
   m_ObjectHideFlags: 0

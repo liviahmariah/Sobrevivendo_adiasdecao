@@ -205,8 +205,9 @@ public class MercadoManager : FaseManager
     // ==========================================
 
     public void RegistrarColetaComida(
-        float valor,
-        bool comidaRuim)
+    float valor,
+    bool comidaRuim,
+    float multiplicadorPontuacao = 1f)
     {
         if (faseFinalizada)
             return;
@@ -220,10 +221,15 @@ public class MercadoManager : FaseManager
         else
         {
             quantidadeItensBons++;
-            pontosBons += valor;
-            pontosSandy += valor;
 
-            comidaBoaConseguida += valor;
+            // O bônus afeta somente a pontuação da Sandy.
+            float pontosRecebidos = valor * multiplicadorPontuacao;
+
+            pontosBons += pontosRecebidos;
+            pontosSandy += pontosRecebidos;
+
+            // O bônus também aumenta a quantidade de comida para a comunidade.
+            comidaBoaConseguida += valor * multiplicadorPontuacao;
         }
 
         Debug.Log(

@@ -84,12 +84,29 @@ public class MedicamentoColetavel : MonoBehaviour
         }
 
         coletado = true;
+        float multiplicadorPontuacao = 1f;
+
+        ItemSoltoPorLatido itemDoLatido =
+            GetComponent<ItemSoltoPorLatido>();
+
+        DetectorPuloSandy detector =
+            FindFirstObjectByType<DetectorPuloSandy>();
+
+        if (itemDoLatido != null &&
+            detector != null &&
+            detector.EstaNoAr())
+        {
+            multiplicadorPontuacao = 1.5f;
+
+            Debug.Log("BÔNUS DE LATIDO + PULO: 1,5x!");
+        }
 
         HospitalManager.Instance.RegistrarColetaMedicamento(
-            idMedicamento,
-            valor,
-            medicamentoRuim
-        );
+    idMedicamento,
+    valor,
+    medicamentoRuim,
+    multiplicadorPontuacao
+);
 
         if (ComentarioMedicamentoUI.Instance != null)
         {

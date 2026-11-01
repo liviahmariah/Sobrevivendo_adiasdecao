@@ -121,6 +121,7 @@ public class RecursoColetavel : MonoBehaviour
             return;
 
         Coletar();
+
     }
 
     public void Coletar()
@@ -146,14 +147,32 @@ public class RecursoColetavel : MonoBehaviour
 
         coletado = true;
 
+        float multiplicadorPontuacao = 1f;
+
+        ItemSoltoPorLatido itemDoLatido =
+            GetComponent<ItemSoltoPorLatido>();
+
+        DetectorPuloSandy detector =
+            FindFirstObjectByType<DetectorPuloSandy>();
+
+        if (itemDoLatido != null &&
+            detector != null &&
+            detector.EstaNoAr())
+        {
+            multiplicadorPontuacao = 1.5f;
+
+            Debug.Log("BÔNUS DE LATIDO + PULO: 1,5x!");
+        }
+
         float valorFinal = recursoRuim ? -valor : valor;
         if (tipoRecurso == TipoRecurso.Comida &&
     MercadoManager.Instance != null)
         {
             MercadoManager.Instance.RegistrarColetaComida(
-                valor,
-                recursoRuim
-            );
+     valor,
+     recursoRuim,
+     multiplicadorPontuacao
+ );
 
             PontuacaoSandyUI pontuacaoUI =
                 FindFirstObjectByType<PontuacaoSandyUI>();

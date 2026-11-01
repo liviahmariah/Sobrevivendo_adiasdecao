@@ -15670,6 +15670,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2388431810192326692, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1772009080}
+    - targetCorrespondingSourceObject: {fileID: 2388431810192326692, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1772009081}
   m_SourcePrefab: {fileID: 100100000, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
 --- !u!114 &1243386602 stripped
 MonoBehaviour:
@@ -19309,6 +19312,25 @@ MonoBehaviour:
   spriteSandy: {fileID: 1243386603}
   corDano: {r: 0.9622642, g: 0.45843717, b: 0.45843717, a: 1}
   duracaoEfeitoDano: 0.2
+--- !u!114 &1772009081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540381389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd531a57d8d364844a8abf1a0b77483e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DetectorPuloSandy
+  animatorSandy: {fileID: 1772009082}
+  parametroChao: Grounded
+--- !u!95 &1772009082 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 916127592559676203, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
+  m_PrefabInstance: {fileID: 1243386601}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1776822596
 GameObject:
   m_ObjectHideFlags: 0
