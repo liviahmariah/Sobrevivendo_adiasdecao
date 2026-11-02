@@ -27,11 +27,52 @@ public class PracaManager : FaseManager
     protected override void Start()
     {
         tipoFase = TipoFase.Praca;
-
         diversaoConseguida = 0f;
 
+        Debug.Log("PRAÇA | Start iniciado.");
+        Debug.Log("PRAÇA | CommunityManager: " +
+            (CommunityManager.instance != null));
+
         base.Start();
+
+        Debug.Log("PRAÇA | Fase ativa: " + faseAtiva);
+        Debug.Log("PRAÇA | Coleta ativa: " + coletaAtiva);
+        Debug.Log("PRAÇA | Tempo restante: " + ObterTempoRestante());
     }
+
+    protected override float CalcularTempoDaFase()
+    {
+        if (CommunityManager.instance == null)
+        {
+            Debug.LogWarning(
+                "PracaManager: CommunityManager não encontrado!"
+            );
+
+            return tempoMaximo;
+        }
+
+        float felicidade = Mathf.Clamp(
+            CommunityManager.instance.felicidade,
+            0f,
+            100f
+        );
+
+        float percentual = felicidade / 100f;
+
+        float tempo = Mathf.Lerp(
+            tempoMinimo,
+            tempoMaximo,
+            percentual
+        );
+
+        Debug.Log(
+            "PRAÇA | Felicidade: " + felicidade +
+            " | Tempo calculado: " + tempo
+        );
+
+        return tempo;
+    }
+
 
     // ==========================================
     // DIVERSÃO
@@ -56,6 +97,12 @@ public class PracaManager : FaseManager
             "PRAÇA | Diversão conseguida: " +
             diversaoConseguida
         );
+
+        if (FindFirstObjectByType<PontuacaoSandyUI>() != null)
+        {
+            FindFirstObjectByType<PontuacaoSandyUI>()
+                .AtualizarPontuacao();
+        }
     }
 
     // ==========================================

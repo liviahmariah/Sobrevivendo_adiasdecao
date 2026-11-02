@@ -1,3 +1,4 @@
+
 using System.Collections;
 using UnityEngine;
 
@@ -143,6 +144,8 @@ public class SpawnerBrinquedosPraca : MonoBehaviour
         {
             componente.brinquedoRuim =
                 Random.value < chanceBrinquedoRuim;
+
+            componente.AtualizarAparencia();
         }
         else
         {
@@ -172,6 +175,7 @@ public class SpawnerBrinquedosPraca : MonoBehaviour
 
         float tempo = 0f;
 
+        // Animação de entrada
         while (tempo < duracaoEntrada)
         {
             if (brinquedo == null)
@@ -197,6 +201,7 @@ public class SpawnerBrinquedosPraca : MonoBehaviour
 
         visual.localScale = escalaFinal;
 
+        // Animação de pulo
         tempo = 0f;
 
         while (tempo < duracaoPulo)
@@ -224,6 +229,7 @@ public class SpawnerBrinquedosPraca : MonoBehaviour
 
         visual.position = posicaoFinal;
 
+        // Flutuação depois do spawn
         if (flutuarDepoisDoSpawn)
         {
             float faseInicial =

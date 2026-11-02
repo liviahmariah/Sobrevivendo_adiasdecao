@@ -729,8 +729,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -3.47, y: 42}
-  m_SizeDelta: {x: 233.67, y: 100}
+  m_AnchoredPosition: {x: -3.47, y: 61.73}
+  m_SizeDelta: {x: 233.67, y: 60.53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &211218599
 GameObject:
@@ -12304,7 +12304,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 706629413}
-  - component: {fileID: 706629412}
+  - component: {fileID: 706629414}
   m_Layer: 0
   m_Name: GerenciadorComentario
   m_TagString: Untagged
@@ -12312,24 +12312,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &706629412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 706629411}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1bca823d0ba5a754b869c1c897fba327, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ComentarioColetaUI
-  texto: {fileID: 461010384}
-  canvas: {fileID: 1760709911}
-  sandy: {fileID: 1772009079}
-  alturaInicial: 100
-  subida: 50
-  duracao: 2
 --- !u!4 &706629413
 Transform:
   m_ObjectHideFlags: 0
@@ -12345,6 +12327,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &706629414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 706629411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7cc5c29b040652478d04f298b4b4a68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ComentarioBrinquedoPracaUI
+  texto: {fileID: 461010384}
+  canvas: {fileID: 1760709911}
+  sandy: {fileID: 1772009079}
+  alturaInicial: 100
+  subida: 50
+  duracao: 2
 --- !u!1 &711054211
 GameObject:
   m_ObjectHideFlags: 0
@@ -16803,9 +16803,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1384937586}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96c44a0bd176a5447bc84d63b97c653b, type: 3}
+  m_Script: {fileID: 11500000, guid: 344557f8aa73b4140a8efeb0a1930412, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MercadoUI
+  m_EditorClassIdentifier: Assembly-CSharp::PracaUI
   textoTempo: {fileID: 1384937589}
   audioSourceBip: {fileID: 1192860945}
   somBip: {fileID: 8300000, guid: c1bf2ea21866da54c9262f07a612c858, type: 3}
@@ -18292,8 +18292,8 @@ GameObject:
   - component: {fileID: 1615706625}
   - component: {fileID: 1615706627}
   - component: {fileID: 1615706626}
-  - component: {fileID: 1615706628}
   - component: {fileID: 1615706629}
+  - component: {fileID: 1615706630}
   m_Layer: 0
   m_Name: Caixa
   m_TagString: Untagged
@@ -18359,22 +18359,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1615706624}
   m_CullTransparentMesh: 1
---- !u!114 &1615706628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1615706624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11199dd74156cfb49b0fc63a697ee6d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaixaComidasUI
-  conteudo: {fileID: 198608420}
-  itemComidaPrefab: {fileID: 2607391835851243762, guid: 586a77fdce6535b499fb419e9c1cb368, type: 3}
-  margem: 10
-  variacaoRotacao: 12
 --- !u!114 &1615706629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18389,6 +18373,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacaFlutuante
   altura: 0.15
   velocidade: 1.5
+--- !u!114 &1615706630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1615706624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9926d585536cfb845aa053d4e87123a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CaixaBrinquedosUI
+  conteudo: {fileID: 198608420}
+  itemBrinquedoPrefab: {fileID: 2607391835851243762, guid: 586a77fdce6535b499fb419e9c1cb368, type: 3}
+  margem: 10
+  variacaoRotacao: 12
 --- !u!1 &1625607923
 GameObject:
   m_ObjectHideFlags: 0

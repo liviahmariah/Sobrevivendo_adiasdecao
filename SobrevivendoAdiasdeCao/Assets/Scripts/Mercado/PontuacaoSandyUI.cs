@@ -19,19 +19,17 @@ public class PontuacaoSandyUI : MonoBehaviour
 
         float pontos = 0f;
 
-        // Hospital
         if (HospitalManager.Instance != null)
         {
             pontos = HospitalManager.Instance.pontosSandy;
         }
-        // Mercado
         else if (MercadoManager.Instance != null)
         {
             pontos = MercadoManager.Instance.pontosSandy;
         }
-        else
+        else if (PracaManager.Instance != null)
         {
-            pontos = 0f;
+            pontos = PracaManager.Instance.diversaoConseguida;
         }
 
         textoPontos.text = "Pontos: " + pontos.ToString("0.##");

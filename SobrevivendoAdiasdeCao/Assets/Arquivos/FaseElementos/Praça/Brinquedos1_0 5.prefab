@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -11.320728, y: -3.2870593, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -124,7 +124,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -155,6 +155,7 @@ MonoBehaviour:
   tipoBrinquedo: 5
   valor: 8
   brinquedoRuim: 0
+  corBrinquedoRuim: {r: 1, g: 0.75, b: 0.75, a: 1}
   somBolaDePraia: {fileID: 8300000, guid: ed069ad54608afd4baad2351adfb3288, type: 3}
   somUrso: {fileID: 8300000, guid: b21125b0fd9f4d44ea3b957928713d4d, type: 3}
   somSandalia: {fileID: 8300000, guid: 708ff4d557c534e48a44cacaffc21497, type: 3}

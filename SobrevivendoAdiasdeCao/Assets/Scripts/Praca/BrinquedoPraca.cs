@@ -95,6 +95,14 @@ public class BrinquedoPraca : MonoBehaviour
         float pontuacao = brinquedoRuim ? -valor : valor;
 
         PracaManager.Instance.AdicionarDiversao(pontuacao);
+        if (ComentarioBrinquedoPracaUI.Instance != null)
+        {
+            ComentarioBrinquedoPracaUI.Instance.MostrarComentario(
+                tipoBrinquedo,
+                valor,
+                brinquedoRuim
+            );
+        }
 
         TocarSom();
 

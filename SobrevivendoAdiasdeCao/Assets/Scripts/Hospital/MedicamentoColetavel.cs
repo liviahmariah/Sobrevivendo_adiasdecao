@@ -21,6 +21,10 @@ public class MedicamentoColetavel : MonoBehaviour
     public Color corMedicamentoRuim =
         new Color(0.55f, 0.85f, 0.55f, 1f);
 
+    [Tooltip("Encontrado automaticamente nos filhos do prefab.")]
+    [SerializeField]
+    private ParticleSystem particulasMedicamentoRuim;
+
     private SpriteRenderer spriteRenderer;
     private Color corOriginal;
     private bool coletado = false;
@@ -32,6 +36,22 @@ public class MedicamentoColetavel : MonoBehaviour
         if (spriteRenderer != null)
             corOriginal = spriteRenderer.color;
 
+        if (particulasMedicamentoRuim == null)
+        {
+            particulasMedicamentoRuim =
+                GetComponentInChildren<ParticleSystem>(true);
+        }
+
+        if (particulasMedicamentoRuim != null)
+        {
+            particulasMedicamentoRuim.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmittingAndClear
+            );
+
+            particulasMedicamentoRuim.gameObject.SetActive(false);
+        }
+
         AtualizarAparencia();
     }
 
@@ -40,12 +60,36 @@ public class MedicamentoColetavel : MonoBehaviour
         if (spriteRenderer == null)
             spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
 
-        if (spriteRenderer == null)
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = medicamentoRuim
+                ? corMedicamentoRuim
+                : corOriginal;
+        }
+
+        if (particulasMedicamentoRuim == null)
+        {
+            particulasMedicamentoRuim =
+                GetComponentInChildren<ParticleSystem>(true);
+        }
+
+        if (particulasMedicamentoRuim == null)
             return;
 
-        spriteRenderer.color = medicamentoRuim
-            ? corMedicamentoRuim
-            : corOriginal;
+        if (medicamentoRuim)
+        {
+            particulasMedicamentoRuim.gameObject.SetActive(true);
+            particulasMedicamentoRuim.Play(true);
+        }
+        else
+        {
+            particulasMedicamentoRuim.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmittingAndClear
+            );
+
+            particulasMedicamentoRuim.gameObject.SetActive(false);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -102,11 +146,11 @@ public class MedicamentoColetavel : MonoBehaviour
         }
 
         HospitalManager.Instance.RegistrarColetaMedicamento(
-    idMedicamento,
-    valor,
-    medicamentoRuim,
-    multiplicadorPontuacao
-);
+            idMedicamento,
+            valor,
+            medicamentoRuim,
+            multiplicadorPontuacao
+        );
 
         if (ComentarioMedicamentoUI.Instance != null)
         {
