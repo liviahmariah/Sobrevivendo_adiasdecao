@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using TMPro;
 using System.Collections;
@@ -51,6 +52,10 @@ public class MapDialogueManager : MonoBehaviour
     private Coroutine rotinaApresentacao;
     private Coroutine rotinaEventos;
 
+    // Controle para executar a apresentação apenas uma vez.
+    private const string CHAVE_APRESENTACAO_REALIZADA =
+        "ApresentacaoComunidadeRealizada";
+
     [Header("Falas de Boas-vindas")]
     [TextArea(2, 5)]
     public string[] falasBoasVindas =
@@ -74,7 +79,37 @@ public class MapDialogueManager : MonoBehaviour
         if (painelDialogo != null)
             painelDialogo.SetActive(false);
 
-        rotinaApresentacao = StartCoroutine(IniciarApresentacao());
+        // Verifica se a apresentação já foi realizada.
+        bool apresentacaoJaRealizada =
+            PlayerPrefs.GetInt(CHAVE_APRESENTACAO_REALIZADA, 0) == 1;
+
+        if (apresentacaoJaRealizada)
+        {
+            // Pula a apresentação inicial.
+            apresentacaoConcluida = true;
+            dukeJaApareceu = true;
+
+            // Mantém o Duke visível normalmente.
+            if (spritesDuke != null)
+            {
+                for (int i = 0; i < spritesDuke.Length; i++)
+                {
+                    if (spritesDuke[i] != null)
+                    {
+                        spritesDuke[i].enabled = true;
+                        spritesDuke[i].color = coresOriginaisDuke[i];
+                    }
+                }
+            }
+
+            // Continua apenas com as mensagens dinâmicas.
+            rotinaEventos = StartCoroutine(SistemaEventos());
+        }
+        else
+        {
+            // Primeira entrada: executa toda a apresentação.
+            rotinaApresentacao = StartCoroutine(IniciarApresentacao());
+        }
     }
 
     private void ConfigurarDuke()
@@ -114,7 +149,9 @@ public class MapDialogueManager : MonoBehaviour
 
         for (int i = 0; i < falasBoasVindas.Length; i++)
         {
-            yield return StartCoroutine(MostrarFalaAnimada(falasBoasVindas[i]));
+            yield return StartCoroutine(
+                MostrarFalaAnimada(falasBoasVindas[i])
+            );
 
             yield return new WaitForSeconds(tempoMensagem);
 
@@ -126,6 +163,10 @@ public class MapDialogueManager : MonoBehaviour
 
         apresentacaoConcluida = true;
         rotinaApresentacao = null;
+
+        // Registra permanentemente que a apresentação terminou.
+        PlayerPrefs.SetInt(CHAVE_APRESENTACAO_REALIZADA, 1);
+        PlayerPrefs.Save();
 
         rotinaEventos = StartCoroutine(SistemaEventos());
     }

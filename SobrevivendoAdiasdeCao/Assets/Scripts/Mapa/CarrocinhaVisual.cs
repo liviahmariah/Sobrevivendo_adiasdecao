@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class CarrocinhaVisual : MonoBehaviour
@@ -16,6 +17,9 @@ public class CarrocinhaVisual : MonoBehaviour
     [SerializeField] private Vector3 posicaoCima;
     [SerializeField] private Vector3 posicaoBaixo;
 
+    [Header("Rotação das partículas")]
+    [SerializeField] private float rotacaoDireita = 179.33f;
+
     private SpriteRenderer spriteRenderer;
     private Vector3 ultimaPosicao;
 
@@ -31,41 +35,38 @@ public class CarrocinhaVisual : MonoBehaviour
 
         if (movimento.magnitude > 0.001f)
         {
-            // Movimento horizontal
             if (Mathf.Abs(movimento.x) > Mathf.Abs(movimento.y))
             {
                 spriteRenderer.sprite = spriteLado;
 
-                // Indo para a direita
                 if (movimento.x > 0)
                 {
                     spriteRenderer.flipX = false;
                     pontoParticulas.localPosition = posicaoEsquerda;
+                    pontoParticulas.localRotation = Quaternion.Euler(0, 0, rotacaoDireita);
                 }
-                // Indo para a esquerda
                 else
                 {
                     spriteRenderer.flipX = true;
                     pontoParticulas.localPosition = posicaoDireita;
+                    pontoParticulas.localRotation = Quaternion.Euler(0, 0, rotacaoDireita + 180f);
                 }
             }
-
-            // Movimento vertical
             else
             {
                 spriteRenderer.flipX = false;
 
-                // Indo para cima
                 if (movimento.y > 0)
                 {
                     spriteRenderer.sprite = spriteCima;
                     pontoParticulas.localPosition = posicaoBaixo;
+                    pontoParticulas.localRotation = Quaternion.Euler(0, 0, rotacaoDireita - 90f);
                 }
-                // Indo para baixo
                 else
                 {
                     spriteRenderer.sprite = spriteBaixo;
                     pontoParticulas.localPosition = posicaoCima;
+                    pontoParticulas.localRotation = Quaternion.Euler(0, 0, rotacaoDireita + 90f);
                 }
             }
         }
