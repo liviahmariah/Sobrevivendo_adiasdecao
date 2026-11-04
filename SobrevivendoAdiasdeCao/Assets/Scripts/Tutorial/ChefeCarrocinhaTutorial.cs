@@ -72,6 +72,9 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
     private Coroutine cicloChefeCoroutine;
 
+    [Header("Animações")]
+    private Animator animatorCarrocinha;
+
 
     // =========================================================
     // START
@@ -79,6 +82,13 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
     private void Start()
     {
+        animatorCarrocinha = GetComponent<Animator>();
+
+        if (animatorCarrocinha == null)
+        {
+            Debug.LogError("Animator da carrocinha não foi encontrado no mesmo GameObject.");
+        }
+
         estadoAtual = EstadoChefe.Fora;
         chefeAtivo = false;
         podeCapturar = true;
@@ -99,6 +109,8 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
     private void Update()
     {
+        AtualizarAnimacoes();
+
         if (!chefeAtivo)
             return;
 
@@ -148,6 +160,29 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
                 ExecutarTransporte();
                 break;
         }
+    }
+
+
+    // =========================================================
+    // ANIMAÇÕES DA CARROCINHA
+    // =========================================================
+
+    private void AtualizarAnimacoes()
+    {
+        if (animatorCarrocinha == null)
+            return;
+
+        bool estaParada = estadoAtual == EstadoChefe.Fora ||
+                          estadoAtual == EstadoChefe.Assustado;
+
+        bool estaAndando = estadoAtual == EstadoChefe.Patrulhando;
+        bool estaCorrendo = estadoAtual == EstadoChefe.Perseguindo;
+        bool agarrando = estadoAtual == EstadoChefe.LevandoSandy;
+
+        animatorCarrocinha.SetBool("EstaParada", estaParada);
+        animatorCarrocinha.SetBool("EstaAndando", estaAndando);
+        animatorCarrocinha.SetBool("EstaCorrendo", estaCorrendo);
+        animatorCarrocinha.SetBool("Agarrando", agarrando);
     }
 
 
@@ -704,6 +739,11 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
             return;
 
         estadoAtual = EstadoChefe.Assustado;
+
+        if (animatorCarrocinha != null)
+        {
+            animatorCarrocinha.SetTrigger("Assustado");
+        }
 
         Debug.Log("Sandy assustou a carrocinha!");
 
