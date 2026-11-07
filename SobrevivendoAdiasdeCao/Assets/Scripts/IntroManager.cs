@@ -1,4 +1,3 @@
-
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,7 +18,7 @@ public class IntroManager : MonoBehaviour
     }
 
     [Header("Quadros da cutscene")]
-    public QuadroCutscene[] quadros = new QuadroCutscene[3];
+    public QuadroCutscene[] quadros;
 
     [Header("Escrita do texto")]
     [Min(0.01f)]
@@ -38,11 +37,11 @@ public class IntroManager : MonoBehaviour
     public float escalaAmpliada = 1.10f;
     public float velocidadeEscala = 2.5f;
 
-    [Header("Som de escrita")]
+    [Header("Som de escrita (SFX)")]
     public AudioSource audioEscrita;
     public AudioClip somEscrita;
 
-    [Header("Aviso para pular")]
+    [Header("Aviso para pular/avançar")]
     public TMP_Text textoPular;
 
     [Header("Transição entre cenas")]
@@ -50,7 +49,11 @@ public class IntroManager : MonoBehaviour
     public float tempoFadeTela = 1f;
     public string proximaCena;
 
-    private bool pulou = false;
+    [Header("Configuração de Continuidade")]
+    [Tooltip("Marque TRUE se a próxima cena também for parte da cutscene para não parar a música.")]
+    public bool proximaCenaEParteDaCutscene = false;
+
+    private bool avancarPressionado = false;
     private bool finalizando = false;
 
     private TMP_Text textoAtual;
@@ -58,7 +61,13 @@ public class IntroManager : MonoBehaviour
 
     void Start()
     {
-        // Começa com a tela preta.
+        // Registra o efeito sonoro de escrita no AudioManager global
+        if (audioEscrita != null && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.RegisterSFXSource(audioEscrita);
+        }
+
+        // Inicia a tela em preto
         if (fade != null)
         {
             Color cor = fade.color;
@@ -66,25 +75,22 @@ public class IntroManager : MonoBehaviour
             fade.color = cor;
         }
 
-        // Aviso para pular a cutscene.
+        // Texto de aviso
         if (textoPular != null)
         {
             textoPular.gameObject.SetActive(true);
-            textoPular.text = "Pressione ESPAÇO para pular";
+            textoPular.text = "Pressione ESPAÇO para avançar";
         }
 
-        // Todas as imagens ficam visíveis desde o início.
+        // Prepara quadros
         foreach (QuadroCutscene quadro in quadros)
         {
-            if (quadro == null)
-                continue;
+            if (quadro == null) continue;
 
             if (quadro.imagem != null)
             {
                 quadro.imagem.gameObject.SetActive(true);
-
-                quadro.imagem.rectTransform.localScale =
-                    Vector3.one * escalaNormal;
+                quadro.imagem.rectTransform.localScale = Vector3.one * escalaNormal;
             }
 
             if (quadro.texto != null)
@@ -95,7 +101,6 @@ public class IntroManager : MonoBehaviour
             }
         }
 
-        // Configura o áudio.
         if (audioEscrita != null)
         {
             audioEscrita.playOnAwake = false;
@@ -110,59 +115,33 @@ public class IntroManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && !finalizando)
         {
-            pulou = true;
-            finalizando = true;
-
-            StopAllCoroutines();
-            PararSomEscrita();
-
-            StartCoroutine(CarregarProximaCena());
+            avancarPressionado = true;
         }
     }
 
     IEnumerator ExecutarCutscene()
     {
-        // Revela a cena.
+        // Revela a tela
         yield return StartCoroutine(FazerFadeTela(1f, 0f));
 
-        foreach (QuadroCutscene quadro in quadros)
+        for (int i = 0; i < quadros.Length; i++)
         {
-            if (pulou)
-                yield break;
+            QuadroCutscene quadro = quadros[i];
 
-            if (quadro == null)
+            if (quadro == null || quadro.imagem == null || quadro.texto == null)
                 continue;
 
-            if (quadro.imagem == null || quadro.texto == null)
-            {
-                Debug.LogWarning(
-                    "Um quadro está sem imagem ou texto.",
-                    this
-                );
-
-                continue;
-            }
-
-            // A fala anterior desaparece suavemente.
+            // Fade Out do texto anterior
             if (textoAtual != null)
             {
-                yield return StartCoroutine(
-                    AnimarAlphaTexto(
-                        textoAtual,
-                        corOriginalTexto.a,
-                        0f,
-                        tempoFadeSaida
-                    )
-                );
-
+                yield return StartCoroutine(AnimarAlphaTexto(textoAtual, corOriginalTexto.a, 0f, tempoFadeSaida));
                 textoAtual.text = "";
                 textoAtual.gameObject.SetActive(false);
             }
 
-            if (pulou)
-                yield break;
+            avancarPressionado = false;
 
-            // Prepara a nova fala.
+            // Configura o texto atual
             textoAtual = quadro.texto;
             corOriginalTexto = textoAtual.color;
 
@@ -174,7 +153,7 @@ public class IntroManager : MonoBehaviour
             cor.a = 0f;
             textoAtual.color = cor;
 
-            // Inicia o som de escrita.
+            // Inicia áudio de digitação
             if (audioEscrita != null && somEscrita != null)
             {
                 audioEscrita.clip = somEscrita;
@@ -182,45 +161,37 @@ public class IntroManager : MonoBehaviour
                 audioEscrita.Play();
             }
 
-            // Digita lentamente, faz o fade de entrada
-            // e amplia a imagem simultaneamente.
-            yield return StartCoroutine(
-                EscreverTextoEAmpliarImagem(quadro)
-            );
+            // Escreve e expande a imagem
+            yield return StartCoroutine(EscreverTextoEAmpliarImagem(quadro));
 
             PararSomEscrita();
 
-            if (pulou)
-                yield break;
+            // Espera o tempo padrão ou o acionamento da tecla ESPAÇO
+            float tempoEsperado = 0f;
+            avancarPressionado = false;
 
-            yield return new WaitForSeconds(tempoExibicaoQuadro);
+            while (tempoEsperado < tempoExibicaoQuadro && !avancarPressionado)
+            {
+                tempoEsperado += Time.deltaTime;
+                yield return null;
+            }
+
+            avancarPressionado = false;
         }
 
-        // Faz a última fala desaparecer.
-        if (!pulou && textoAtual != null)
+        // Esconde a última fala
+        if (textoAtual != null)
         {
-            yield return StartCoroutine(
-                AnimarAlphaTexto(
-                    textoAtual,
-                    corOriginalTexto.a,
-                    0f,
-                    tempoFadeSaida
-                )
-            );
-
+            yield return StartCoroutine(AnimarAlphaTexto(textoAtual, corOriginalTexto.a, 0f, tempoFadeSaida));
             textoAtual.text = "";
             textoAtual.gameObject.SetActive(false);
         }
 
-        if (!pulou)
-        {
-            finalizando = true;
-            yield return StartCoroutine(CarregarProximaCena());
-        }
+        finalizando = true;
+        yield return StartCoroutine(CarregarProximaCena());
     }
 
-    IEnumerator EscreverTextoEAmpliarImagem(
-        QuadroCutscene quadro)
+    IEnumerator EscreverTextoEAmpliarImagem(QuadroCutscene quadro)
     {
         TMP_Text texto = quadro.texto;
         RectTransform imagem = quadro.imagem.rectTransform;
@@ -232,60 +203,40 @@ public class IntroManager : MonoBehaviour
         texto.maxVisibleCharacters = 0;
 
         float tempoDecorrido = 0f;
-        float tempoProximaLetra = 0f;
+        float tempoEscritaTotal = totalCaracteres * velocidadeTexto;
+        float duracao = Mathf.Max(tempoEscritaTotal, tempoFadeEntrada);
 
-        float tempoEscritaTotal =
-            totalCaracteres * velocidadeTexto;
-
-        float duracao = Mathf.Max(
-            tempoEscritaTotal,
-            tempoFadeEntrada
-        );
-
-        Vector3 escalaAlvo =
-            Vector3.one * escalaAmpliada;
+        Vector3 escalaAlvo = Vector3.one * escalaAmpliada;
 
         Color cor = corOriginalTexto;
         cor.a = 0f;
         texto.color = cor;
 
-        while (tempoDecorrido < duracao ||
-               Vector3.Distance(imagem.localScale, escalaAlvo) > 0.001f)
+        while (tempoDecorrido < duracao || Vector3.Distance(imagem.localScale, escalaAlvo) > 0.001f)
         {
-            if (pulou)
-                yield break;
+            // Pressionar Espaço durante a digitação exibe o texto completo
+            if (avancarPressionado)
+            {
+                avancarPressionado = false;
+                break;
+            }
 
             tempoDecorrido += Time.deltaTime;
-            tempoProximaLetra += Time.deltaTime;
 
-            // Revela as letras no ritmo configurado.
             int caracteresVisiveis = Mathf.Clamp(
-                Mathf.FloorToInt(
-                    tempoDecorrido / velocidadeTexto
-                ),
+                Mathf.FloorToInt(tempoDecorrido / velocidadeTexto),
                 0,
                 totalCaracteres
             );
 
             texto.maxVisibleCharacters = caracteresVisiveis;
 
-            // Fade de entrada da fala.
-            float progressoFade = tempoFadeEntrada <= 0f
-                ? 1f
-                : Mathf.Clamp01(
-                    tempoDecorrido / tempoFadeEntrada
-                );
+            float progressoFade = tempoFadeEntrada <= 0f ? 1f : Mathf.Clamp01(tempoDecorrido / tempoFadeEntrada);
 
             cor = corOriginalTexto;
-            cor.a = Mathf.Lerp(
-                0f,
-                corOriginalTexto.a,
-                progressoFade
-            );
-
+            cor.a = Mathf.Lerp(0f, corOriginalTexto.a, progressoFade);
             texto.color = cor;
 
-            // Amplia a imagem atual suavemente.
             imagem.localScale = Vector3.MoveTowards(
                 imagem.localScale,
                 escalaAlvo,
@@ -295,20 +246,14 @@ public class IntroManager : MonoBehaviour
             yield return null;
         }
 
-        // Garante que todo o texto e a ampliação terminem.
         texto.maxVisibleCharacters = totalCaracteres;
         texto.color = corOriginalTexto;
         imagem.localScale = escalaAlvo;
     }
 
-    IEnumerator AnimarAlphaTexto(
-        TMP_Text texto,
-        float alphaInicial,
-        float alphaFinal,
-        float duracao)
+    IEnumerator AnimarAlphaTexto(TMP_Text texto, float alphaInicial, float alphaFinal, float duracao)
     {
-        if (texto == null)
-            yield break;
+        if (texto == null) yield break;
 
         Color cor = texto.color;
 
@@ -323,19 +268,10 @@ public class IntroManager : MonoBehaviour
 
         while (tempo < duracao)
         {
-            if (pulou)
-                yield break;
-
             tempo += Time.deltaTime;
-
             float progresso = Mathf.Clamp01(tempo / duracao);
 
-            cor.a = Mathf.Lerp(
-                alphaInicial,
-                alphaFinal,
-                progresso
-            );
-
+            cor.a = Mathf.Lerp(alphaInicial, alphaFinal, progresso);
             texto.color = cor;
 
             yield return null;
@@ -353,8 +289,7 @@ public class IntroManager : MonoBehaviour
 
     IEnumerator FazerFadeTela(float inicio, float fim)
     {
-        if (fade == null)
-            yield break;
+        if (fade == null) yield break;
 
         Color cor = fade.color;
 
@@ -370,15 +305,8 @@ public class IntroManager : MonoBehaviour
         while (tempo < tempoFadeTela)
         {
             tempo += Time.deltaTime;
-
-            cor.a = Mathf.Lerp(
-                inicio,
-                fim,
-                Mathf.Clamp01(tempo / tempoFadeTela)
-            );
-
+            cor.a = Mathf.Lerp(inicio, fim, Mathf.Clamp01(tempo / tempoFadeTela));
             fade.color = cor;
-
             yield return null;
         }
 
@@ -390,20 +318,37 @@ public class IntroManager : MonoBehaviour
     {
         PararSomEscrita();
 
-        yield return StartCoroutine(
-            FazerFadeTela(0f, 1f)
-        );
+        // Fade da tela para preto
+        yield return StartCoroutine(FazerFadeTela(0f, 1f));
 
         if (string.IsNullOrWhiteSpace(proximaCena))
         {
-            Debug.LogError(
-                "Defina o nome da próxima cena no Inspector!",
-                this
-            );
-
+            Debug.LogError("Defina o nome da próxima cena no Inspector!", this);
             yield break;
         }
 
-        SceneManager.LoadScene(proximaCena);
+        // Se a próxima cena ainda é cutscene (ex: Intro1 -> Intro2)
+        if (proximaCenaEParteDaCutscene)
+        {
+            if (MusicManager.instance != null)
+            {
+                MusicManager.instance.IrParaIntro2(proximaCena);
+            }
+            else
+            {
+                SceneManager.LoadScene(proximaCena);
+            }
+        }
+        else // Se a cutscene acabou e vai para o jogo principal
+        {
+            if (MusicManager.instance != null)
+            {
+                MusicManager.instance.PararMusicaCutsceneEEntrarNoJogo(proximaCena);
+            }
+            else
+            {
+                SceneManager.LoadScene(proximaCena);
+            }
+        }
     }
 }

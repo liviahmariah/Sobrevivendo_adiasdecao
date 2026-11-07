@@ -1,169 +1,175 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
 
 public class MusicManager : MonoBehaviour
 {
     public static MusicManager instance;
 
-    [Header("AudioSources")]
-    public AudioSource musicMenu;
-    public AudioSource musicCutscene;
+    [Header("Fontes de Áudio (Dois canais para Crossfade)")]
+    public AudioSource audioA;
+    public AudioSource audioB;
 
-    [Header("Configuração")]
-    public float fadeDuration = 2f;
+    [Header("Músicas do Jogo")]
+    public AudioClip musicaMenu;
+    public AudioClip musicaCutscene;
+    public AudioClip musicaTutorial;
 
-    private bool mudandoDeCena = false;
+    [Header("Configurações de Transição")]
+    [Min(0f)]
+    public float tempoCrossfade = 2f;
+
+    private AudioSource audioAtual;
+    private AudioSource proximoAudio;
+    private Coroutine rotinaTransiction;
 
     private void Awake()
     {
-        // Evita dois MusicManagers
+        // Garante Singleton sem duplicar ao voltar de cenas
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
+            enabled = false;
             return;
         }
 
         instance = this;
-
-        // Mantém o MusicManager e seus filhos entre as cenas
         DontDestroyOnLoad(gameObject);
+
+        PrepararAudioSource(audioA);
+        PrepararAudioSource(audioB);
+
+        audioAtual = audioA;
+        proximoAudio = audioB;
     }
 
     private void Start()
     {
-        // Música do Menu
-        if (musicMenu != null)
-        {
-            musicMenu.volume = 1f;
-            musicMenu.loop = true;
+        if (instance != this) return;
 
-            if (!musicMenu.isPlaying)
-            {
-                musicMenu.Play();
-            }
+        // Registra nos canais globais do AudioManager se ele existir
+        if (AudioManager.Instance != null)
+        {
+            if (audioA != null) AudioManager.Instance.RegisterMusicSource(audioA);
+            if (audioB != null) AudioManager.Instance.RegisterMusicSource(audioB);
         }
 
-        // Música da Cutscene começa parada
-        if (musicCutscene != null)
+        // Toca a música do menu ao iniciar o jogo
+        if (musicaMenu != null)
         {
-            musicCutscene.volume = 0f;
-            musicCutscene.loop = true;
-            musicCutscene.Stop();
+            audioAtual.clip = musicaMenu;
+            audioAtual.volume = 1f;
+            audioAtual.Play();
         }
     }
 
+    private void PrepararAudioSource(AudioSource fonte)
+    {
+        if (fonte == null) return;
+        fonte.playOnAwake = false;
+        fonte.loop = true;
+        fonte.volume = 0f;
+    }
+
     // =====================================================
-    // MENU → INTRO
+    // MÉTODOS DE TRANSIÇÃO SUAVE
     // =====================================================
 
+    // Chamado para ir para a Cutscene (Intro1)
     public void IrParaIntro()
     {
-        if (mudandoDeCena)
-            return;
-
-        StartCoroutine(MudarParaIntro());
-    }
-
-    private IEnumerator MudarParaIntro()
-    {
-        mudandoDeCena = true;
-
-        // ---------------------------------------------
-        // FADE OUT DO MENU
-        // ---------------------------------------------
-
-        if (musicMenu != null)
-        {
-            float volumeInicial = musicMenu.volume;
-            float tempo = 0f;
-
-            while (tempo < fadeDuration)
-            {
-                tempo += Time.unscaledDeltaTime;
-
-                float progresso = tempo / fadeDuration;
-
-                musicMenu.volume = Mathf.Lerp(
-                    volumeInicial,
-                    0f,
-                    progresso
-                );
-
-                yield return null;
-            }
-
-            musicMenu.volume = 0f;
-            musicMenu.Stop();
-        }
-
-        // ---------------------------------------------
-        // TROCA PARA INTRO
-        // ---------------------------------------------
-
+        TocarMusicaSuave(musicaCutscene);
         SceneManager.LoadScene("Intro1");
+    }
 
-        yield return null;
+    // Chamado pelo IntroManager ao trocar da Intro1 para Intro2 (Música continua)
+    public void IrParaIntro2(string nomeProximaCena)
+    {
+        SceneManager.LoadScene(nomeProximaCena);
+    }
 
-        // ---------------------------------------------
-        // COMEÇA A MÚSICA DA CUTSCENE
-        // ---------------------------------------------
-
-        if (musicCutscene != null)
+    // Chamado pelo IntroManager ao terminar a Cutscene e ir para o Tutorial/Jogo
+    public void PararMusicaCutsceneEEntrarNoJogo(string nomeCenaJogo)
+    {
+        if (nomeCenaJogo.Contains("Tutorial"))
         {
-            musicCutscene.volume = 0f;
-
-            if (!musicCutscene.isPlaying)
-            {
-                musicCutscene.Play();
-            }
-
-            float tempo = 0f;
-
-            while (tempo < fadeDuration)
-            {
-                tempo += Time.unscaledDeltaTime;
-
-                float progresso = tempo / fadeDuration;
-
-                musicCutscene.volume = Mathf.Lerp(
-                    0f,
-                    1f,
-                    progresso
-                );
-
-                yield return null;
-            }
-
-            musicCutscene.volume = 1f;
+            TocarMusicaSuave(musicaTutorial);
+        }
+        else
+        {
+            TocarMusicaSuave(null); // Faz fade out até o silêncio se não tiver música
         }
 
-        mudandoDeCena = false;
+        SceneManager.LoadScene(nomeCenaJogo);
     }
 
-    // =====================================================
-    // INTRO → INTRO1
-    // =====================================================
-
-    public void IrParaIntro2()
+    // Método genérico de Crossfade
+    public void TocarMusicaSuave(AudioClip novaMusica)
     {
-        if (mudandoDeCena)
-            return;
+        if (audioAtual != null && audioAtual.isPlaying && audioAtual.clip == novaMusica)
+        {
+            return; // Se já é a mesma música, continua tocando sem reiniciar
+        }
 
-        StartCoroutine(MudarParaIntro2());
+        if (rotinaTransiction != null)
+        {
+            StopCoroutine(rotinaTransiction);
+        }
+
+        rotinaTransiction = StartCoroutine(ExecutarCrossfade(novaMusica));
     }
 
-    private IEnumerator MudarParaIntro2()
+    private IEnumerator ExecutarCrossfade(AudioClip novaMusica)
     {
-        mudandoDeCena = true;
+        // Se houver uma nova música, prepara o canal secundário
+        if (novaMusica != null)
+        {
+            proximoAudio.Stop();
+            proximoAudio.clip = novaMusica;
+            proximoAudio.volume = 0f;
+            proximoAudio.Play();
+        }
 
-        SceneManager.LoadScene("Intro2");
+        float volumeInicial = audioAtual != null ? audioAtual.volume : 0f;
+        float tempo = 0f;
 
-        yield return null;
+        while (tempo < tempoCrossfade)
+        {
+            tempo += Time.unscaledDeltaTime;
+            float progresso = Mathf.Clamp01(tempo / tempoCrossfade);
 
-        // Não fazemos absolutamente nada com a música.
-        // Ela continua tocando.
+            // Fade Out na atual
+            if (audioAtual != null)
+            {
+                audioAtual.volume = Mathf.Lerp(volumeInicial, 0f, progresso);
+            }
 
-        mudandoDeCena = false;
+            // Fade In na próxima
+            if (novaMusica != null && proximoAudio != null)
+            {
+                proximoAudio.volume = progresso;
+            }
+
+            yield return null;
+        }
+
+        // Finaliza o áudio antigo
+        if (audioAtual != null)
+        {
+            audioAtual.Stop();
+            audioAtual.volume = 0f;
+        }
+
+        if (novaMusica != null && proximoAudio != null)
+        {
+            proximoAudio.volume = 1f;
+        }
+
+        // Inverte as referências dos canais (o próximo vira o atual)
+        AudioSource temp = audioAtual;
+        audioAtual = proximoAudio;
+        proximoAudio = temp;
+
+        rotinaTransiction = null;
     }
 }

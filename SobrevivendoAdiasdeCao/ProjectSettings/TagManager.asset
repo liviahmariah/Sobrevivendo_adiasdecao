@@ -9,6 +9,10 @@ TagManager:
   - chao
   - Carrocinha
   - carrocinha
+  - CutsceneMusic
+  - PainelPause
+  - PainelConfig
+  - PainelCreditos
   layers:
   - Default
   - TransparentFX

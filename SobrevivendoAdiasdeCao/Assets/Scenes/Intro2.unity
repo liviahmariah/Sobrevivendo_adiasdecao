@@ -675,7 +675,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Pressione  ESPA\xC7O para pular"
+  m_text: "Pressione ESPA\xC7O para avan\xE7ar"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 241c6acceca8b844baad6cbcf60cefc7, type: 2}
   m_sharedMaterial: {fileID: -699112959996641730, guid: 241c6acceca8b844baad6cbcf60cefc7, type: 2}
@@ -825,12 +825,15 @@ MonoBehaviour:
   escalaNormal: 1
   escalaAmpliada: 1.12
   velocidadeEscala: 3
+  audioMusica: {fileID: 0}
+  musicaCutscene: {fileID: 8300000, guid: 56dae8bfa9776b84bbfc6d8313b36196, type: 3}
   audioEscrita: {fileID: 750630291}
   somEscrita: {fileID: 8300000, guid: cfbed163dbcbbb34b80206c665c74374, type: 3}
   textoPular: {fileID: 1014683769}
   fade: {fileID: 945176642}
   tempoFadeTela: 1
   proximaCena: Tutorial
+  proximaCenaEParteDaCutscene: 0
 --- !u!1 &1083716754
 GameObject:
   m_ObjectHideFlags: 0
