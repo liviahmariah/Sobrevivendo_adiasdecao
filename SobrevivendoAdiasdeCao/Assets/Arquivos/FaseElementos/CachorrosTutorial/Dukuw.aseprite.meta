@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 517af4964a5503343a023c60df546296
+guid: 2076e5721aec3bc4bb722659f943c27b
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -137,7 +137,7 @@ ScriptedImporter:
       y: 4
       width: 51
       height: 50
-    spriteID: 85128d8c0dc8d74489ac87b0262bf059
+    spriteID: 4e32f4524999d0849912d26b61997a0a
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -154,11 +154,11 @@ ScriptedImporter:
     customData: 
     rect:
       serializedVersion: 2
-      x: 4
-      y: 62
+      x: 63
+      y: 4
       width: 51
       height: 48
-    spriteID: 380f4a9d85736b94c82d2127708907aa
+    spriteID: adbb62a6612acd346ad80dadb04adc50
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -166,7 +166,7 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 62}
+    uvTransform: {x: 63, y: 4}
   - name: Frame_2
     originalName: 
     pivot: {x: 0.5882353, y: 0}
@@ -176,10 +176,10 @@ ScriptedImporter:
     rect:
       serializedVersion: 2
       x: 63
-      y: 4
+      y: 60
       width: 51
       height: 48
-    spriteID: 0ce0728b5ec9d2a4d865f561abf50d2f
+    spriteID: efb470520a89c0b498ea93c7af0d044c
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -187,18 +187,39 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 63, y: 4}
+    uvTransform: {x: 63, y: 60}
+  - name: Frame_3
+    originalName: 
+    pivot: {x: 0.5882353, y: 0}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 62
+      width: 51
+      height: 50
+    spriteID: e1d7ca9fd0bbd66499d79aa3188b55a8
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 4, y: 62}
   spriteSheetImportData: []
   tileSetImportData: []
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 2030169812
+      value0: 271016694
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: Duku_Idle
+    name: Dukuw
     layerFlags: 0
     layerType: 0
     blendMode: 0
@@ -211,7 +232,7 @@ ScriptedImporter:
         y: 0
         width: 51
         height: 50
-      spriteId: 85128d8c0dc8d74489ac87b0262bf059
+      spriteId: 4e32f4524999d0849912d26b61997a0a
     - name: Frame_1
       frameIndex: 1
       additiveSortOrder: 0
@@ -220,7 +241,7 @@ ScriptedImporter:
         y: 0
         width: 51
         height: 48
-      spriteId: 380f4a9d85736b94c82d2127708907aa
+      spriteId: adbb62a6612acd346ad80dadb04adc50
     - name: Frame_2
       frameIndex: 2
       additiveSortOrder: 0
@@ -229,7 +250,16 @@ ScriptedImporter:
         y: 0
         width: 51
         height: 48
-      spriteId: 0ce0728b5ec9d2a4d865f561abf50d2f
+      spriteId: efb470520a89c0b498ea93c7af0d044c
+    - name: Frame_3
+      frameIndex: 3
+      additiveSortOrder: 0
+      cellRect:
+        x: 2
+        y: 0
+        width: 51
+        height: 50
+      spriteId: e1d7ca9fd0bbd66499d79aa3188b55a8
     linkedCells: []
     tileCells: []
     tileSetIndex: 0

@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -7,9 +6,9 @@ public class PlayerMovement : MonoBehaviour
     public float speed = 7f;
 
     [Header("Configurações do pulo")]
-    public float jumpHeight = 1.5f;
-    public float jumpDuration = 0.8f;
-    public int maxJumps = 1;
+    public float jumpForce = 12f; // Força do 1º pulo
+    [Range(0.1f, 1f)] public float doubleJumpMultiplier = 0.5f; // 0.5 = metade da força no 2º pulo!
+    public int maxJumps = 2; // Permite o pulo duplo (2 pulos)
 
     [Header("Detecção do chão")]
     public Transform groundCheck;
@@ -31,35 +30,20 @@ public class PlayerMovement : MonoBehaviour
 
     private float moveInput;
     private int jumpCount;
-
     private bool isGrounded;
-    private bool isJumping;
-
-    private float jumpTime;
-    private float startY;
 
     private float velocidadeBase;
-
     private bool poeiraAtiva;
 
     [Header("Carrocinha")]
     public ChefeCarrocinhaTutorial chefe;
 
-    // Escala original do Player
     private Vector3 escalaOriginal;
-
-    // =====================================================
-    // AWAKE - INICIALIZA A VELOCIDADE-BASE ANTES DOS STARTS
-    // =====================================================
 
     private void Awake()
     {
         velocidadeBase = speed;
     }
-
-    // =====================================================
-    // START
-    // =====================================================
 
     private void Start()
     {
@@ -67,19 +51,15 @@ public class PlayerMovement : MonoBehaviour
         anim = GetComponent<Animator>();
 
         escalaOriginal = transform.localScale;
-
         jumpCount = 0;
 
         if (rb != null)
         {
-            rb.gravityScale = 1f;
+            rb.gravityScale = 2.5f;
         }
         else
         {
-            Debug.LogError(
-                "PlayerMovement: Rigidbody2D não encontrado na Sandy.",
-                this
-            );
+            Debug.LogError("PlayerMovement: Rigidbody2D não encontrado na Sandy.", this);
         }
 
         if (poeiraCorrida != null)
@@ -87,10 +67,6 @@ public class PlayerMovement : MonoBehaviour
             poeiraCorrida.Stop();
         }
     }
-
-    // =====================================================
-    // UPDATE
-    // =====================================================
 
     private void Update()
     {
@@ -117,19 +93,13 @@ public class PlayerMovement : MonoBehaviour
         // POEIRA DA CORRIDA
         AtualizarPoeira();
 
-        // PULO
+        // PULO (FÍSICA DE PULO DUPLO COM FORÇA REDUZIDA)
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (jumpCount < maxJumps)
             {
-                StartJump();
+                ExecutarPulo();
             }
-        }
-
-        // ATUALIZAÇÃO DO PULO
-        if (isJumping)
-        {
-            UpdateJump();
         }
 
         // LATIDO
@@ -138,7 +108,7 @@ public class PlayerMovement : MonoBehaviour
             Bark();
         }
 
-        // VIRAR PERSONAGEM, MANTENDO A ESCALA ORIGINAL
+        // VIRAR PERSONAGEM
         if (moveInput > 0)
         {
             transform.localScale = new Vector3(
@@ -157,19 +127,66 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // POEIRA DA CORRIDA
-    // =====================================================
+    private void ExecutarPulo()
+    {
+        if (rb == null) return;
+
+        PararPoeira();
+        jumpCount++;
+
+        // Calcula a força baseada no contador: 1º pulo = cheia | 2º pulo = metade (50%)
+        float forcaAtual = (jumpCount == 1) ? jumpForce : jumpForce * doubleJumpMultiplier;
+
+        // Aplica a força de pulo
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, forcaAtual);
+
+        isGrounded = false;
+
+        if (anim != null)
+        {
+            anim.SetBool("Grounded", false);
+        }
+
+        if (TutorialManager.instance != null)
+        {
+            TutorialManager.instance.RegistrarPulo();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (rb == null) return;
+
+        rb.linearVelocity = new Vector2(
+            moveInput * speed,
+            rb.linearVelocity.y
+        );
+    }
+
+    private void VerificarChao()
+    {
+        if (groundCheck == null) return;
+
+        Collider2D colisao = Physics2D.OverlapCircle(
+            groundCheck.position,
+            groundCheckRadius,
+            groundLayer
+        );
+
+        isGrounded = colisao != null;
+
+        // Reseta os pulos ao pousar
+        if (isGrounded && rb.linearVelocity.y <= 0.1f)
+        {
+            jumpCount = 0;
+        }
+    }
 
     private void AtualizarPoeira()
     {
-        if (poeiraCorrida == null)
-            return;
+        if (poeiraCorrida == null) return;
 
-        bool deveMostrarPoeira =
-            Mathf.Abs(moveInput) > 0.1f &&
-            isGrounded &&
-            !isJumping;
+        bool deveMostrarPoeira = Mathf.Abs(moveInput) > 0.1f && isGrounded;
 
         if (deveMostrarPoeira)
         {
@@ -200,35 +217,16 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // FÍSICA
-    // =====================================================
-
-    private void FixedUpdate()
+    private void PararPoeira()
     {
-        if (rb == null)
-            return;
-
-        rb.linearVelocity = new Vector2(
-            moveInput * speed,
-            rb.linearVelocity.y
-        );
+        if (poeiraCorrida == null) return;
+        poeiraCorrida.Stop();
+        poeiraAtiva = false;
     }
-
-    // =====================================================
-    // VELOCIDADE
-    // =====================================================
 
     public void DefinirVelocidade(float multiplicador)
     {
         speed = velocidadeBase * multiplicador;
-
-        Debug.Log(
-            $"Velocidade-base: {velocidadeBase} | " +
-            $"Multiplicador: {multiplicador} | " +
-            $"Velocidade atual: {speed}",
-            this
-        );
     }
 
     public void RestaurarVelocidade()
@@ -241,234 +239,31 @@ public class PlayerMovement : MonoBehaviour
         return velocidadeBase;
     }
 
-    // =====================================================
-    // VERIFICAR CHÃO
-    // =====================================================
-
-    private void VerificarChao()
-    {
-        if (groundCheck == null)
-            return;
-
-        Collider2D colisao = Physics2D.OverlapCircle(
-            groundCheck.position,
-            groundCheckRadius,
-            groundLayer
-        );
-
-        isGrounded = colisao != null;
-
-        if (isGrounded && !isJumping)
-        {
-            jumpCount = 0;
-        }
-    }
-
-    // =====================================================
-    // COMEÇAR PULO
-    // =====================================================
-
-    private void StartJump()
-    {
-        if (rb == null)
-            return;
-
-        isJumping = true;
-
-        PararPoeira();
-
-        jumpTime = 0f;
-        startY = transform.position.y;
-
-        jumpCount++;
-
-        rb.gravityScale = 0f;
-
-        rb.linearVelocity = new Vector2(
-            rb.linearVelocity.x,
-            0f
-        );
-
-        isGrounded = false;
-
-        if (anim != null)
-        {
-            anim.SetBool("Grounded", false);
-        }
-
-        if (TutorialManager.instance != null)
-        {
-            TutorialManager.instance.RegistrarPulo();
-        }
-    }
-
-    // =====================================================
-    // PARAR POEIRA
-    // =====================================================
-
-    private void PararPoeira()
-    {
-        if (poeiraCorrida == null)
-            return;
-
-        poeiraCorrida.Stop();
-        poeiraAtiva = false;
-    }
-
-    // =====================================================
-    // ATUALIZAR PULO
-    // =====================================================
-
-    private void UpdateJump()
-    {
-        if (jumpDuration <= 0f)
-            return;
-
-        jumpTime += Time.deltaTime / jumpDuration;
-
-        float t = Mathf.Clamp01(jumpTime);
-
-        float height =
-            4f *
-            jumpHeight *
-            t *
-            (1f - t);
-
-        transform.position = new Vector3(
-            transform.position.x,
-            startY + height,
-            transform.position.z
-        );
-
-        if (t >= 1f)
-        {
-            isJumping = false;
-
-            transform.position = new Vector3(
-                transform.position.x,
-                startY,
-                transform.position.z
-            );
-
-            if (rb != null)
-            {
-                rb.gravityScale = 1f;
-            }
-
-            VerificarChao();
-
-            if (anim != null)
-            {
-                anim.SetBool("Grounded", isGrounded);
-            }
-        }
-    }
-
-    // =====================================================
-    // LATIDO
-    // =====================================================
-
-
     private void Bark()
     {
-        if (anim != null)
-            anim.SetTrigger("Bark");
+        if (anim != null) anim.SetTrigger("Bark");
+        if (audioSource != null && somLatido != null) audioSource.PlayOneShot(somLatido);
 
-        if (audioSource != null && somLatido != null)
-            audioSource.PlayOneShot(somLatido);
+        if (TutorialManager.instance != null) TutorialManager.instance.RegistrarLatido();
+        if (chefe != null) chefe.AssustarChefe();
+        if (molhoChaves != null) molhoChaves.ReceberLatido();
 
-        Debug.Log("Latido!");
-
-        if (TutorialManager.instance != null)
-            TutorialManager.instance.RegistrarLatido();
-
-        if (chefe != null)
-            chefe.AssustarChefe();
-
-        if (molhoChaves != null)
-            molhoChaves.ReceberLatido();
-
-        // Identifica os NPCs próximos na direção em que Sandy está virada.
         float direcaoSandy = Mathf.Sign(transform.localScale.x);
+        if (direcaoSandy == 0f) direcaoSandy = 1f;
 
-        if (direcaoSandy == 0f)
-            direcaoSandy = 1f;
-
-        NPCRecurso[] npcs =
-            FindObjectsByType<NPCRecurso>(FindObjectsSortMode.None);
-
+        NPCRecurso[] npcs = FindObjectsByType<NPCRecurso>(FindObjectsSortMode.None);
         foreach (NPCRecurso npc in npcs)
         {
-            if (npc == null)
-                continue;
-
-            Vector2 diferenca =
-                (Vector2)npc.transform.position -
-                (Vector2)transform.position;
-
-            // Ignora NPCs atrás da Sandy.
-            if (diferenca.x * direcaoSandy <= 0f)
-                continue;
-
+            if (npc == null) continue;
+            Vector2 diferenca = (Vector2)npc.transform.position - (Vector2)transform.position;
+            if (diferenca.x * direcaoSandy <= 0f) continue;
             npc.ReceberLatido();
         }
     }
 
-
-    // =====================================================
-    // COLISÃO COM CHÃO
-    // =====================================================
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            if (!isJumping)
-            {
-                isGrounded = true;
-                jumpCount = 0;
-
-                if (anim != null)
-                {
-                    anim.SetBool("Grounded", true);
-                }
-            }
-        }
-    }
-
-    // =====================================================
-    // SAIR DO CHÃO
-    // =====================================================
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            if (!isJumping)
-            {
-                isGrounded = false;
-                PararPoeira();
-
-                if (anim != null)
-                {
-                    anim.SetBool("Grounded", false);
-                }
-            }
-        }
-    }
-
-    // =====================================================
-    // GIZMO
-    // =====================================================
-
     private void OnDrawGizmosSelected()
     {
-        if (groundCheck == null)
-            return;
-
-        Gizmos.DrawWireSphere(
-            groundCheck.position,
-            groundCheckRadius
-        );
+        if (groundCheck == null) return;
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 }

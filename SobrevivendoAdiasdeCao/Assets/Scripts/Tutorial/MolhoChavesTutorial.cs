@@ -231,6 +231,13 @@ public class MolhoChavesTutorial : MonoBehaviour
             "Chave liberada: " + chavesDerrubadas +
             "/" + quantidadeTotal
         );
+
+        // Dentro do MolhoChavesTutorial.cs, ao liberar/coletar a chave:
+        if (TutorialManager.instance != null)
+        {
+            TutorialManager.instance.NotificarChaveColetada();
+        }
+
     }
 
     // =====================================================
@@ -245,6 +252,7 @@ public class MolhoChavesTutorial : MonoBehaviour
                 "Nenhuma chave está aguardando coleta."
             );
             return;
+            TutorialManager.instance.NotificarChaveColetada();
         }
 
         chaveNoChao = false;

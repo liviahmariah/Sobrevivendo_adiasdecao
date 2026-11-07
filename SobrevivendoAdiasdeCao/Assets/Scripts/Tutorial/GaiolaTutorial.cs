@@ -310,5 +310,6 @@ public class GaiolaTutorial : MonoBehaviour
 
         if (TutorialManager.instance != null)
             TutorialManager.instance.VerificarVitoria();
+        TutorialManager.instance.NotificarGaiolaAberta();
     }
 }

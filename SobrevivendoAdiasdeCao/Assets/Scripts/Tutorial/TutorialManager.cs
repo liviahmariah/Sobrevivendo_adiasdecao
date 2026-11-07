@@ -73,14 +73,10 @@ public class TutorialManager : MonoBehaviour
     [Header("UI do Tutorial")]
     public GameObject painelDialogo;
     public TextMeshProUGUI textoDuke;
+    [Header("Visual do Duke")]
+    public DukeVisualController dukeVisualController;
     [Header("Identificação do Duke")]
     public TextMeshProUGUI textoIdentificacaoDuke;
-    [Header("Aparição do Duke")]
-    public GameObject dukeVisual;
-    public float duracaoAparicaoDuke = 0.5f;
-    private SpriteRenderer[] spritesDuke;
-    private Color[] coresOriginaisDuke;
-    private bool dukeJaApareceu = false;
 
     public GameObject tituloFase;
     public TextMeshProUGUI textoTitulo;
@@ -104,15 +100,6 @@ public class TutorialManager : MonoBehaviour
     private Vector3 escalaOriginalBalao;
     private Vector2 posicaoOriginalBalao;
     private Coroutine rotinaAnimacaoBalao;
-
-    // =====================================================
-    // SOM DO DUKE
-    // =====================================================
-
-    [Header("Som do Duke")]
-    public AudioSource audioSourceDuke;
-    public AudioClip somLatidoDuke;
-    public Animator animatorDuke;
 
     [Header("Músicas de Vitória e Derrota")]
     [SerializeField] private AudioSource audioSourceMusicaFinal;
@@ -281,19 +268,6 @@ public class TutorialManager : MonoBehaviour
         tutorialIniciado = false;
         chefeLiberado = false;
         tutorialTerminou = false;
-        if (dukeVisual != null)
-        {
-            spritesDuke = dukeVisual
-                .GetComponentsInChildren<SpriteRenderer>(true);
-
-            coresOriginaisDuke = new Color[spritesDuke.Length];
-
-            for (int i = 0; i < spritesDuke.Length; i++)
-            {
-                coresOriginaisDuke[i] = spritesDuke[i].color;
-                spritesDuke[i].enabled = false;
-            }
-        }
 
         if (balãoAnimado != null)
         {
@@ -495,8 +469,12 @@ public class TutorialManager : MonoBehaviour
         {
            
         }
+        // ONDE ESTAVA:
+        // TocarLatidoDuke();
 
-        TocarLatidoDuke();
+        // TROQUE POR:
+        if (dukeVisualController != null)
+            dukeVisualController.TocarLatido();
     }
 
     // =====================================================
@@ -525,12 +503,16 @@ public class TutorialManager : MonoBehaviour
 
         rotinaAnimacaoBalao = StartCoroutine(AnimarEntradaBalao());
 
-        if (!dukeJaApareceu)
-        {
-            yield return StartCoroutine(AnimarAparicaoDuke());
-        }
+        // ONDE ESTAVA:
+        // if (!dukeJaApareceu) { yield return StartCoroutine(AnimarAparicaoDuke()); }
+        // TocarLatidoDuke();
 
-        TocarLatidoDuke();
+        // TROQUE POR:
+        if (dukeVisualController != null)
+        {
+            dukeVisualController.GarantaAparicao(this);
+            dukeVisualController.TocarLatido();
+        }
 
         for (int i = 0; i <= quantidadeCaracteres; i++)
         {
@@ -566,33 +548,6 @@ public class TutorialManager : MonoBehaviour
         textoDuke.geometrySortingOrder = VertexSortingOrder.Reverse;
         textoDuke.maxVisibleCharacters = int.MaxValue;
         textoSendoEscrito = false;
-    }
-
-    // =====================================================
-    // SOM DO DUKE
-    // =====================================================
-
-    void TocarLatidoDuke()
-    {
-        Debug.Log("Tentando ativar o latido do Duke!");
-
-        if (animatorDuke == null)
-        {
-            Debug.LogError("Animator do Duke está NULL!");
-            return;
-        }
-
-        Debug.Log("Animator encontrado: " + animatorDuke.gameObject.name);
-
-        animatorDuke.ResetTrigger("Latir");
-        animatorDuke.SetTrigger("Latir");
-
-        Debug.Log("Trigger Latir enviado!");
-
-        if (audioSourceDuke != null && somLatidoDuke != null)
-        {
-            audioSourceDuke.PlayOneShot(somLatidoDuke);
-        }
     }
 
 
@@ -952,8 +907,15 @@ public class TutorialManager : MonoBehaviour
     }
 
     // =====================================================
-    // COLETA / INÍCIO DO INTERVALO
+    // ETAPA DE COLETA E LIBERTAÇÃO (PASSO A PASSO DIRETO)
     // =====================================================
+
+    // =====================================================
+    // ETAPA DE COLETA E LIBERTAÇÃO (PASSO A PASSO DIRETO)
+    // =====================================================
+
+    private int avisosChaveColetada = 0;
+    private int avisosGaiolaAberta = 0;
 
     void ComecarColeta()
     {
@@ -962,17 +924,21 @@ public class TutorialManager : MonoBehaviour
 
         etapaAtual = EtapaTutorial.Coleta;
 
-        MostrarObjetivo("Colete as 8 chaves e liberte os cães!");
+        // Reseta os contadores ao iniciar a etapa
+        avisosChaveColetada = 0;
+        avisosGaiolaAberta = 0;
+
+        MostrarObjetivo("Vá até o molho de chaves e aperte Z para derrubar a chave!");
 
         MostrarFalaTemporaria(
-            "O intervalo não vai durar para sempre! Colete as 8 chaves do molho e liberte os cães. A última está com a carrocinha."
+            "Sandy, veja aquele molho de chaves na parede! Chegue perto dele e use seu latido (tecla Z) para fazer a chave cair!"
         );
 
         IniciarDica(
-            "Sandy, procure as chaves das gaiolas! Precisamos libertar todos antes que o chefe volte."
+            "Aproxime-se do molho de chaves na parede e aperte Z para latir!"
         );
 
-        Debug.Log("Tutorial das mecânicas concluído!");
+        Debug.Log("Tutorial de mecânicas concluído. Iniciando fase de libertação!");
 
         if (tutorialTimer != null)
         {
@@ -980,8 +946,58 @@ public class TutorialManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning(
-                "TutorialTimer não foi configurado no Inspector!"
+            Debug.LogWarning("TutorialTimer não foi configurado no Inspector!");
+        }
+    }
+
+    // -----------------------------------------------------
+    // CHAMAR QUANDO A CHAVE FOR COLETADA
+    // -----------------------------------------------------
+    public void NotificarChaveColetada()
+    {
+        if (tutorialTerminou) return;
+
+        PararDica();
+        avisosChaveColetada++;
+
+        // Só exibe a fala e altera o objetivo nas 2 primeiras vezes
+        if (avisosChaveColetada <= 2)
+        {
+            MostrarObjetivo("Vá até uma gaiola e aperte o BOTÃO DIREITO DO MOUSE para abri-la!");
+
+            MostrarFalaTemporaria(
+                "Boa! A chave já está com você! Agora vá até uma das gaiolas trancadas e use o BOTÃO DIREITO DO MOUSE para libertar seu amigo!"
+            );
+
+            IniciarDica(
+                "Chegue perto de uma gaiola trancada e clique com o BOTÃO DIREITO DO MOUSE para abrir."
+            );
+        }
+    }
+
+    // -----------------------------------------------------
+    // CHAMAR QUANDO UMA GAIOLA FOR ABERTA
+    // -----------------------------------------------------
+    public void NotificarGaiolaAberta()
+    {
+        if (tutorialTerminou) return;
+
+        PararDica();
+        avisosGaiolaAberta++;
+
+        int abertas = TutorialChavesManager.instance != null ? TutorialChavesManager.instance.GaiolasAbertas : 0;
+
+        // Atualiza o objetivo sempre para mostrar o progresso ao jogador
+        if (abertas < 8)
+        {
+            MostrarObjetivo($"Liberte os cães! ({abertas}/8 gaiolas abertas)");
+        }
+
+        // A fala explicativa só roda nas 2 primeiras gaiolas libertadas
+        if (avisosGaiolaAberta <= 2 && abertas < 8)
+        {
+            MostrarFalaTemporaria(
+                "Perfeito! Cão libertado! Lembre-se: você só pode carregar UMA chave por vez. Volte ao molho, lata com Z para pegar outra e use o BOTÃO DIREITO DO MOUSE na próxima gaiola!"
             );
         }
     }
@@ -1413,52 +1429,4 @@ public class TutorialManager : MonoBehaviour
             instance = null;
     }
 
-    IEnumerator AnimarAparicaoDuke()
-    {
-        if (spritesDuke == null || spritesDuke.Length == 0)
-            yield break;
-
-        dukeJaApareceu = true;
-
-        // Torna os sprites visíveis, inicialmente transparentes.
-        for (int i = 0; i < spritesDuke.Length; i++)
-        {
-            if (spritesDuke[i] == null)
-                continue;
-
-            spritesDuke[i].enabled = true;
-
-            Color cor = coresOriginaisDuke[i];
-            cor.a = 0f;
-            spritesDuke[i].color = cor;
-        }
-
-        float duracao = Mathf.Max(0.01f, duracaoAparicaoDuke);
-        float tempo = 0f;
-
-        while (tempo < duracao)
-        {
-            tempo += Time.deltaTime;
-            float progresso = Mathf.Clamp01(tempo / duracao);
-
-            for (int i = 0; i < spritesDuke.Length; i++)
-            {
-                if (spritesDuke[i] == null)
-                    continue;
-
-                Color cor = coresOriginaisDuke[i];
-                cor.a = Mathf.Lerp(0f, coresOriginaisDuke[i].a, progresso);
-                spritesDuke[i].color = cor;
-            }
-
-            yield return null;
-        }
-
-        // Garante que as cores originais sejam restauradas.
-        for (int i = 0; i < spritesDuke.Length; i++)
-        {
-            if (spritesDuke[i] != null)
-                spritesDuke[i].color = coresOriginaisDuke[i];
-        }
-    }
 }

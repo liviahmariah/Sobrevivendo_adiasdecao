@@ -203,21 +203,21 @@ public class PauseManager : MonoBehaviour
             if (s.gameObject.name.Contains("Master"))
             {
                 sliderMaster = s;
-                sliderMaster.value = AudioManager.Instance.GetMasterVolume();
+                // sliderMaster.value = AudioManager.Instance.GetMasterVolume(); // COMENTADO
                 sliderMaster.onValueChanged.RemoveAllListeners();
                 sliderMaster.onValueChanged.AddListener(AudioManager.Instance.SetMasterVolume);
             }
             else if (s.gameObject.name.Contains("Musica") || s.gameObject.name.Contains("Music"))
             {
                 sliderMusica = s;
-                sliderMusica.value = AudioManager.Instance.GetMusicVolume();
+                // sliderMusica.value = AudioManager.Instance.GetMusicVolume(); // COMENTADO
                 sliderMusica.onValueChanged.RemoveAllListeners();
                 sliderMusica.onValueChanged.AddListener(AudioManager.Instance.SetMusicVolume);
             }
             else if (s.gameObject.name.Contains("SFX") || s.gameObject.name.Contains("Efeitos"))
             {
                 sliderSFX = s;
-                sliderSFX.value = AudioManager.Instance.GetSFXVolume();
+                // sliderSFX.value = AudioManager.Instance.GetSFXVolume(); // COMENTADO
                 sliderSFX.onValueChanged.RemoveAllListeners();
                 sliderSFX.onValueChanged.AddListener(AudioManager.Instance.SetSFXVolume);
             }
