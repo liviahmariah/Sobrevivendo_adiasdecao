@@ -266,4 +266,4 @@ public class PlayerMovement : MonoBehaviour
         if (groundCheck == null) return;
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
-}
+} 

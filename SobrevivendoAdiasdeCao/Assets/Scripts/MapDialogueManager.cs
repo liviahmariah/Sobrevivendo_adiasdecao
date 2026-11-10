@@ -1,8 +1,7 @@
-
-using UnityEngine;
-using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 
 public class MapDialogueManager : MonoBehaviour
 {
@@ -40,11 +39,12 @@ public class MapDialogueManager : MonoBehaviour
     public float velocidadeTexto = 0.035f;
     public float pausaVirgula = 0.06f;
     public float pausaPontuacao = 0.15f;
-    public float tempoMensagem = 3f;
-    public float tempoEntreFalase = 0.5f;
+    public float tempoMensagem = 3.5f;
+    public float tempoEntreFalase = 0.4f;
 
-    [Header("Sistema de Mensagens")]
-    public float tempoEntreEventos = 8f;
+    [Header("Sistema de Dicas Frequentes (Máx. 15 segundos)")]
+    [Tooltip("Tempo de espera entre uma dica e outra (deve ser no máximo 15s).")]
+    public float tempoEntreEventos = 10f;
 
     private bool mostrandoMensagem = false;
     private bool apresentacaoConcluida = false;
@@ -52,23 +52,22 @@ public class MapDialogueManager : MonoBehaviour
     private Coroutine rotinaApresentacao;
     private Coroutine rotinaEventos;
 
-    // Controle para executar a apresentação apenas uma vez.
-    private const string CHAVE_APRESENTACAO_REALIZADA =
-        "ApresentacaoComunidadeRealizada";
+    private const string CHAVE_APRESENTACAO_REALIZADA = "ApresentacaoComunidadeRealizada";
 
-    [Header("Falas de Boas-vindas")]
+    [Header("Falas da Introdução Inicial da Sandy")]
     [TextArea(2, 5)]
     public string[] falasBoasVindas =
     {
-        "Olá, Sandy! Seja bem-vinda ao nosso ponto de organização!",
-        "É daqui que vamos acompanhar a situação de toda a comunidade.",
-        "Estas barras mostram como estão os cães. Acompanhe a alimentação e o ânimo para saber do que eles precisam!",
-        "Quando a alimentação estiver baixa, precisaremos buscar comida.",
-        "O Mercado é onde podemos conseguir alimentos para a comunidade.",
-        "Na Praça, podemos encontrar recursos para melhorar o ânimo dos cães.",
-        "E no Hospital, podemos conseguir medicamentos para cuidar dos que precisam.",
-        "Escolha os locais com atenção, consiga os recursos e volte para ajudar todos!",
-        "Contamos com você, Sandy! Vamos nessa!"
+        "Que bom ver você de volta sã e salva, Sandy!",
+        "Você foi incrível conseguindo escapar e libertar nossos amigos lá atrás.",
+        "Agora, este é o nosso Ponto de Encontro. É daqui que cuidamos da nossa grande família canina!",
+        "Dê uma olhada nessas barras ali em cima: elas mostram como a comunidade está se sentindo.",
+        "Precisamos manter todos alimentados, alegres e saudáveis.",
+        "Se a comida faltar, o Mercado é o melhor lugar para buscar suprimentos.",
+        "Se o pessoal estiver desanimado, uma ida à Praça vai renovar a alegria de todos!",
+        "E se alguém ficar doentinho, precisaremos buscar remédios lá no Hospital.",
+        "Escolha para onde ir com sabedoria. Toda a comunidade confia nas suas patinhas, Sandy!",
+        "Estamos juntos nessa! Quando estiver pronta, escolha um local no mapa."
     };
 
     private void Start()
@@ -79,35 +78,29 @@ public class MapDialogueManager : MonoBehaviour
         if (painelDialogo != null)
             painelDialogo.SetActive(false);
 
-        // Verifica se a apresentação já foi realizada.
-        bool apresentacaoJaRealizada =
-            PlayerPrefs.GetInt(CHAVE_APRESENTACAO_REALIZADA, 0) == 1;
+        StartCoroutine(AguardarIntroEIniciar());
+    }
+
+    private IEnumerator AguardarIntroEIniciar()
+    {
+        // Aguarda a cena fazer o fade de entrada suave
+        while (Time.timeScale == 0f)
+        {
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(0.4f);
+
+        bool apresentacaoJaRealizada = PlayerPrefs.GetInt(CHAVE_APRESENTACAO_REALIZADA, 0) == 1;
 
         if (apresentacaoJaRealizada)
         {
-            // Pula a apresentação inicial.
             apresentacaoConcluida = true;
-            dukeJaApareceu = true;
-
-            // Mantém o Duke visível normalmente.
-            if (spritesDuke != null)
-            {
-                for (int i = 0; i < spritesDuke.Length; i++)
-                {
-                    if (spritesDuke[i] != null)
-                    {
-                        spritesDuke[i].enabled = true;
-                        spritesDuke[i].color = coresOriginaisDuke[i];
-                    }
-                }
-            }
-
-            // Continua apenas com as mensagens dinâmicas.
+            ExibirDukeImediatamente();
             rotinaEventos = StartCoroutine(SistemaEventos());
         }
         else
         {
-            // Primeira entrada: executa toda a apresentação.
             rotinaApresentacao = StartCoroutine(IniciarApresentacao());
         }
     }
@@ -115,7 +108,7 @@ public class MapDialogueManager : MonoBehaviour
     private void ConfigurarDuke()
     {
         if (textoIdentificacaoDuke != null)
-            textoIdentificacaoDuke.text = "DUKE - LÍDER DA COMUNIDADE";
+            textoIdentificacaoDuke.text = "DUCKT - LÍDER DA COMUNIDADE";
 
         if (dukeVisual != null)
         {
@@ -124,9 +117,7 @@ public class MapDialogueManager : MonoBehaviour
 
             for (int i = 0; i < spritesDuke.Length; i++)
             {
-                if (spritesDuke[i] == null)
-                    continue;
-
+                if (spritesDuke[i] == null) continue;
                 coresOriginaisDuke[i] = spritesDuke[i].color;
                 spritesDuke[i].enabled = false;
             }
@@ -135,26 +126,33 @@ public class MapDialogueManager : MonoBehaviour
 
     private void ConfigurarBalao()
     {
-        if (balaoAnimado == null)
-            return;
-
+        if (balaoAnimado == null) return;
         escalaOriginalBalao = balaoAnimado.localScale;
         posicaoOriginalBalao = balaoAnimado.anchoredPosition;
         balaoAnimado.localScale = Vector3.zero;
     }
 
+    private void ExibirDukeImediatamente()
+    {
+        dukeJaApareceu = true;
+        if (spritesDuke == null) return;
+
+        for (int i = 0; i < spritesDuke.Length; i++)
+        {
+            if (spritesDuke[i] != null)
+            {
+                spritesDuke[i].enabled = true;
+                spritesDuke[i].color = coresOriginaisDuke[i];
+            }
+        }
+    }
+
     private IEnumerator IniciarApresentacao()
     {
-        yield return new WaitForSeconds(1f);
-
         for (int i = 0; i < falasBoasVindas.Length; i++)
         {
-            yield return StartCoroutine(
-                MostrarFalaAnimada(falasBoasVindas[i])
-            );
-
+            yield return StartCoroutine(MostrarFalaAnimada(falasBoasVindas[i]));
             yield return new WaitForSeconds(tempoMensagem);
-
             yield return StartCoroutine(EsconderDialogoAnimado());
 
             if (i < falasBoasVindas.Length - 1)
@@ -164,7 +162,6 @@ public class MapDialogueManager : MonoBehaviour
         apresentacaoConcluida = true;
         rotinaApresentacao = null;
 
-        // Registra permanentemente que a apresentação terminou.
         PlayerPrefs.SetInt(CHAVE_APRESENTACAO_REALIZADA, 1);
         PlayerPrefs.Save();
 
@@ -219,18 +216,14 @@ public class MapDialogueManager : MonoBehaviour
 
     private IEnumerator AnimarAparicaoDuke()
     {
-        if (spritesDuke == null || spritesDuke.Length == 0)
-            yield break;
+        if (spritesDuke == null || spritesDuke.Length == 0) yield break;
 
         dukeJaApareceu = true;
 
         for (int i = 0; i < spritesDuke.Length; i++)
         {
-            if (spritesDuke[i] == null)
-                continue;
-
+            if (spritesDuke[i] == null) continue;
             spritesDuke[i].enabled = true;
-
             Color cor = coresOriginaisDuke[i];
             cor.a = 0f;
             spritesDuke[i].color = cor;
@@ -246,9 +239,7 @@ public class MapDialogueManager : MonoBehaviour
 
             for (int i = 0; i < spritesDuke.Length; i++)
             {
-                if (spritesDuke[i] == null)
-                    continue;
-
+                if (spritesDuke[i] == null) continue;
                 Color cor = coresOriginaisDuke[i];
                 cor.a = Mathf.Lerp(0f, coresOriginaisDuke[i].a, progresso);
                 spritesDuke[i].color = cor;
@@ -278,8 +269,7 @@ public class MapDialogueManager : MonoBehaviour
 
     private IEnumerator AnimarEntradaBalao()
     {
-        if (balaoAnimado == null)
-            yield break;
+        if (balaoAnimado == null) yield break;
 
         Vector3 escondido = Vector3.zero;
         Vector3 aumentado = escalaOriginalBalao * escalaPop;
@@ -290,16 +280,8 @@ public class MapDialogueManager : MonoBehaviour
         while (tempo < tempoEntradaBalao)
         {
             tempo += Time.deltaTime;
-
-            float progresso = Mathf.Clamp01(tempo / tempoEntradaBalao);
-            progresso = Mathf.SmoothStep(0f, 1f, progresso);
-
-            balaoAnimado.localScale = Vector3.Lerp(
-                escondido,
-                aumentado,
-                progresso
-            );
-
+            float progresso = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(tempo / tempoEntradaBalao));
+            balaoAnimado.localScale = Vector3.Lerp(escondido, aumentado, progresso);
             yield return null;
         }
 
@@ -309,15 +291,8 @@ public class MapDialogueManager : MonoBehaviour
         while (tempo < duracaoPop)
         {
             tempo += Time.deltaTime;
-
-            float progresso = Mathf.Clamp01(tempo / duracaoPop);
-
-            balaoAnimado.localScale = Vector3.Lerp(
-                aumentado,
-                normal,
-                Mathf.SmoothStep(0f, 1f, progresso)
-            );
-
+            float progresso = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(tempo / duracaoPop));
+            balaoAnimado.localScale = Vector3.Lerp(aumentado, normal, progresso);
             yield return null;
         }
 
@@ -329,9 +304,7 @@ public class MapDialogueManager : MonoBehaviour
     {
         if (balaoAnimado == null)
         {
-            if (painelDialogo != null)
-                painelDialogo.SetActive(false);
-
+            if (painelDialogo != null) painelDialogo.SetActive(false);
             mostrandoMensagem = false;
             yield break;
         }
@@ -342,115 +315,116 @@ public class MapDialogueManager : MonoBehaviour
         while (tempo < tempoSaidaBalao)
         {
             tempo += Time.deltaTime;
-
-            float progresso = Mathf.Clamp01(tempo / tempoSaidaBalao);
-            progresso = Mathf.SmoothStep(0f, 1f, progresso);
-
-            balaoAnimado.localScale = Vector3.Lerp(
-                escalaInicial,
-                Vector3.zero,
-                progresso
-            );
-
+            float progresso = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(tempo / tempoSaidaBalao));
+            balaoAnimado.localScale = Vector3.Lerp(escalaInicial, Vector3.zero, progresso);
             yield return null;
         }
 
         balaoAnimado.localScale = Vector3.zero;
         balaoAnimado.anchoredPosition = posicaoOriginalBalao;
 
-        if (painelDialogo != null)
-            painelDialogo.SetActive(false);
+        if (painelDialogo != null) painelDialogo.SetActive(false);
 
         mostrandoMensagem = false;
     }
 
     private void Update()
     {
-        if (balaoAnimado != null &&
-            painelDialogo != null &&
-            painelDialogo.activeSelf)
+        if (balaoAnimado != null && painelDialogo != null && painelDialogo.activeSelf)
         {
-            float movimento =
-                Mathf.Sin(Time.time * velocidadeFlutuacao) *
-                intensidadeFlutuacao;
-
-            balaoAnimado.anchoredPosition =
-                posicaoOriginalBalao + Vector2.up * movimento;
+            float movimento = Mathf.Sin(Time.time * velocidadeFlutuacao) * intensidadeFlutuacao;
+            balaoAnimado.anchoredPosition = posicaoOriginalBalao + Vector2.up * movimento;
         }
     }
 
+    // =====================================================
+    // SISTEMA DE EVENTOS CONSTANTES (MÁXIMO 15 SEGUNDOS)
+    // =====================================================
     private IEnumerator SistemaEventos()
     {
-        yield return new WaitForSeconds(tempoEntreEventos);
+        // Primeira espera curta de 5 segundos após entrar no mapa
+        yield return new WaitForSeconds(5f);
 
         while (true)
         {
             if (!mostrandoMensagem && apresentacaoConcluida)
             {
-                string mensagem = EscolherMensagem();
+                string dica = EscolherDicaDinamica();
 
-                if (!string.IsNullOrEmpty(mensagem))
+                if (!string.IsNullOrEmpty(dica))
                 {
-                    yield return StartCoroutine(MostrarFalaAnimada(mensagem));
-
+                    yield return StartCoroutine(MostrarFalaAnimada(dica));
                     yield return new WaitForSeconds(tempoMensagem);
-
                     yield return StartCoroutine(EsconderDialogoAnimado());
                 }
             }
 
+            // Garante que o intervalo entre o fim de uma fala e o início de outra fique em 10~12 segundos
             yield return new WaitForSeconds(tempoEntreEventos);
         }
     }
 
-    private string EscolherMensagem()
+    private string EscolherDicaDinamica()
     {
         CommunityManager c = CommunityManager.instance;
+        List<string> dicas = new List<string>();
 
-        if (c == null)
-            return "Olá, Sandy!";
-
-        List<string> mensagens = new List<string>();
-
-        if (c.alimentacao < 20)
+        // 1. VERIFICAÇÃO DE ALIMENTAÇÃO
+        if (c != null && c.alimentacao < 25)
         {
-            mensagens.Add("Essa não! A comunidade está precisando muito de comida!");
-            mensagens.Add("Precisamos conseguir alimentos imediatamente!");
+            dicas.Add("Sandy, a comida está acabando! Precisamos ir ao Mercado quanto antes!");
+            dicas.Add("A barriguinha dos filhotes está roncando... Que tal dar um pulo no Mercado?");
+            dicas.Add("Sem comida, a comunidade fica fraca. O Mercado é nossa melhor opção agora!");
         }
-        else if (c.alimentacao < 50)
+        else if (c != null && c.alimentacao < 50)
         {
-            mensagens.Add("A comida está acabando...");
-        }
-
-        if (c.felicidade < 20)
-        {
-            mensagens.Add("O ânimo da comunidade está muito baixo!");
-            mensagens.Add("Precisamos animar esses cães!");
-        }
-        else if (c.felicidade < 50)
-        {
-            mensagens.Add("A comunidade está ficando desanimada.");
+            dicas.Add("Os estoques de ração estão ficando baixos.");
+            dicas.Add("Seria bom planejar uma busca de alimentos em breve.");
         }
 
-        if (mensagens.Count == 0)
+        // 2. VERIFICAÇÃO DE FELICIDADE / ÂNIMO
+        if (c != null && c.felicidade < 25)
         {
-            mensagens.Add("A comunidade está indo muito bem!");
-            mensagens.Add("Continue ajudando todos!");
-            mensagens.Add("Hoje parece um ótimo dia!");
+            dicas.Add("O pessoal está muito desanimado... Uma visitinha à Praça faria milagres!");
+            dicas.Add("Precisamos de brinquedos e carinho! A Praça é o lugar ideal para animar todos.");
+            dicas.Add("O clima na comunidade está meio triste... Que tal irmos até a Praça?");
+        }
+        else if (c != null && c.felicidade < 50)
+        {
+            dicas.Add("O ânimo da matilha podia estar melhor. Fique de olho nisso!");
         }
 
-        return mensagens[Random.Range(0, mensagens.Count)];
+        // 3. SE TUDO ESTIVER EQUILIBRADO (MENSAGENS VARIADAS DE COMPANHIAS E DICAS)
+        if (dicas.Count == 0)
+        {
+            // Dicas gerais sobre locais
+            dicas.Add("No Mercado você encontra alimentos e água para abastecer a comunidade!");
+            dicas.Add("A Praça é ótima para encontrar itens recreativos e aumentar a felicidade dos cães.");
+            dicas.Add("No Hospital conseguimos medicamentos importantes para cuidar de quem precisa.");
+
+            // Frases motivacionais e de carinho da comunidade
+            dicas.Add("Você é o orgulho da nossa matilha, Sandy!");
+            dicas.Add("Lembre-se: explore com cuidado para não atrair a atenção da Carrocinha.");
+            dicas.Add("Sempre que precisar, estou aqui para te dar um direcionamento.");
+            dicas.Add("Qualquer missão que você escolher ajudará demais nossa comunidade!");
+            dicas.Add("Dá uma olhada no mapa e escolha para onde quer ir primeiro!");
+        }
+
+        return dicas[Random.Range(0, dicas.Count)];
     }
 
     private void OnDisable()
     {
-        if (rotinaApresentacao != null)
-            StopCoroutine(rotinaApresentacao);
+        if (rotinaApresentacao != null) StopCoroutine(rotinaApresentacao);
+        if (rotinaEventos != null) StopCoroutine(rotinaEventos);
+        if (rotinaAnimacaoBalao != null) StopCoroutine(rotinaAnimacaoBalao);
+    }
 
-        if (rotinaEventos != null)
-            StopCoroutine(rotinaEventos);
-
-        if (rotinaAnimacaoBalao != null)
-            StopCoroutine(rotinaAnimacaoBalao);
+    [ContextMenu("Resetar Apresentacao do Duke")]
+    public void ResetarApresentacaoSalva()
+    {
+        PlayerPrefs.DeleteKey(CHAVE_APRESENTACAO_REALIZADA);
+        PlayerPrefs.Save();
+        Debug.Log("Apresentação inicial da Sandy resetada com sucesso!");
     }
 }

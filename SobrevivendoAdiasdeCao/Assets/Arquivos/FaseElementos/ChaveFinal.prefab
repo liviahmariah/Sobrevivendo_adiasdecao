@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7492344356270549168}
   - component: {fileID: 2985367781583737698}
   - component: {fileID: 1677241135444842141}
+  - component: {fileID: -5104415213530965454}
   m_Layer: 0
   m_Name: ChaveFinal
   m_TagString: Untagged
@@ -106,7 +107,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95034d2cc847943408a5be921e9828ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChaveFinalTutorial
-  chaveAtiva: 0
   distanciaSalto: 1.5
   alturaSalto: 1.5
   duracaoSalto: 0.5
@@ -156,3 +156,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.64, y: 0.64}
   m_EdgeRadius: 0
+--- !u!114 &-5104415213530965454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5543251370450234549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 651c852a9bdbc6346bf1627d2d5ff648, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EfeitoChaveSolta
+  alturaPulo: 0.7
+  duracaoPulo: 0.45
+  rotacoes: 1.5
+  somAoSoltar: {fileID: 8300000, guid: 8124fce2554050c46b72d11c1ae5b532, type: 3}
+  volumeSom: 0.8

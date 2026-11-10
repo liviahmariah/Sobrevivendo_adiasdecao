@@ -142,5 +142,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16bd020cf71e063449f8c09893dc22fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjetilFeirante
-  velocidade: 6
+  velocidade: 3
   tempoDeVida: 4
+  camadasObstaculos:
+    serializedVersion: 2
+    m_Bits: 0
+  spritePontinho: {fileID: 5535382118489973300, guid: 3594f78c88465ff408312045a01810a9, type: 3}
+  corPontinho: {r: 1, g: 1, b: 1, a: 0.6}
+  escalaPontinho: {x: 0.12, y: 0.12, z: 1}
+  intervaloPontinhos: 0.15
+  tempoVidaPontinho: 0.4

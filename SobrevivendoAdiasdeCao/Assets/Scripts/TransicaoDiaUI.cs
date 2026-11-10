@@ -1,357 +1,230 @@
-
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 public class TransicaoDiaUI : MonoBehaviour
 {
-    [Header("Imagens")]
-    public Image imagemSol;
-    public Image imagemLua;
+    [Header("Painel Principal (UI)")]
+    [Tooltip("GameObject pai do painel de transição na UI.")]
+    public GameObject painelTransicao;
+    [Tooltip("Imagem escura de fundo para fazer o fade.")]
     public Image sobreposicaoEscura;
 
-    [Header("Painel de informações")]
-    public CanvasGroup grupoInformacoes;
+    [Header("Textos TMP")]
     public TMP_Text textoTitulo;
     public TMP_Text textoResumo;
+    public TMP_Text textoProximoDia;
 
-    [Header("Tempos dos fades")]
-    public float duracaoFade = 2f;
+    [Header("Efeitos Sonoros")]
+    public AudioSource audioSourceUI;
+    public AudioClip somDigitacao;
+    public AudioClip somNovoDia;
 
-    [Header("Tempo de exibição")]
-    public float tempoTelaNoite = 4f;
-    public float tempoTelaAmanha = 4f;
+    [Header("Configurações de Tempo")]
+    public float duracaoFade = 0.5f;
+    public float velocidadeTexto = 0.035f;
+    public float tempoExibicaoResumo = 2.5f;
+    public float tempoExibicaoProximoDia = 2.0f;
 
-    [Header("Escurecimento noturno")]
-    [Range(0f, 1f)]
-    public float opacidadeNoite = 0.65f;
+    [Header("Títulos dos Dias (Dia 1 ao 15)")]
+    public string[] titulosDosDias = new string[]
+    {
+        "Dia Inicial",
+        "Primeira Etapa",
+        "Novo Ciclo",
+        "Avanço da Matilha",
+        "Manhã Regular",
+        "Atividades da Comunidade",
+        "Nova Jornada",
+        "Ponto Central",
+        "Desenvolvimento",
+        "Continuidade",
+        "Nova Fase",
+        "Manutenção",
+        "Organização",
+        "Etapa Final",
+        "Encerramento"
+    };
 
-    private Coroutine animacaoAtual;
-    private bool executando;
-
-    private Color corSol;
-    private Color corLua;
-    private Color corSobreposicao;
+    private bool executando = false;
 
     private void Awake()
     {
-        if (imagemSol != null)
-            corSol = imagemSol.color;
-
-        if (imagemLua != null)
-            corLua = imagemLua.color;
-
-        if (sobreposicaoEscura != null)
-            corSobreposicao = sobreposicaoEscura.color;
-
         PrepararTelaInicial();
     }
 
     private void PrepararTelaInicial()
     {
-        DefinirAlphaImagem(imagemSol, 0f);
-        DefinirAlphaImagem(imagemLua, 0f);
-        DefinirAlphaEscurecimento(0f);
+        if (textoTitulo != null) textoTitulo.text = "";
+        if (textoResumo != null) textoResumo.text = "";
+        if (textoProximoDia != null) textoProximoDia.text = "";
 
-        if (grupoInformacoes != null)
-            grupoInformacoes.alpha = 0f;
+        if (sobreposicaoEscura != null)
+        {
+            Color c = sobreposicaoEscura.color;
+            c.a = 0f;
+            sobreposicaoEscura.color = c;
+        }
 
-        if (imagemSol != null)
-            imagemSol.gameObject.SetActive(false);
-
-        if (imagemLua != null)
-            imagemLua.gameObject.SetActive(false);
-
-        if (grupoInformacoes != null)
-            grupoInformacoes.gameObject.SetActive(false);
+        if (painelTransicao != null)
+            painelTransicao.SetActive(false);
     }
 
     public void IniciarTransicao(Action aoFinalizar = null)
     {
-        if (executando)
-        {
-            Debug.LogWarning(
-                "TransicaoDiaUI: uma transição já está em andamento."
-            );
-            return;
-        }
+        if (executando) return;
 
-        // Ativar antes de iniciar a Coroutine.
         gameObject.SetActive(true);
+        if (painelTransicao != null)
+            painelTransicao.SetActive(true);
 
-        if (!gameObject.activeInHierarchy)
-        {
-            Debug.LogError(
-                "TransicaoDiaUI: o objeto ou algum pai está inativo."
-            );
-            return;
-        }
-
-        animacaoAtual = StartCoroutine(
-            ExecutarTransicao(aoFinalizar)
-        );
+        StartCoroutine(ExecutarTransicaoSimplificada(aoFinalizar));
     }
 
-    private IEnumerator ExecutarTransicao(Action aoFinalizar)
+    private IEnumerator ExecutarTransicaoSimplificada(Action aoFinalizar)
     {
         executando = true;
 
-        int diaEncerrado = DayManager.Instance.diaAtual;
-        int proximoDia = diaEncerrado + 1;
+        // 1. CONGELA O JOGO E O ÁUDIO DO MAPA
+        Time.timeScale = 0f;
+        AudioListener.pause = true;
 
-        float mediaDia = DayManager.Instance.ObterMediaDoDia(
-            diaEncerrado
-        );
+        // Fade-In da Imagem Escura de Fundo
+        yield return StartCoroutine(FadeFundo(0f, 1f, duracaoFade));
 
-        // Atualiza os textos antes de exibi-los.
-        MostrarInformacoes(
-            "A noite chegou",
-            CriarResumo(
-                diaEncerrado,
-                mediaDia
-            )
-        );
-
-        // -----------------------------
-        // 1. A NOITE CHEGOU
-        // -----------------------------
-
-        if (imagemLua != null)
-        {
-            imagemLua.gameObject.SetActive(true);
-            DefinirAlphaImagem(imagemLua, 0f);
-
-            yield return FadeImagem(
-                imagemLua, 0f, 1f, duracaoFade
-            );
-        }
-
-        yield return FadeEscurecimento(
-            0f, opacidadeNoite, duracaoFade
-        );
-
-        yield return FadeInformacoes(0f, 1f, duracaoFade);
-
-        yield return new WaitForSecondsRealtime(tempoTelaNoite);
-
-        // -----------------------------
-        // 2. DESAPARECE A NOITE
-        // -----------------------------
-
-        yield return FadeInformacoes(1f, 0f, duracaoFade);
-
-        if (imagemLua != null)
-        {
-            yield return FadeImagem(
-                imagemLua, 1f, 0f, duracaoFade
-            );
-
-            imagemLua.gameObject.SetActive(false);
-        }
-
-        // -----------------------------
-        // 3. NOVO AMANHECER
-        // -----------------------------
-
-        DefinirAlphaImagem(imagemSol, 0f);
-
-        if (imagemSol != null)
-            imagemSol.gameObject.SetActive(true);
-
-        DefinirAlphaEscurecimento(opacidadeNoite);
-
-        MostrarInformacoes(
-            "Dia " + proximoDia + " começou",
-            CriarResumoComunidade()
-        );
-
-        yield return FadeEscurecimento(
-            opacidadeNoite, 0f, duracaoFade
-        );
-
-        if (imagemSol != null)
-        {
-            yield return FadeImagem(
-                imagemSol, 0f, 1f, duracaoFade
-            );
-        }
-
-        yield return FadeInformacoes(0f, 1f, duracaoFade);
-
-        yield return new WaitForSecondsRealtime(tempoTelaAmanha);
-
-        // -----------------------------
-        // 4. ENCERRA A TRANSIÇÃO
-        // -----------------------------
-
-        yield return FadeInformacoes(1f, 0f, duracaoFade);
-
-        if (imagemSol != null)
-        {
-            yield return FadeImagem(
-                imagemSol, 1f, 0f, duracaoFade
-            );
-
-            imagemSol.gameObject.SetActive(false);
-        }
-
-        yield return null;
-
-        if (grupoInformacoes != null)
-            grupoInformacoes.gameObject.SetActive(false);
-
-        DefinirAlphaEscurecimento(0f);
-
-        executando = false;
-        animacaoAtual = null;
-
-        // Só agora o DayManager pode iniciar o novo dia.
-        aoFinalizar?.Invoke();
-    }
-
-    private void MostrarInformacoes(string titulo, string resumo)
-    {
-        if (grupoInformacoes != null)
-        {
-            grupoInformacoes.gameObject.SetActive(true);
-            grupoInformacoes.alpha = 0f;
-        }
+        // ----------------------------------------------------
+        // ETAPA 1: RESULTADOS DO DIA QUE ACABOU
+        // ----------------------------------------------------
+        int diaEncerrado = DayManager.Instance != null ? DayManager.Instance.diaAtual : 1;
+        float mediaDia = DayManager.Instance != null ? DayManager.Instance.ObterMediaDoDia(diaEncerrado) : 100f;
 
         if (textoTitulo != null)
-            textoTitulo.text = titulo;
+            textoTitulo.text = $"FIM DO DIA {diaEncerrado}";
 
-        if (textoResumo != null)
-            textoResumo.text = resumo;
+        string resumoTexto = CriarTextoResumo(diaEncerrado, mediaDia);
+
+        // Digita o resumo perfeitamente sincronizado
+        yield return StartCoroutine(EfeitoDigitarTexto(textoResumo, resumoTexto));
+
+        // Aguarda a leitura do resumo
+        yield return new WaitForSecondsRealtime(tempoExibicaoResumo);
+
+        // Limpa tela do resumo
+        if (textoTitulo != null) textoTitulo.text = "";
+        if (textoResumo != null) textoResumo.text = "";
+
+        // ----------------------------------------------------
+        // ETAPA 2: ANÚNCIO DO NOVO DIA (Dia X: Título)
+        // ----------------------------------------------------
+        int proximoDia = diaEncerrado + 1;
+        string tituloDia = ObterTituloDoDia(proximoDia);
+        string mensagemProximoDia = $"Dia {proximoDia}: {tituloDia}";
+
+        if (audioSourceUI != null && somNovoDia != null)
+            audioSourceUI.PlayOneShot(somNovoDia);
+
+        yield return StartCoroutine(EfeitoDigitarTexto(textoProximoDia, mensagemProximoDia));
+
+        yield return new WaitForSecondsRealtime(tempoExibicaoProximoDia);
+
+        // ----------------------------------------------------
+        // ETAPA 3: FIM DA TRANSIÇÃO E DESCONGELAMENTO
+        // ----------------------------------------------------
+        yield return StartCoroutine(FadeFundo(1f, 0f, duracaoFade));
+
+        if (textoProximoDia != null) textoProximoDia.text = "";
+
+        if (painelTransicao != null)
+            painelTransicao.SetActive(false);
+
+        // Descongela o jogo e o áudio da cena
+        AudioListener.pause = false;
+        Time.timeScale = 1f;
+
+        executando = false;
+
+        // Notifica o DayManager para avançar o dia
+        aoFinalizar?.Invoke();
+
+        gameObject.SetActive(false);
     }
 
-    private string CriarResumo(int dia, float media)
+    private string CriarTextoResumo(int dia, float media)
     {
         if (CommunityManager.instance == null)
+            return $"Média da Comunidade: {media:F0}%";
+
+        var c = CommunityManager.instance;
+
+        return $"Alimentação: {c.alimentacao:F0}%\n" +
+               $"Saúde: {c.saude:F0}%\n" +
+               $"Felicidade: {c.felicidade:F0}%\n\n" +
+               $"MÉDIA GERAL: {media:F0}%";
+    }
+
+    private string ObterTituloDoDia(int dia)
+    {
+        int index = dia - 1;
+
+        if (index >= 0 && index < titulosDosDias.Length)
+            return titulosDosDias[index];
+
+        return "Uma Nova Jornada";
+    }
+
+    // =====================================================
+    // EFEITO DE DIGITAÇÃO INSTANTÂNEO E 100% SINCRONIZADO
+    // =====================================================
+    private IEnumerator EfeitoDigitarTexto(TMP_Text componenteTexto, string textoCompleto)
+    {
+        if (componenteTexto == null) yield break;
+
+        // Limpa o texto e garante que a opacidade esteja visível
+        componenteTexto.text = "";
+        componenteTexto.maxVisibleCharacters = int.MaxValue;
+
+        for (int i = 0; i < textoCompleto.Length; i++)
         {
-            return "Dia " + dia +
-                   "\nMédia da comunidade: " + media.ToString("F1");
-        }
+            char caractereAtual = textoCompleto[i];
 
-        CommunityManager comunidade = CommunityManager.instance;
+            // Adiciona a letra/símbolo atual no componente TMP
+            componenteTexto.text += caractereAtual;
 
-        return "Resumo do dia " + dia +
-               "\nMédia da comunidade: " + media.ToString("F1") +
-               "\nAlimentação: " + comunidade.alimentacao.ToString("F1") +
-               "\nSaúde: " + comunidade.saude.ToString("F1") +
-               "\nFelicidade: " + comunidade.felicidade.ToString("F1");
-    }
-
-    private string CriarResumoComunidade()
-    {
-        if (CommunityManager.instance == null)
-            return "Prepare-se para mais um dia.";
-
-        CommunityManager comunidade = CommunityManager.instance;
-
-        return "Como a comunidade está?" +
-               "\nAlimentação: " + comunidade.alimentacao.ToString("F1") +
-               "\nSaúde: " + comunidade.saude.ToString("F1") +
-               "\nFelicidade: " + comunidade.felicidade.ToString("F1");
-    }
-
-    private IEnumerator FadeInformacoes(
-        float inicio, float fim, float duracao)
-    {
-        if (grupoInformacoes == null)
-            yield break;
-
-        yield return AnimarAlpha(
-            inicio, fim, duracao,
-            valor => grupoInformacoes.alpha = valor
-        );
-    }
-
-    private IEnumerator FadeImagem(
-        Image imagem, float inicio, float fim, float duracao)
-    {
-        if (imagem == null)
-            yield break;
-
-        Color corOriginal = imagem == imagemSol
-            ? corSol
-            : corLua;
-
-        yield return AnimarAlpha(
-            inicio, fim, duracao,
-            valor =>
+            // Se for uma letra ou número, toca o som IMEDIATAMENTE no mesmo frame
+            if (char.IsLetterOrDigit(caractereAtual))
             {
-                Color cor = corOriginal;
-                cor.a = corOriginal.a * valor;
-                imagem.color = cor;
+                if (audioSourceUI != null && somDigitacao != null)
+                {
+                    audioSourceUI.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
+                    audioSourceUI.PlayOneShot(somDigitacao, 0.4f);
+                }
             }
-        );
-    }
 
-    private IEnumerator FadeEscurecimento(
-        float inicio, float fim, float duracao)
-    {
-        if (sobreposicaoEscura == null)
-            yield break;
-
-        yield return AnimarAlpha(
-            inicio, fim, duracao,
-            DefinirAlphaEscurecimento
-        );
-    }
-
-    private IEnumerator AnimarAlpha(
-        float inicio,
-        float fim,
-        float duracao,
-        Action<float> atualizar)
-    {
-        if (duracao <= 0f)
-        {
-            atualizar(fim);
-            yield break;
+            // Aguarda o tempo exato em tempo real (sem congelar pela pausa da cena)
+            yield return new WaitForSecondsRealtime(velocidadeTexto);
         }
+    }
 
+    private IEnumerator FadeFundo(float inicio, float fim, float duracao)
+    {
+        if (sobreposicaoEscura == null) yield break;
+
+        Color cor = sobreposicaoEscura.color;
         float tempo = 0f;
-
-        atualizar(inicio);
 
         while (tempo < duracao)
         {
             tempo += Time.unscaledDeltaTime;
-
             float progresso = Mathf.Clamp01(tempo / duracao);
-            float suave = Mathf.SmoothStep(0f, 1f, progresso);
-
-            atualizar(Mathf.Lerp(inicio, fim, suave));
-
+            cor.a = Mathf.Lerp(inicio, fim, Mathf.SmoothStep(0f, 1f, progresso));
+            sobreposicaoEscura.color = cor;
             yield return null;
         }
 
-        atualizar(fim);
-    }
-
-    private void DefinirAlphaImagem(Image imagem, float alpha)
-    {
-        if (imagem == null)
-            return;
-
-        Color cor = imagem == imagemSol
-            ? corSol
-            : corLua;
-
-        cor.a = alpha;
-        imagem.color = cor;
-    }
-
-    private void DefinirAlphaEscurecimento(float alpha)
-    {
-        if (sobreposicaoEscura == null)
-            return;
-
-        Color cor = corSobreposicao;
-        cor.a = alpha;
+        cor.a = fim;
         sobreposicaoEscura.color = cor;
     }
 }

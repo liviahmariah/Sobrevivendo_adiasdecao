@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using System.Collections;
 
@@ -45,15 +44,12 @@ public class AtaqueFeirante : MonoBehaviour
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
 
-        GameObject objetoPlayer =
-            GameObject.FindGameObjectWithTag("Player");
+        GameObject objetoPlayer = GameObject.FindGameObjectWithTag("Player");
 
         if (objetoPlayer != null)
             player = objetoPlayer.transform;
         else
-            Debug.LogWarning(
-                "AtaqueFeirante: Player não encontrado!"
-            );
+            Debug.LogWarning("AtaqueFeirante: Player não encontrado!");
 
         viradoParaDireita = comecaViradoParaDireita;
         AtualizarOrientacao();
@@ -67,10 +63,7 @@ public class AtaqueFeirante : MonoBehaviour
         if (player == null)
             return;
 
-        Vector2 diferenca =
-            (Vector2)player.position -
-            (Vector2)transform.position;
-
+        Vector2 diferenca = (Vector2)player.position - (Vector2)transform.position;
         float distancia = diferenca.magnitude;
 
         // Sandy precisa estar dentro do alcance.
@@ -82,10 +75,7 @@ public class AtaqueFeirante : MonoBehaviour
         }
 
         // Verifica o campo de visão atual.
-        Vector2 frente = viradoParaDireita
-            ? Vector2.right
-            : Vector2.left;
-
+        Vector2 frente = viradoParaDireita ? Vector2.right : Vector2.left;
         float angulo = Vector2.Angle(frente, diferenca);
 
         if (angulo > anguloVisao * 0.5f)
@@ -180,8 +170,7 @@ public class AtaqueFeirante : MonoBehaviour
 
         proximoAtaque = Time.time + intervaloAtaque;
 
-        EnergiaSandy energia =
-            player.GetComponentInParent<EnergiaSandy>();
+        EnergiaSandy energia = player.GetComponentInParent<EnergiaSandy>();
 
         if (energia == null)
             energia = player.GetComponentInChildren<EnergiaSandy>();
@@ -193,9 +182,7 @@ public class AtaqueFeirante : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning(
-                "AtaqueFeirante: EnergiaSandy não encontrada!"
-            );
+            Debug.LogWarning("AtaqueFeirante: EnergiaSandy não encontrada!");
         }
     }
 
@@ -209,62 +196,37 @@ public class AtaqueFeirante : MonoBehaviour
 
         proximoProjetil = Time.time + intervaloProjetil;
 
-        Vector3 origem = pontoDisparo != null
-            ? pontoDisparo.position
-            : transform.position;
+        Vector3 origem = pontoDisparo != null ? pontoDisparo.position : transform.position;
 
-        GameObject projetil = Instantiate(
-            projetilPrefab,
-            origem,
-            Quaternion.identity
-        );
+        GameObject projetil = Instantiate(projetilPrefab, origem, Quaternion.identity);
 
-        ProjetilFeirante script =
-            projetil.GetComponent<ProjetilFeirante>();
+        ProjetilFeirante script = projetil.GetComponent<ProjetilFeirante>();
 
         if (script != null)
         {
-            script.Configurar(player);
+            // ENVIA A POSIÇÃO FIXA EM VEZ DA REFERÊNCIA DO TRANSFORM
+            script.Configurar(player.position);
         }
         else
         {
-            Debug.LogWarning(
-                "O prefab do projétil não possui ProjetilFeirante."
-            );
+            Debug.LogWarning("O prefab do projétil não possui ProjetilFeirante.");
         }
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(
-            transform.position,
-            alcanceVisao
-        );
+        Gizmos.DrawWireSphere(transform.position, alcanceVisao);
 
-        Vector3 frente = comecaViradoParaDireita
-            ? Vector3.right
-            : Vector3.left;
-
+        Vector3 frente = comecaViradoParaDireita ? Vector3.right : Vector3.left;
         float metadeAngulo = anguloVisao * 0.5f;
 
-        Vector3 limiteEsquerdo =
-            Quaternion.Euler(0, 0, metadeAngulo) * frente;
-
-        Vector3 limiteDireito =
-            Quaternion.Euler(0, 0, -metadeAngulo) * frente;
+        Vector3 limiteEsquerdo = Quaternion.Euler(0, 0, metadeAngulo) * frente;
+        Vector3 limiteDireito = Quaternion.Euler(0, 0, -metadeAngulo) * frente;
 
         Gizmos.color = Color.red;
-
-        Gizmos.DrawRay(
-            transform.position,
-            limiteEsquerdo * alcanceVisao
-        );
-
-        Gizmos.DrawRay(
-            transform.position,
-            limiteDireito * alcanceVisao
-        );
+        Gizmos.DrawRay(transform.position, limiteEsquerdo * alcanceVisao);
+        Gizmos.DrawRay(transform.position, limiteDireito * alcanceVisao);
     }
 
     private void OnDisable()

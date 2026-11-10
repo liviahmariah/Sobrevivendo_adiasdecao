@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 8833309750478934099}
   - component: {fileID: 3588257102566105457}
   - component: {fileID: -7687287173040985305}
+  - component: {fileID: 733362079664805896}
   m_Layer: 0
   m_Name: NPC1
   m_TagString: Untagged
@@ -185,3 +186,24 @@ MonoBehaviour:
   deslocamentoImagem: {x: 0, y: 1.2, z: 0}
   tamanhoImagem: {x: 0.6, y: 0.6}
   danoPorContato: 1
+--- !u!114 &733362079664805896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 586390783481972229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04a44c2e0f60b22459a4f5c2d46fa138, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemVoadorSusto
+  alturaArco: 2.5
+  distanciaHorizontal: 3
+  duracaoVoo: 0.5
+  velocidadeRotacao: 720
+  spritePontinho: {fileID: 5535382118489973300, guid: 3594f78c88465ff408312045a01810a9, type: 3}
+  corPontinho: {r: 1, g: 1, b: 1, a: 1}
+  escalaPontinho: {x: 0.15, y: 0.15, z: 1}
+  intervaloPontinhos: 0.15
+  tempoVidaPontinho: 0.6
