@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using System.Collections;
 
@@ -46,6 +45,7 @@ public class QuedaMedicamentosHospital : MonoBehaviour
         if (HospitalManager.Instance == null)
             return;
 
+        // Garante que continue caindo enquanto a fase estiver rolando
         if (!HospitalManager.Instance.PodeColetar())
             return;
 
@@ -67,21 +67,21 @@ public class QuedaMedicamentosHospital : MonoBehaviour
 
     private float ObterDificuldade()
     {
-        float tempoRestante =
-            HospitalManager.Instance.ObterTempoRestante();
+        if (HospitalManager.Instance == null)
+            return 0f;
 
-        float tempoTotal = Mathf.Max(
-            HospitalManager.Instance.tempoMaximo,
-            1f
-        );
+        float tempoRestante = HospitalManager.Instance.ObterTempoRestante();
+        float tempoTotal = Mathf.Max(HospitalManager.Instance.tempoMaximo, 1f);
 
-        return 1f - Mathf.Clamp01(tempoRestante / tempoTotal);
+        // Garante que o valor nunca ultrapasse 1 (100% da velocidade/frequência no final da fase)
+        return Mathf.Clamp01(1f - (tempoRestante / tempoTotal));
     }
 
     private void AtualizarIntervalo()
     {
         float dificuldade = ObterDificuldade();
 
+        // No final da fase, a frequência de queda atinge o 'intervaloFinal' (mais rápida)
         tempoProximaQueda = Mathf.Lerp(
             intervaloInicial,
             intervaloFinal,
@@ -91,13 +91,8 @@ public class QuedaMedicamentosHospital : MonoBehaviour
 
     private void CriarMedicamento()
     {
-        Transform ponto = pontosQueda[
-            Random.Range(0, pontosQueda.Length)
-        ];
-
-        GameObject prefab = prefabsMedicamentos[
-            Random.Range(0, prefabsMedicamentos.Length)
-        ];
+        Transform ponto = pontosQueda[Random.Range(0, pontosQueda.Length)];
+        GameObject prefab = prefabsMedicamentos[Random.Range(0, prefabsMedicamentos.Length)];
 
         if (ponto == null || prefab == null)
             return;
@@ -108,23 +103,16 @@ public class QuedaMedicamentosHospital : MonoBehaviour
             Quaternion.identity
         );
 
-        MedicamentoColetavel componente =
-            medicamento.GetComponent<MedicamentoColetavel>();
+        MedicamentoColetavel componente = medicamento.GetComponent<MedicamentoColetavel>();
 
         if (componente == null)
         {
-            Debug.LogWarning(
-                "O prefab não possui MedicamentoColetavel!",
-                medicamento
-            );
-
+            Debug.LogWarning("O prefab não possui MedicamentoColetavel!", medicamento);
             Destroy(medicamento);
             return;
         }
 
-        componente.medicamentoRuim =
-            Random.value < chanceMedicamentoRuim;
-
+        componente.medicamentoRuim = Random.value < chanceMedicamentoRuim;
         componente.AtualizarAparencia();
 
         medicamentosAtivos++;
@@ -152,22 +140,16 @@ public class QuedaMedicamentosHospital : MonoBehaviour
         }
 
         Transform visual = medicamento.transform;
-
         Vector3 escalaFinal = visual.localScale;
 
         float velocidade = ObterVelocidade();
-
-        float rotacao = Random.Range(
-            -rotacaoMaxima,
-            rotacaoMaxima
-        );
-
+        float rotacao = Random.Range(-rotacaoMaxima, rotacaoMaxima);
         float direcao = Random.value < 0.5f ? -1f : 1f;
 
         visual.localScale = Vector3.zero;
-
         float tempo = 0f;
 
+        // Animação de entrada (surgimento/escala)
         while (tempo < duracaoEntrada)
         {
             if (medicamento == null)
@@ -177,14 +159,8 @@ public class QuedaMedicamentosHospital : MonoBehaviour
             }
 
             tempo += Time.deltaTime;
-
-            float progresso = Mathf.Clamp01(
-                tempo / duracaoEntrada
-            );
-
-            float escala = Mathf.Sin(
-                progresso * Mathf.PI * 0.5f
-            );
+            float progresso = Mathf.Clamp01(tempo / duracaoEntrada);
+            float escala = Mathf.Sin(progresso * Mathf.PI * 0.5f);
 
             visual.localScale = escalaFinal * escala;
 
@@ -199,27 +175,22 @@ public class QuedaMedicamentosHospital : MonoBehaviour
 
         visual.localScale = escalaFinal;
 
+        // Loop contínuo da descida do medicamento
         while (medicamento != null)
         {
-            if (HospitalManager.Instance == null ||
-                !HospitalManager.Instance.PodeColetar())
+            if (HospitalManager.Instance == null || !HospitalManager.Instance.PodeColetar())
                 break;
 
-            float deslocamento = Mathf.Sin(
-                Time.time * 5f
-            ) * balancoHorizontal * direcao;
+            float deslocamento = Mathf.Sin(Time.time * 5f) * balancoHorizontal * direcao;
 
+            // Correção dos multiplicadores de velocidade e deltaTime
             visual.position += new Vector3(
                 deslocamento * Time.deltaTime,
                 -velocidade * Time.deltaTime,
                 0f
             );
 
-            visual.Rotate(
-                0f,
-                0f,
-                rotacao * Time.deltaTime
-            );
+            visual.Rotate(0f, 0f, rotacao * Time.deltaTime);
 
             yield return null;
         }

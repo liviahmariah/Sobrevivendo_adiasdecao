@@ -7,10 +7,12 @@ public class AtaqueFeirante : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public Transform pontoDisparo;
     public GameObject projetilPrefab;
+    public Animator animator;
 
-    [Header("Diálogo")]
+    [Header("Diálogo / Falas")]
     public BalaoFalaFeirante balaoFala;
-    public float tempoAmeaca = 1.2f;
+    [Tooltip("Tempo que a fala fica visível durante o ataque.")]
+    public float tempoExibicaoFala = 1.5f;
 
     [Header("Visão")]
     public float alcanceVisao = 7f;
@@ -23,26 +25,33 @@ public class AtaqueFeirante : MonoBehaviour
     [Header("Ataque à distância")]
     public float distanciaMinimaProjetil = 2.5f;
     public float intervaloProjetil = 2f;
+    [Tooltip("Caso NÃO use Animation Events na animação, o projétil será lançado após este tempo em segundos.")]
+    public float atrasoDisparoFallback = 0.25f;
 
     [Header("Ataque por proximidade")]
     public float distanciaAtaque = 1.5f;
     public float intervaloAtaque = 1.5f;
 
-    [Header("Orientação")]
+    [Header("Orientação Base")]
     public bool comecaViradoParaDireita = true;
 
     private Transform player;
     private float proximoProjetil;
     private float proximoAtaque;
     private bool viradoParaDireita;
-    private bool ameacaEmAndamento;
-    private bool jaAmeacou;
-    private Coroutine rotinaAmeaca;
+    private Coroutine rotinaFala;
+    private bool projetilDisparadoNesteAtaque = false;
+
+    // Trigger único de ataque no Animator
+    private static readonly int HashAtacar = Animator.StringToHash("Atacar");
 
     private void Start()
     {
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (animator == null)
+            animator = GetComponent<Animator>();
 
         GameObject objetoPlayer = GameObject.FindGameObjectWithTag("Player");
 
@@ -66,26 +75,36 @@ public class AtaqueFeirante : MonoBehaviour
         Vector2 diferenca = (Vector2)player.position - (Vector2)transform.position;
         float distancia = diferenca.magnitude;
 
-        // Sandy precisa estar dentro do alcance.
-        if (distancia > alcanceVisao || distancia <= 0.01f)
+        // Sandy fora do alcance ou com visão bloqueada
+        if (distancia > alcanceVisao || distancia <= 0.01f || !SandyEstaNoCampoDeVisao(diferenca, distancia))
         {
-            CancelarAmeaca();
-            jaAmeacou = false;
+            EsconderFalaSeNecessario();
             return;
         }
 
-        // Verifica o campo de visão atual.
+        // Vira para o lado da Sandy (Esquerda/Direita)
+        viradoParaDireita = diferenca.x >= 0f;
+        AtualizarOrientacao();
+
+        // Escolhe o ataque conforme a distância
+        if (distancia <= distanciaAtaque)
+        {
+            TentarAtacarPerto();
+        }
+        else if (distancia >= distanciaMinimaProjetil)
+        {
+            TentarAtacarLonge();
+        }
+    }
+
+    private bool SandyEstaNoCampoDeVisao(Vector2 diferenca, float distancia)
+    {
         Vector2 frente = viradoParaDireita ? Vector2.right : Vector2.left;
         float angulo = Vector2.Angle(frente, diferenca);
 
         if (angulo > anguloVisao * 0.5f)
-        {
-            CancelarAmeaca();
-            jaAmeacou = false;
-            return;
-        }
+            return false;
 
-        // Verifica obstáculos que bloqueiam a visão.
         RaycastHit2D obstaculo = Physics2D.Raycast(
             transform.position,
             diferenca.normalized,
@@ -93,123 +112,126 @@ public class AtaqueFeirante : MonoBehaviour
             obstaculos
         );
 
-        if (obstaculo.collider != null)
-        {
-            CancelarAmeaca();
-            jaAmeacou = false;
-            return;
-        }
-
-        // O Feirante percebe Sandy e vira para ela.
-        viradoParaDireita = diferenca.x >= 0f;
-        AtualizarOrientacao();
-
-        // Primeiro, ameaça Sandy com uma fala.
-        if (!jaAmeacou && !ameacaEmAndamento)
-        {
-            rotinaAmeaca = StartCoroutine(AmeacarEAguardar());
-            return;
-        }
-
-        // Não ataca enquanto a fala está sendo exibida.
-        if (ameacaEmAndamento)
-            return;
-
-        // Escolhe o ataque conforme a distância.
-        if (distancia <= distanciaAtaque)
-        {
-            AtacarDePerto();
-        }
-        else if (distancia >= distanciaMinimaProjetil)
-        {
-            AtacarDeLonge();
-        }
-    }
-
-    private IEnumerator AmeacarEAguardar()
-    {
-        ameacaEmAndamento = true;
-
-        if (balaoFala != null)
-            balaoFala.MostrarFala();
-
-        yield return new WaitForSeconds(tempoAmeaca);
-
-        if (balaoFala != null)
-            balaoFala.EsconderFala();
-
-        ameacaEmAndamento = false;
-        jaAmeacou = true;
-        rotinaAmeaca = null;
-    }
-
-    private void CancelarAmeaca()
-    {
-        if (rotinaAmeaca != null)
-        {
-            StopCoroutine(rotinaAmeaca);
-            rotinaAmeaca = null;
-        }
-
-        ameacaEmAndamento = false;
-
-        if (balaoFala != null)
-            balaoFala.EsconderFala();
+        return obstaculo.collider == null;
     }
 
     private void AtualizarOrientacao()
     {
         if (spriteRenderer != null)
-            spriteRenderer.flipX = !viradoParaDireita;
+        {
+            spriteRenderer.flipX = comecaViradoParaDireita ? !viradoParaDireita : viradoParaDireita;
+        }
     }
 
-    private void AtacarDePerto()
+    private void TentarAtacarPerto()
     {
         if (Time.time < proximoAtaque)
             return;
 
         proximoAtaque = Time.time + intervaloAtaque;
 
-        EnergiaSandy energia = player.GetComponentInParent<EnergiaSandy>();
+        // 1. Fala junto com o ataque
+        ExibirFalaJuntoComAtaque();
 
+        // 2. Animação
+        if (animator != null)
+            animator.SetTrigger(HashAtacar);
+
+        // 3. Aplica o dano
+        EnergiaSandy energia = player.GetComponentInParent<EnergiaSandy>();
         if (energia == null)
             energia = player.GetComponentInChildren<EnergiaSandy>();
 
         if (energia != null)
         {
             energia.PerderEnergia();
-            Debug.Log("FEIRANTE ATACOU SANDY DE PERTO!");
-        }
-        else
-        {
-            Debug.LogWarning("AtaqueFeirante: EnergiaSandy não encontrada!");
+            Debug.Log("FEIRANTE ATACOU DE PERTO!");
         }
     }
 
-    private void AtacarDeLonge()
+    private void TentarAtacarLonge()
     {
-        if (projetilPrefab == null)
-            return;
-
-        if (Time.time < proximoProjetil)
+        if (projetilPrefab == null || Time.time < proximoProjetil)
             return;
 
         proximoProjetil = Time.time + intervaloProjetil;
+        projetilDisparadoNesteAtaque = false;
+
+        // 1. Fala junto com o ataque
+        ExibirFalaJuntoComAtaque();
+
+        // 2. Animação de Ataque
+        if (animator != null)
+            animator.SetTrigger(HashAtacar);
+
+        // 3. Fallback: Garante o lançamento mesmo se não houver Animation Event configurado
+        StartCoroutine(RotinaFallbackProjetil());
+    }
+
+    private void ExibirFalaJuntoComAtaque()
+    {
+        if (balaoFala == null)
+            return;
+
+        if (rotinaFala != null)
+            StopCoroutine(rotinaFala);
+
+        rotinaFala = StartCoroutine(RotinaExibirFala());
+    }
+
+    private IEnumerator RotinaExibirFala()
+    {
+        balaoFala.MostrarFala();
+        yield return new WaitForSeconds(tempoExibicaoFala);
+        balaoFala.EsconderFala();
+        rotinaFala = null;
+    }
+
+    private void EsconderFalaSeNecessario()
+    {
+        if (rotinaFala != null)
+        {
+            StopCoroutine(rotinaFala);
+            rotinaFala = null;
+        }
+
+        if (balaoFala != null)
+            balaoFala.EsconderFala();
+    }
+
+    private IEnumerator RotinaFallbackProjetil()
+    {
+        yield return new WaitForSeconds(atrasoDisparoFallback);
+
+        // Se a animação já não disparou via Animation Event, o código lança agora
+        if (!projetilDisparadoNesteAtaque)
+        {
+            DispararProjetilInstancia();
+        }
+    }
+
+    // ========================================================================
+    // MÉTODO DE DISPARO (Pode ser chamado por Animation Event OU pelo Fallback)
+    // ========================================================================
+    public void DispararProjetilInstancia()
+    {
+        if (projetilPrefab == null || player == null || projetilDisparadoNesteAtaque)
+            return;
+
+        projetilDisparadoNesteAtaque = true;
 
         Vector3 origem = pontoDisparo != null ? pontoDisparo.position : transform.position;
-
         GameObject projetil = Instantiate(projetilPrefab, origem, Quaternion.identity);
 
         ProjetilFeirante script = projetil.GetComponent<ProjetilFeirante>();
-
         if (script != null)
         {
-            // ENVIA A POSIÇÃO FIXA EM VEZ DA REFERÊNCIA DO TRANSFORM
             script.Configurar(player.position);
+            Debug.Log("FEIRANTE LANÇOU PROJÉTIL COM SUCESSO!");
         }
         else
         {
-            Debug.LogWarning("O prefab do projétil não possui ProjetilFeirante.");
+            Debug.LogError("O Prefab do projétil NÃO possui o script 'ProjetilFeirante' anexado!");
         }
     }
 
@@ -231,6 +253,6 @@ public class AtaqueFeirante : MonoBehaviour
 
     private void OnDisable()
     {
-        CancelarAmeaca();
+        EsconderFalaSeNecessario();
     }
 }

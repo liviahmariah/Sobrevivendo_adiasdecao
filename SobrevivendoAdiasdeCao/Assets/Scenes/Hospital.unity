@@ -931,6 +931,8 @@ MonoBehaviour:
   - {fileID: 1928747098}
   - {fileID: 1594056064}
   - {fileID: 293354610}
+  - {fileID: 1301183632}
+  - {fileID: 579214355}
   prefabsMedicamentos:
   - {fileID: 1770576235107977729, guid: a74439757da8a5d49b0cd72dde10b4ab, type: 3}
   - {fileID: 8706106127335455176, guid: b62378961a91baf43b7e3be4d675dffe, type: 3}
@@ -945,7 +947,7 @@ MonoBehaviour:
   duracaoEntrada: 0.25
   rotacaoMaxima: 12
   balancoHorizontal: 0.12
-  maxMedicamentosSimultaneos: 8
+  maxMedicamentosSimultaneos: 10
   chanceMedicamentoRuim: 0.2
 --- !u!4 &241103460
 Transform:
@@ -6035,7 +6037,7 @@ Transform:
   m_GameObject: {fileID: 293354609}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.7, y: 0, z: 0}
+  m_LocalPosition: {x: 2.12, y: -0.78, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6478,37 +6480,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 386613054}
   m_CullTransparentMesh: 1
---- !u!1 &424364468
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 424364469}
-  m_Layer: 0
-  m_Name: Spawn_01 (4)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &424364469
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 424364468}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.55, y: -2.88, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 699367974}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &458445589
 GameObject:
   m_ObjectHideFlags: 0
@@ -7124,6 +7095,37 @@ MonoBehaviour:
   valorMedicamentoDiferente: 0.5
   valorKitDiferente: 0.75
   perdaAnimoAoSerPega: 10
+--- !u!1 &579214354
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 579214355}
+  m_Layer: 0
+  m_Name: PontoQueda_1 (5)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &579214355
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 579214354}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -8, y: -0.32, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2074956587}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &600204874
 GameObject:
   m_ObjectHideFlags: 0
@@ -12206,78 +12208,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &699367972
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 699367974}
-  - component: {fileID: 699367973}
-  m_Layer: 0
-  m_Name: SpawnRecursosMercado
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &699367973
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 699367972}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be1886a36cc253e42b5b1ac5f7a7a2a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpawnRecursosMercado
-  prefabsComida:
-  - {fileID: 1770576235107977729, guid: a74439757da8a5d49b0cd72dde10b4ab, type: 3}
-  - {fileID: 8706106127335455176, guid: b62378961a91baf43b7e3be4d675dffe, type: 3}
-  - {fileID: 1758124043824647090, guid: 6e46957f43add304e985d21aeb798ada, type: 3}
-  - {fileID: 287889492426877123, guid: 95e62e44c4ccd29439c2c86c97af53fb, type: 3}
-  - {fileID: 805301444011691559, guid: 6095297bdbc30aa46af5f303586b81c0, type: 3}
-  - {fileID: 1300144712726418409, guid: adde2ac0a416624478c1a5704444c1c0, type: 3}
-  pontosSpawn:
-  - {fileID: 2142920673}
-  - {fileID: 1104745985}
-  - {fileID: 2046477156}
-  - {fileID: 1200901197}
-  - {fileID: 424364469}
-  quantidadeInicial: 3
-  intervaloSpawn: 1
-  chanceComidaRuim: 0.53
-  duracaoEntrada: 0.35
-  alturaPulo: 0.65
-  duracaoPulo: 0.4
-  escalaInicial: 0.2
-  flutuarDepoisDoSpawn: 1
-  alturaFlutuacao: 0.08
-  velocidadeFlutuacao: 2.5
---- !u!4 &699367974
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 699367972}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.28, y: -0.25, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2142920673}
-  - {fileID: 1104745985}
-  - {fileID: 2046477156}
-  - {fileID: 1200901197}
-  - {fileID: 424364469}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &701390675
 GameObject:
   m_ObjectHideFlags: 0
@@ -12994,7 +12924,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Busque alimento para comunidade
+  m_text: "Busque rem\xE9dios para a comunidade"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 241c6acceca8b844baad6cbcf60cefc7, type: 2}
   m_sharedMaterial: {fileID: -699112959996641730, guid: 241c6acceca8b844baad6cbcf60cefc7, type: 2}
@@ -13726,6 +13656,10 @@ MonoBehaviour:
   prefabProjetil: {fileID: 5758187747585115680, guid: 0b7978848fde4a24ab61f68ecab39a3a, type: 3}
   pontoLancamento: {fileID: 1181681365}
   intervaloAtaques: 5
+  atrasoDisparoFallback: 0.25
+  spriteRenderer: {fileID: 0}
+  animator: {fileID: 0}
+  comecaViradaParaDireita: 1
   energiaSandy: {fileID: 2066973224}
   efeitoOndulacao: {fileID: 2085112266}
 --- !u!95 &913475820
@@ -13738,7 +13672,7 @@ Animator:
   m_GameObject: {fileID: 913475815}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: -2094705916252035484, guid: 6d5559fb3561a804ab9c3dca5d6c8ae3, type: 3}
+  m_Controller: {fileID: 9100000, guid: c296f554d62fb7742baccc0401705e08, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -14387,37 +14321,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1104745984
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1104745985}
-  m_Layer: 0
-  m_Name: Spawn_01 (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1104745985
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1104745984}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.35, y: -1.83, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 699367974}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1130723452
 GameObject:
   m_ObjectHideFlags: 0
@@ -14612,7 +14515,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Mercado P\xFAblico "
+  m_text: Hospital
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 241c6acceca8b844baad6cbcf60cefc7, type: 2}
   m_sharedMaterial: {fileID: -699112959996641730, guid: 241c6acceca8b844baad6cbcf60cefc7, type: 2}
@@ -15186,37 +15089,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1200901196
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1200901197}
-  m_Layer: 0
-  m_Name: Spawn_01 (3)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1200901197
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200901196}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.92, y: -2.97, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 699367974}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1225857836
 GameObject:
@@ -15983,6 +15855,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1301183631
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1301183632}
+  m_Layer: 0
+  m_Name: PontoQueda_1 (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1301183632
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1301183631}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -9.7, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2074956587}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1308970197
 GameObject:
   m_ObjectHideFlags: 0
@@ -16243,6 +16146,7 @@ GameObject:
   - component: {fileID: 1361207930}
   - component: {fileID: 1361207929}
   - component: {fileID: 1361207928}
+  - component: {fileID: 1361207931}
   m_Layer: 0
   m_Name: AudioFase
   m_TagString: Untagged
@@ -16378,6 +16282,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1361207931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1361207927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b2c93f66352b244a9159334ace7db2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioRegister
+  category: 0
 --- !u!1 &1372631134
 GameObject:
   m_ObjectHideFlags: 0
@@ -18189,8 +18106,8 @@ GameObject:
   - component: {fileID: 1615706625}
   - component: {fileID: 1615706627}
   - component: {fileID: 1615706626}
-  - component: {fileID: 1615706628}
   - component: {fileID: 1615706629}
+  - component: {fileID: 1615706630}
   m_Layer: 0
   m_Name: Caixa
   m_TagString: Untagged
@@ -18256,22 +18173,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1615706624}
   m_CullTransparentMesh: 1
---- !u!114 &1615706628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1615706624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11199dd74156cfb49b0fc63a697ee6d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaixaComidasUI
-  conteudo: {fileID: 198608420}
-  itemComidaPrefab: {fileID: 2607391835851243762, guid: 586a77fdce6535b499fb419e9c1cb368, type: 3}
-  margem: 10
-  variacaoRotacao: 12
 --- !u!114 &1615706629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18286,6 +18187,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacaFlutuante
   altura: 0.15
   velocidade: 1.5
+--- !u!114 &1615706630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1615706624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9c54c72d1f742041bb33d7709f351a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CaixaComidasHospitalUI
+  conteudo: {fileID: 198608420}
+  itemComidaPrefab: {fileID: 2607391835851243762, guid: 688f7d94f1d833b49b2c10ab2d6ee85f, type: 3}
+  margem: 10
+  variacaoRotacao: 12
 --- !u!1 &1625607923
 GameObject:
   m_ObjectHideFlags: 0
@@ -18912,7 +18829,7 @@ MonoBehaviour:
   saidaEsquerda: {fileID: 754384379}
   intervaloMinimo: 3
   intervaloMaximo: 7
-  maximoNPCsAtivos: 3
+  maximoNPCsAtivos: 2
   chanceNPCagressivo: 10
 --- !u!1 &1745447144
 GameObject:
@@ -19424,7 +19341,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1823105266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24823,7 +24740,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2022083440}
-  - component: {fileID: 2022083439}
+  - component: {fileID: 2022083441}
   m_Layer: 0
   m_Name: PontuacaoSandyUI
   m_TagString: Untagged
@@ -24831,19 +24748,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2022083439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2022083438}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc81abc78f123f241b33799570844eb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PontuacaoSandyUI
-  textoPontos: {fileID: 1145391401}
 --- !u!4 &2022083440
 Transform:
   m_ObjectHideFlags: 0
@@ -24859,37 +24763,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2046477155
-GameObject:
+--- !u!114 &2022083441
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2046477156}
-  m_Layer: 0
-  m_Name: Spawn_01 (2)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2046477156
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2046477155}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.33, y: -1.84, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 699367974}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 2022083438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79d0ff11a50a4834d87a9493e460c404, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PontuacaoHospitalUI
+  textoPontos: {fileID: 1145391401}
+  prefixoTexto: 'Pontos: '
 --- !u!1 &2064021242
 GameObject:
   m_ObjectHideFlags: 0
@@ -25144,6 +25031,8 @@ Transform:
   - {fileID: 1928747098}
   - {fileID: 1594056064}
   - {fileID: 293354610}
+  - {fileID: 1301183632}
+  - {fileID: 579214355}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2085112261
@@ -25439,37 +25328,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2131619673}
   m_CullTransparentMesh: 1
---- !u!1 &2142920672
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2142920673}
-  m_Layer: 0
-  m_Name: Spawn_01
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2142920673
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2142920672}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6, y: -1.77, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 699367974}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2147301896
 GameObject:
   m_ObjectHideFlags: 0
@@ -25561,7 +25419,6 @@ SceneRoots:
   - {fileID: 573599233}
   - {fileID: 1583056516}
   - {fileID: 757972751}
-  - {fileID: 699367974}
   - {fileID: 71420918}
   - {fileID: 513286609}
   - {fileID: 693354345}

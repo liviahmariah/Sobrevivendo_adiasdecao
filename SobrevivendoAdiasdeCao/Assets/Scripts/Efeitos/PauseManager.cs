@@ -6,17 +6,12 @@ public class PauseManager : MonoBehaviour
 {
     public static PauseManager Instance { get; private set; }
 
-    [Header("Painéis (Buscados por Tag)")]
+    [Header("Painéis de UI (Arraste os objetos do Prefab)")]
     [SerializeField] private GameObject painelPause;
     [SerializeField] private GameObject painelConfiguracoes;
     [SerializeField] private GameObject painelCreditos;
 
-    [Header("Sliders de Áudio (No Painel de Configurações)")]
-    [SerializeField] private Slider sliderMaster;
-    [SerializeField] private Slider sliderMusica;
-    [SerializeField] private Slider sliderSFX;
-
-    [Header("Nomes EXATOS das Cenas sem Pause")]
+    [Header("Cenas onde o Pause é BLOQUEADO")]
     [SerializeField] private string cenaMenu = "Menu";
     [SerializeField] private string cenaIntro1 = "Intro1";
     [SerializeField] private string cenaIntro2 = "Intro2";
@@ -26,17 +21,29 @@ public class PauseManager : MonoBehaviour
 
     private void Awake()
     {
+        // Garante instância única
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
-            enabled = false;
             return;
         }
 
         Instance = this;
+
+        // Se estiver preso dentro de algum filho, desanexa para a raiz e aplica DontDestroyOnLoad
+        if (transform.parent != null)
+        {
+            transform.SetParent(null);
+        }
+
         DontDestroyOnLoad(gameObject);
 
         SceneManager.sceneLoaded += AoCarregarCena;
+    }
+
+    private void Start()
+    {
+        FecharTodosOsPaineis();
     }
 
     private void Update()
@@ -45,6 +52,7 @@ public class PauseManager : MonoBehaviour
         {
             string cenaAtual = SceneManager.GetActiveScene().name;
 
+            // Não abre pause nas telas de Menu/Intro
             if (!PodePausarNaCenaAtual(cenaAtual))
                 return;
 
@@ -59,27 +67,11 @@ public class PauseManager : MonoBehaviour
 
     public void AlternarPause()
     {
-        if (painelPause == null || painelConfiguracoes == null)
-        {
-            BuscarPaineisNaCena();
-        }
-
-        if (painelPause == null)
-        {
-            Debug.LogError("[PauseManager] ERRO CRÍTICO: Não existe nenhum GameObject na cena com a Tag 'PainelPause'!");
-            return;
-        }
-
         pausado = !pausado;
 
         if (pausado)
         {
-            // Abre apenas o menu de Pause e esconde os demais
-            painelPause.SetActive(true);
-            if (painelConfiguracoes != null) painelConfiguracoes.SetActive(false);
-            if (painelCreditos != null) painelCreditos.SetActive(false);
-
-            Time.timeScale = 0f;
+            Pausar();
         }
         else
         {
@@ -87,19 +79,25 @@ public class PauseManager : MonoBehaviour
         }
     }
 
+    public void Pausar()
+    {
+        pausado = true;
+        Time.timeScale = 0f;
+
+        if (painelPause != null) painelPause.SetActive(true);
+        if (painelConfiguracoes != null) painelConfiguracoes.SetActive(false);
+        if (painelCreditos != null) painelCreditos.SetActive(false);
+    }
+
     public void Continuar()
     {
         pausado = false;
+        Time.timeScale = 1f;
 
         FecharTodosOsPaineis();
-
-        Time.timeScale = 1f;
     }
 
-    // =====================================================
-    // NAVEGAÇÃO DE PAINÉIS
-    // =====================================================
-
+    // Navegação de Painéis
     public void AbrirConfiguracoes()
     {
         if (painelPause != null) painelPause.SetActive(false);
@@ -121,21 +119,11 @@ public class PauseManager : MonoBehaviour
         if (painelCreditos != null) painelCreditos.SetActive(true);
     }
 
-    public void VoltarParaConfiguracoes()
-    {
-        if (painelCreditos != null) painelCreditos.SetActive(false);
-        if (painelConfiguracoes != null) painelConfiguracoes.SetActive(true);
-    }
-
     public void VoltarMenuPrincipal()
     {
         Time.timeScale = 1f;
         pausado = false;
-
-        if (MusicManager.instance != null)
-        {
-            MusicManager.instance.TocarMusicaSuave(MusicManager.instance.musicaMenu);
-        }
+        FecharTodosOsPaineis();
 
         SceneManager.LoadScene(cenaMenu);
     }
@@ -147,81 +135,11 @@ public class PauseManager : MonoBehaviour
         if (painelCreditos != null) painelCreditos.SetActive(false);
     }
 
-    private void FecharTudo()
-    {
-        pausado = false;
-        Time.timeScale = 1f;
-        FecharTodosOsPaineis();
-    }
-
     private void AoCarregarCena(Scene cena, LoadSceneMode modo)
     {
-        FecharTudo();
-        BuscarPaineisNaCena();
-    }
-
-    // =====================================================
-    // BUSCA AUTOMÁTICA DE COMPONENTES POR TAG
-    // =====================================================
-
-    private void BuscarPaineisNaCena()
-    {
-        GameObject[] todosObjetos = Resources.FindObjectsOfTypeAll<GameObject>();
-
-        foreach (GameObject obj in todosObjetos)
-        {
-            if (obj.hideFlags == HideFlags.None && obj.scene.isLoaded)
-            {
-                if (obj.CompareTag("PainelPause"))
-                {
-                    painelPause = obj;
-                }
-                else if (obj.CompareTag("PainelConfig"))
-                {
-                    painelConfiguracoes = obj;
-                }
-                else if (obj.CompareTag("PainelCreditos"))
-                {
-                    painelCreditos = obj;
-                }
-            }
-        }
-
+        Time.timeScale = 1f;
+        pausado = false;
         FecharTodosOsPaineis();
-        ConectarSlidersDeAudio();
-    }
-
-    private void ConectarSlidersDeAudio()
-    {
-        if (AudioManager.Instance == null || painelConfiguracoes == null) return;
-
-        // Procura os Sliders dentro do Painel de Configurações
-        Slider[] sliders = painelConfiguracoes.GetComponentsInChildren<Slider>(true);
-
-        foreach (Slider s in sliders)
-        {
-            if (s.gameObject.name.Contains("Master"))
-            {
-                sliderMaster = s;
-                // sliderMaster.value = AudioManager.Instance.GetMasterVolume(); // COMENTADO
-                sliderMaster.onValueChanged.RemoveAllListeners();
-                sliderMaster.onValueChanged.AddListener(AudioManager.Instance.SetMasterVolume);
-            }
-            else if (s.gameObject.name.Contains("Musica") || s.gameObject.name.Contains("Music"))
-            {
-                sliderMusica = s;
-                // sliderMusica.value = AudioManager.Instance.GetMusicVolume(); // COMENTADO
-                sliderMusica.onValueChanged.RemoveAllListeners();
-                sliderMusica.onValueChanged.AddListener(AudioManager.Instance.SetMusicVolume);
-            }
-            else if (s.gameObject.name.Contains("SFX") || s.gameObject.name.Contains("Efeitos"))
-            {
-                sliderSFX = s;
-                // sliderSFX.value = AudioManager.Instance.GetSFXVolume(); // COMENTADO
-                sliderSFX.onValueChanged.RemoveAllListeners();
-                sliderSFX.onValueChanged.AddListener(AudioManager.Instance.SetSFXVolume);
-            }
-        }
     }
 
     private void OnDestroy()
@@ -229,7 +147,6 @@ public class PauseManager : MonoBehaviour
         if (Instance == this)
         {
             SceneManager.sceneLoaded -= AoCarregarCena;
-            Instance = null;
             Time.timeScale = 1f;
         }
     }

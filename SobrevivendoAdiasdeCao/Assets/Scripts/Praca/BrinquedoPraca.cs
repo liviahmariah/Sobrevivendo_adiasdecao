@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class BrinquedoPraca : MonoBehaviour
@@ -26,8 +25,7 @@ public class BrinquedoPraca : MonoBehaviour
     public bool brinquedoRuim = false;
 
     [Header("Aparência dos brinquedos ruins")]
-    public Color corBrinquedoRuim =
-        new Color(1f, 0.75f, 0.75f, 1f);
+    public Color corBrinquedoRuim = new Color(1f, 0.75f, 0.75f, 1f);
 
     private SpriteRenderer[] sprites;
     private Color[] coresOriginais;
@@ -55,16 +53,21 @@ public class BrinquedoPraca : MonoBehaviour
     {
         sprites = GetComponentsInChildren<SpriteRenderer>(true);
 
-        coresOriginais = new Color[sprites.Length];
-
-        for (int i = 0; i < sprites.Length; i++)
+        if (sprites != null && sprites.Length > 0)
         {
-            coresOriginais[i] = sprites[i].color;
+            coresOriginais = new Color[sprites.Length];
+
+            for (int i = 0; i < sprites.Length; i++)
+            {
+                coresOriginais[i] = sprites[i].color;
+            }
         }
     }
 
     public void AtualizarAparencia()
     {
+        if (sprites == null) return;
+
         for (int i = 0; i < sprites.Length; i++)
         {
             sprites[i].color = brinquedoRuim
@@ -86,15 +89,17 @@ public class BrinquedoPraca : MonoBehaviour
         if (coletado)
             return;
 
-        if (PracaManager.Instance == null ||
-            !PracaManager.Instance.PodeColetar())
+        if (PracaManager.Instance == null || !PracaManager.Instance.PodeColetar())
             return;
 
         coletado = true;
 
         float pontuacao = brinquedoRuim ? -valor : valor;
 
+        // 1. Atualiza pontuação da Praça
         PracaManager.Instance.AdicionarDiversao(pontuacao);
+
+        // 2. Exibe balão de comentário
         if (ComentarioBrinquedoPracaUI.Instance != null)
         {
             ComentarioBrinquedoPracaUI.Instance.MostrarComentario(
@@ -104,6 +109,34 @@ public class BrinquedoPraca : MonoBehaviour
             );
         }
 
+        // 3. INTEGRAÇÃO COM A CAIXA DE BRINQUEDOS DA UI (PRAÇA)
+        if (CaixaBrinquedosUI.Instance != null)
+        {
+            if (brinquedoRuim)
+            {
+                // Se o brinquedo for ruim, remove um item bom previamente guardado
+                CaixaBrinquedosUI.Instance.RemoverUmBrinquedo();
+                Debug.Log("PRAÇA | Brinquedo RUIM: Item removido da caixa!");
+            }
+            else
+            {
+                // Resgata o Sprite principal do brinquedo
+                SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>(true);
+                Sprite spriteParaUI = (sr != null) ? sr.sprite : null;
+
+                if (spriteParaUI != null)
+                {
+                    CaixaBrinquedosUI.Instance.AdicionarBrinquedo(spriteParaUI);
+                    Debug.Log("PRAÇA | Brinquedo BOM: Adicionado à caixa!");
+                }
+                else
+                {
+                    Debug.LogWarning("PRAÇA | Nenhum SpriteRenderer encontrado no brinquedo!");
+                }
+            }
+        }
+
+        // 4. Efeitos sonoros
         TocarSom();
 
         Debug.Log(
