@@ -363,7 +363,7 @@ MonoBehaviour:
   consumoAlimentacaoNormal: 0.1
   multiplicadorConsumoSaudeAtencao: 0.5
   multiplicadorConsumoSaudeCritica: 1
-  perdaSaudeFomeAtencao: 0.5
+  perdaSaudeFomeAtencao: 1
   perdaSaudeFomeCritica: 1
   perdaFelicidadeFome: 0.5
   perdaFelicidadeSaude: 0.5
