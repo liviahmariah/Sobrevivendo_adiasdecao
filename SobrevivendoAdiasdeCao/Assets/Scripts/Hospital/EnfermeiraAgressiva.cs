@@ -17,6 +17,14 @@ public class EnfermeiraAgressiva : MonoBehaviour
     [Tooltip("Caso NÃO use Animation Events na Unity, o projétil será instanciado após esse atraso.")]
     public float atrasoDisparoFallback = 0.25f;
 
+    [Header("Áudio")]
+    public AudioSource audioSource;
+    public AudioClip somAtaque;
+    [Range(0f, 1f)]
+    public float volumeSomAtaque = 1f;
+    [Tooltip("Varia levemente o tom do som a cada ataque para ficar mais natural.")]
+    public bool variarTom = true;
+
     [Header("Componentes Visuais")]
     public SpriteRenderer spriteRenderer;
     public Animator animator;
@@ -32,7 +40,6 @@ public class EnfermeiraAgressiva : MonoBehaviour
     private bool viradaParaDireita;
     private bool projetilDisparadoNesteAtaque = false;
 
-    // Trigger de ataque otimizado para o Animator
     private static readonly int HashAtacar = Animator.StringToHash("Atacar");
 
     private void Start()
@@ -42,6 +49,16 @@ public class EnfermeiraAgressiva : MonoBehaviour
 
         if (animator == null)
             animator = GetComponent<Animator>();
+
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+
+        // Cria um AudioSource automaticamente caso o objeto ainda não tenha um
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+        }
 
         if (sandy == null)
         {
@@ -66,16 +83,13 @@ public class EnfermeiraAgressiva : MonoBehaviour
 
         float distancia = Vector2.Distance(transform.position, sandy.position);
 
-        // Só reage quando a Sandy entra na distância de percepção
         if (distancia > distanciaPercepcao)
             return;
 
-        // Orientação visual em direção à Sandy (Esquerda/Direita)
         Vector2 diferenca = (Vector2)sandy.position - (Vector2)transform.position;
         viradaParaDireita = diferenca.x >= 0f;
         AtualizarOrientacao();
 
-        // Intervalo entre os disparos
         if (Time.time < proximoAtaque)
             return;
 
@@ -93,8 +107,20 @@ public class EnfermeiraAgressiva : MonoBehaviour
             animator.SetTrigger(HashAtacar);
         }
 
-        // 2. Garante o disparo mesmo se a animação não tiver Animation Event configurado
+        // 2. Toca o som do ataque
+        TocarSomAtaque();
+
+        // 3. Garante o disparo mesmo se a animação não tiver Animation Event configurado
         StartCoroutine(RotinaFallbackDisparo());
+    }
+
+    private void TocarSomAtaque()
+    {
+        if (audioSource == null || somAtaque == null)
+            return;
+
+        audioSource.pitch = variarTom ? Random.Range(0.92f, 1.08f) : 1f;
+        audioSource.PlayOneShot(somAtaque, volumeSomAtaque);
     }
 
     private IEnumerator RotinaFallbackDisparo()

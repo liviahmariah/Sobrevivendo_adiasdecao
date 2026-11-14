@@ -1,10 +1,9 @@
-
 using UnityEngine;
 
 public class CarrocinhaMercado : MonoBehaviour
 {
     [Header("Movimento")]
-    public float velocidade = 3f;
+    public float velocidade = 3.5f;
 
     [Header("Alvo")]
     public Transform player;
@@ -17,6 +16,7 @@ public class CarrocinhaMercado : MonoBehaviour
 
     private bool perseguindo = false;
     private bool capturou = false;
+    private bool alturaInicializada = false;
 
     private void Awake()
     {
@@ -24,52 +24,47 @@ public class CarrocinhaMercado : MonoBehaviour
 
         if (rb != null)
         {
-            // Impede a rotação causada pelas colisões.
+            rb.gravityScale = 0f;
             rb.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
     }
 
     private void Start()
     {
-        // Guarda a altura inicial como referência do chão.
-        alturaDoChao = rb != null
-            ? rb.position.y
-            : transform.position.y;
+        Inicializar();
+    }
 
-        Desativar();
+    private void Inicializar()
+    {
+        if (!alturaInicializada)
+        {
+            alturaDoChao = rb != null ? rb.position.y : transform.position.y;
+            alturaInicializada = true;
+        }
 
         if (player == null)
         {
-            GameObject objetoPlayer =
-                GameObject.FindGameObjectWithTag("Player");
-
+            GameObject objetoPlayer = GameObject.FindGameObjectWithTag("Player");
             if (objetoPlayer != null)
             {
                 player = objetoPlayer.transform;
             }
             else
             {
-                Debug.LogWarning(
-                    "CarrocinhaMercado: Player não encontrado!"
-                );
+                Debug.LogWarning("CarrocinhaMercado: Player não encontrado!");
             }
         }
     }
 
-    private void Update()
-    {
-        if (!perseguindo || player == null)
-            return;
-    }
-
     private void FixedUpdate()
     {
-        if (rb == null)
+        if (!perseguindo || capturou)
             return;
 
-        if (!perseguindo || player == null)
+        if (player == null)
         {
-            return;
+            Inicializar();
+            if (player == null) return;
         }
 
         PerseguirSandy();
@@ -77,10 +72,13 @@ public class CarrocinhaMercado : MonoBehaviour
 
     public void Ativar()
     {
+        gameObject.SetActive(true);
+        Inicializar();
+
         perseguindo = true;
         capturou = false;
 
-        Debug.Log("CARROCINHA DO MERCADO ATIVADA!");
+        Debug.Log("CARROCINHA ATIVADA! Perseguindo Sandy.");
     }
 
     public void Desativar()
@@ -95,35 +93,44 @@ public class CarrocinhaMercado : MonoBehaviour
 
     private void PerseguirSandy()
     {
-        // Persegue somente na horizontal.
-        float direcaoX =
-            Mathf.Sign(player.position.x - rb.position.x);
+        float posAtualX = rb != null ? rb.position.x : transform.position.x;
+        float distanciaX = player.position.x - posAtualX;
+        float direcaoX = Mathf.Sign(distanciaX);
 
-        // Se Sandy estiver exatamente na mesma posição X,
-        // não aplica movimento horizontal.
-        if (Mathf.Abs(player.position.x - rb.position.x) < 0.05f)
+        if (Mathf.Abs(distanciaX) < 0.05f)
         {
             direcaoX = 0f;
         }
 
-        rb.linearVelocity = new Vector2(
-            direcaoX * velocidade,
-            0f
-        );
+        float novoX = posAtualX + (direcaoX * velocidade * Time.fixedDeltaTime);
+        Vector2 novaPosicao = new Vector2(novoX, alturaDoChao);
 
-        // Mantém a carrocinha na altura inicial.
-        rb.position = new Vector2(
-            rb.position.x,
-            alturaDoChao
-        );
+        if (rb != null)
+        {
+            rb.MovePosition(novaPosicao);
+        }
+        else
+        {
+            transform.position = novaPosicao;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        VerificarColisao(collision.gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        VerificarColisao(other.gameObject);
+    }
+
+    private void VerificarColisao(GameObject objeto)
+    {
         if (!perseguindo || capturou)
             return;
 
-        if (!collision.gameObject.CompareTag("Player"))
+        if (!objeto.CompareTag("Player"))
             return;
 
         CapturarSandy();
@@ -142,20 +149,20 @@ public class CarrocinhaMercado : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         }
 
-        Debug.Log("=================================");
         Debug.Log("CARROCINHA ENCOSTOU NA SANDY!");
-        Debug.Log("SANDY FOI PEGA!");
-        Debug.Log("=================================");
 
-        if (MercadoManager.Instance != null)
+        // Envia a derrota para o Manager da fase atual (Hospital ou Mercado)
+        if (HospitalManager.Instance != null)
+        {
+            HospitalManager.Instance.Derrota();
+        }
+        else if (MercadoManager.Instance != null)
         {
             MercadoManager.Instance.Derrota();
         }
         else
         {
-            Debug.LogWarning(
-                "CarrocinhaMercado: MercadoManager não encontrado!"
-            );
+            Debug.LogWarning("CarrocinhaMercado: Nenhum Manager (Hospital ou Mercado) encontrado!");
         }
     }
 }

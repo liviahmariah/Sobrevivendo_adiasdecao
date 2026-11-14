@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 155239308435346763}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.18, y: 0.07, z: 0}
+  m_LocalPosition: {x: 0.1, y: 0.292, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 8833309750478934099}
   - component: {fileID: 3588257102566105457}
   - component: {fileID: -7687287173040985305}
+  - component: {fileID: 7609193318945780959}
   m_Layer: 0
   m_Name: NPC
   m_TagString: Untagged
@@ -60,8 +61,8 @@ Transform:
   m_GameObject: {fileID: 586390783481972229}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.516023, y: -5.3368106, z: -18.456642}
-  m_LocalScale: {x: 0.8894883, y: 2.3176694, z: 1.2051096}
+  m_LocalPosition: {x: -10.7666, y: -6.6468, z: -18.456642}
+  m_LocalScale: {x: 4.310104, y: 4.421913, z: 1.2835622}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5407803131280646770}
@@ -116,8 +117,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 0.74156475, b: 0.36320752, a: 1}
+  m_Sprite: {fileID: -3807731255014252932, guid: 928799f20209af0428447a8c79273b48, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -155,13 +156,21 @@ MonoBehaviour:
   - {fileID: 2156575890166693913, guid: 9815962bbe4a4084d85f78af04b0ebd8, type: 3}
   - {fileID: 2156575890166693913, guid: 85e17a4d9c08d2e4b8c494c70c620d7b, type: 3}
   pontoDeSolta: {fileID: 5407803131280646770}
+  escalaItemNaMao: 1
   distanciaInteracao: 1.5
   distanciaAFrente: 1
-  animatorNPC: {fileID: 0}
-  triggerSoltarRecurso: SoltarRecurso
   duracaoLancamento: 0.35
   alturaLancamento: 0.6
   escalaInicial: 0.65
+  velocidadeRotacaoNoAr: 360
+  spritePontinho: {fileID: 7482667652216324306, guid: 0bf70efc0185e094c88830412f98b376, type: 3}
+  corPontinho: {r: 1, g: 1, b: 1, a: 0.9}
+  tamanhoPontinho: 0.14
+  distanciaEntrePontinhos: 0.18
+  tempoVidaPontinho: 0.7
+  animatorNPC: {fileID: 7609193318945780959}
+  triggerSoltarRecurso: SoltarRecurso
+  tempoParadoNoSusto: 0.5
 --- !u!114 &3588257102566105457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,3 +202,25 @@ MonoBehaviour:
   deslocamentoImagem: {x: 0, y: 1.2, z: 0}
   tamanhoImagem: {x: 0.6, y: 0.6}
   danoPorContato: 1
+--- !u!95 &7609193318945780959
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 586390783481972229}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1156791d06bc1814e847243ceac99bff, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

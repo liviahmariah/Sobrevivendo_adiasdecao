@@ -20,8 +20,10 @@ public class QuedaMedicamentosHospital : MonoBehaviour
     public float rotacaoMaxima = 12f;
     public float balancoHorizontal = 0.12f;
 
-    [Header("Limite de medicamentos")]
+    [Header("Limite de medicamentos e Limpeza")]
     public int maxMedicamentosSimultaneos = 8;
+    [Tooltip("Altura Y abaixo da tela onde o medicamento é destruído para liberar vaga para os próximos.")]
+    public float limiteInferiorY = -6f;
 
     [Header("Chance de medicamento ruim")]
     [Range(0f, 1f)]
@@ -33,25 +35,26 @@ public class QuedaMedicamentosHospital : MonoBehaviour
 
     private void Start()
     {
-        tempoProximaQueda = intervaloInicial;
+        tempoProximaQueda = 0.2f; // Começa rápido logo no início
         inicializado = true;
     }
 
     private void Update()
     {
-        if (!inicializado)
+        if (!inicializado || HospitalManager.Instance == null)
             return;
 
-        if (HospitalManager.Instance == null)
-            return;
-
-        // Garante que continue caindo enquanto a fase estiver rolando
-        if (!HospitalManager.Instance.PodeColetar())
+        // Continua spawnando até o último milésimo do tempo da fase
+        float tempoRestante = HospitalManager.Instance.ObterTempoRestante();
+        if (tempoRestante <= 0f)
             return;
 
         if (pontosQueda == null || pontosQueda.Length == 0 ||
             prefabsMedicamentos == null || prefabsMedicamentos.Length == 0)
             return;
+
+        // Segurança: garante que o contador nunca fique dessincronizado
+        medicamentosAtivos = Mathf.Max(0, medicamentosAtivos);
 
         if (medicamentosAtivos >= maxMedicamentosSimultaneos)
             return;
@@ -73,7 +76,6 @@ public class QuedaMedicamentosHospital : MonoBehaviour
         float tempoRestante = HospitalManager.Instance.ObterTempoRestante();
         float tempoTotal = Mathf.Max(HospitalManager.Instance.tempoMaximo, 1f);
 
-        // Garante que o valor nunca ultrapasse 1 (100% da velocidade/frequência no final da fase)
         return Mathf.Clamp01(1f - (tempoRestante / tempoTotal));
     }
 
@@ -81,7 +83,6 @@ public class QuedaMedicamentosHospital : MonoBehaviour
     {
         float dificuldade = ObterDificuldade();
 
-        // No final da fase, a frequência de queda atinge o 'intervaloFinal' (mais rápida)
         tempoProximaQueda = Mathf.Lerp(
             intervaloInicial,
             intervaloFinal,
@@ -135,7 +136,7 @@ public class QuedaMedicamentosHospital : MonoBehaviour
     {
         if (medicamento == null)
         {
-            medicamentosAtivos--;
+            medicamentosAtivos = Mathf.Max(0, medicamentosAtivos - 1);
             yield break;
         }
 
@@ -154,7 +155,7 @@ public class QuedaMedicamentosHospital : MonoBehaviour
         {
             if (medicamento == null)
             {
-                medicamentosAtivos--;
+                medicamentosAtivos = Mathf.Max(0, medicamentosAtivos - 1);
                 yield break;
             }
 
@@ -169,7 +170,7 @@ public class QuedaMedicamentosHospital : MonoBehaviour
 
         if (medicamento == null)
         {
-            medicamentosAtivos--;
+            medicamentosAtivos = Mathf.Max(0, medicamentosAtivos - 1);
             yield break;
         }
 
@@ -178,12 +179,11 @@ public class QuedaMedicamentosHospital : MonoBehaviour
         // Loop contínuo da descida do medicamento
         while (medicamento != null)
         {
-            if (HospitalManager.Instance == null || !HospitalManager.Instance.PodeColetar())
+            if (HospitalManager.Instance == null || HospitalManager.Instance.ObterTempoRestante() <= 0f)
                 break;
 
             float deslocamento = Mathf.Sin(Time.time * 5f) * balancoHorizontal * direcao;
 
-            // Correção dos multiplicadores de velocidade e deltaTime
             visual.position += new Vector3(
                 deslocamento * Time.deltaTime,
                 -velocidade * Time.deltaTime,
@@ -192,12 +192,16 @@ public class QuedaMedicamentosHospital : MonoBehaviour
 
             visual.Rotate(0f, 0f, rotacao * Time.deltaTime);
 
+            // Se passou do fundo da tela, sai do loop para ser destruído e liberar vaga
+            if (visual.position.y <= limiteInferiorY)
+                break;
+
             yield return null;
         }
 
         if (medicamento != null)
             Destroy(medicamento);
 
-        medicamentosAtivos--;
+        medicamentosAtivos = Mathf.Max(0, medicamentosAtivos - 1);
     }
 }

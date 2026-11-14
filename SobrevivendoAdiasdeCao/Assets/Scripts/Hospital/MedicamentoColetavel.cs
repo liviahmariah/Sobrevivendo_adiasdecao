@@ -3,7 +3,7 @@ using UnityEngine;
 public class MedicamentoColetavel : MonoBehaviour
 {
     [Header("Identificação")]
-    public string idMedicamento;
+    public string idMedicamento = "medicamento";
 
     [Header("Valor")]
     [Min(0f)]
@@ -109,8 +109,7 @@ public class MedicamentoColetavel : MonoBehaviour
 
         if (string.IsNullOrEmpty(idMedicamento))
         {
-            Debug.LogWarning("MedicamentoColetavel: ID do medicamento não definido!", this);
-            return;
+            idMedicamento = "medicamento";
         }
 
         coletado = true;
@@ -127,7 +126,6 @@ public class MedicamentoColetavel : MonoBehaviour
 
         // 1. Registra a coleta e calcula os pontos no HospitalManager
         HospitalManager.Instance.RegistrarColetaMedicamento(
-            idMedicamento,
             valor,
             medicamentoRuim,
             multiplicadorPontuacao
@@ -138,15 +136,9 @@ public class MedicamentoColetavel : MonoBehaviour
         {
             bool valioso = categoria == RecursoColetavel.CategoriaComida.Valiosa;
 
-            float multiplicador = medicamentoRuim
-                ? 1f
-                : HospitalManager.Instance.ObterMultiplicadorMedicamento(idMedicamento);
-
-            float valorFinal = valor * multiplicador;
-
             ComentarioMedicamentoUI.Instance.MostrarComentario(
                 idMedicamento,
-                valorFinal,
+                valor,
                 medicamentoRuim,
                 valioso
             );
@@ -180,10 +172,10 @@ public class MedicamentoColetavel : MonoBehaviour
         }
         else
         {
-            PontuacaoSandyUI pontuacaoGenérica = FindFirstObjectByType<PontuacaoSandyUI>();
-            if (pontuacaoGenérica != null)
+            PontuacaoSandyUI pontuacaoGenerica = FindFirstObjectByType<PontuacaoSandyUI>();
+            if (pontuacaoGenerica != null)
             {
-                pontuacaoGenérica.AtualizarPontuacao();
+                pontuacaoGenerica.AtualizarPontuacao();
             }
         }
 

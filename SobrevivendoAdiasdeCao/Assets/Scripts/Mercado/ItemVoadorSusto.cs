@@ -26,15 +26,32 @@ public class ItemVoadorSusto : MonoBehaviour
     [Tooltip("Tempo que cada pontinho fica visível antes de sumir.")]
     public float tempoVidaPontinho = 0.6f;
 
-    private List<GameObject> pontinhosCriados = new List<GameObject>();
+    private Collider2D colisorItem;
+    private bool voando = false;
 
-    /// <summary>
-    /// Chama o efeito de arremesso a partir da posição inicial.
-    /// </summary>
-    /// <param name="posicaoInicial">Posição da mão do NPC.</param>
-    /// <param name="olhandoParaDireita">Direção em que o item deve voar.</param>
+    private void Awake()
+    {
+        colisorItem = GetComponent<Collider2D>();
+
+        // Enquanto está na mão do NPC, não pode ser coletado ainda
+        if (colisorItem != null && !voando)
+        {
+            colisorItem.enabled = false;
+        }
+    }
+
     public void IniciarVoo(Vector3 posicaoInicial, bool olhandoParaDireita)
     {
+        if (voando) return;
+        voando = true;
+
+        // Libera a coleta assim que o item salta da mão do NPC
+        if (colisorItem == null)
+            colisorItem = GetComponent<Collider2D>();
+
+        if (colisorItem != null)
+            colisorItem.enabled = true;
+
         transform.position = posicaoInicial;
         float direcao = olhandoParaDireita ? 1f : -1f;
         Vector3 posicaoFinal = posicaoInicial + new Vector3(distanciaHorizontal * direcao, -0.5f, 0f);
@@ -73,23 +90,20 @@ public class ItemVoadorSusto : MonoBehaviour
 
         // Finaliza o voo exatamente na posição do chão
         transform.position = fim;
-        transform.rotation = Quaternion.identity; // Reseta rotação ao cair no chão
+        transform.rotation = Quaternion.identity;
     }
 
     private void CriarPontinhoTrilha(Vector3 posicao)
     {
-        // Cria um GameObject vazio para ser o pontinho
         GameObject pontinho = new GameObject("PontinhoTrilha");
         pontinho.transform.position = posicao;
         pontinho.transform.localScale = escalaPontinho;
 
-        // Adiciona e configura o SpriteRenderer
         SpriteRenderer sr = pontinho.AddComponent<SpriteRenderer>();
         sr.sprite = spritePontinho;
         sr.color = corPontinho;
-        sr.sortingOrder = 5; // Garante que o pontinho apareça acima do fundo
+        sr.sortingOrder = 5;
 
-        // Programa a destruição do pontinho após alguns instantes
         Destroy(pontinho, tempoVidaPontinho);
     }
 }

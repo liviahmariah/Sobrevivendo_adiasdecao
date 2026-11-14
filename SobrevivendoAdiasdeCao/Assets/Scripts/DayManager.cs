@@ -226,5 +226,7 @@ public class DayManager : MonoBehaviour
         return diasRegistrados[indice]
             ? mediasDosDias[indice]
             : 0f;
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene("CenaFinal");
     }
 }

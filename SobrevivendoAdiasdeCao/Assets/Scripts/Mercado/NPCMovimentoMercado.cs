@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class NPCMovimentoMercado : MonoBehaviour
@@ -12,12 +13,7 @@ public class NPCMovimentoMercado : MonoBehaviour
     private Transform pontoSaida;
     private bool configurado;
     private bool saidaValida;
-
-    [Header("Mecânica do Susto / Item")]
-    public ItemVoadorSusto itemDoNPC;
-    public Transform maoDoNPC;
-
-    private bool jaLevouSusto = false;
+    private bool pausadoPorSusto = false;
 
     public Vector2 DirecaoAtual => direcao;
 
@@ -50,7 +46,7 @@ public class NPCMovimentoMercado : MonoBehaviour
 
     private void Update()
     {
-        if (!configurado)
+        if (!configurado || pausadoPorSusto)
             return;
 
         // Move o NPC continuamente.
@@ -70,30 +66,18 @@ public class NPCMovimentoMercado : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Chame este método quando a Sandy latir próximo ao NPC.
-    /// </summary>
-    public void OnSandyLatir()
+    public void PausarPorSusto(float duracao)
     {
-        // Impede que o item voe mais de uma vez se a Sandy latir seguidamente
-        if (jaLevouSusto) return;
-        jaLevouSusto = true;
-
-        if (itemDoNPC == null)
-        {
-            Debug.LogWarning($"{name}: 'itemDoNPC' não foi atribuído no Inspector!");
+        if (duracao <= 0f)
             return;
-        }
 
-        // Garante que pegará a posição da mão ou a do próprio NPC caso mão não esteja atribuída
-        Vector3 posOrigem = maoDoNPC != null ? maoDoNPC.position : transform.position;
+        StartCoroutine(RotinaPausaSusto(duracao));
+    }
 
-        // CORREÇÃO DA DIREÇÃO:
-        // Se a direção em X for maior que 0, ele está andando para a direita.
-        bool paraDireita = direcao.x >= 0f;
-
-        // Ativa o GameObject do item e dispara o voo com rastro
-        itemDoNPC.gameObject.SetActive(true);
-        itemDoNPC.IniciarVoo(posOrigem, paraDireita);
+    private IEnumerator RotinaPausaSusto(float duracao)
+    {
+        pausadoPorSusto = true;
+        yield return new WaitForSeconds(duracao);
+        pausadoPorSusto = false;
     }
 }

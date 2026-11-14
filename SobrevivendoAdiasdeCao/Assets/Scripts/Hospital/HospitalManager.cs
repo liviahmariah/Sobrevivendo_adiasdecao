@@ -1,18 +1,8 @@
-
 using UnityEngine;
-using System.Collections.Generic;
 
 public class HospitalManager : FaseManager
 {
     public static HospitalManager Instance;
-
-    // Identificadores dos medicamentos
-    public const string ANTIBIOTICO = "antibiotico";
-    public const string ANALGESICO = "analgesico";
-    public const string ANTISSEPTICO = "antisseptico";
-    public const string VERMIFUGO = "vermifugo";
-    public const string COLIRIO = "colirio";
-    public const string KIT_PRIMEIROS_SOCORROS = "kit_primeiros_socorros";
 
     [Header("Medicamentos conseguidos")]
     public float medicamentosConseguidos = 0f;
@@ -30,21 +20,8 @@ public class HospitalManager : FaseManager
     public float pontosBons = 0f;
     public float pontosRuins = 0f;
 
-    [Header("Necessidade da comunidade")]
-    public string medicamentoSolicitado = "";
-
-    [Header("Compatibilidade dos medicamentos")]
-    [Range(0f, 1f)]
-    public float valorMedicamentoDiferente = 0.5f;
-
-    [Range(0f, 1f)]
-    public float valorKitDiferente = 0.75f;
-
     [Header("Penalidade por ser pega")]
     public float perdaAnimoAoSerPega = 10f;
-
-    private HashSet<string> medicamentosConseguidosTipos =
-        new HashSet<string>();
 
     protected override void Awake()
     {
@@ -75,8 +52,6 @@ public class HospitalManager : FaseManager
         pontosBons = 0f;
         pontosRuins = 0f;
 
-        medicamentosConseguidosTipos.Clear();
-
         base.Start();
     }
 
@@ -106,44 +81,6 @@ public class HospitalManager : FaseManager
     }
 
     // ==========================================
-    // NECESSIDADE DE MEDICAMENTO
-    // ==========================================
-
-    public void DefinirMedicamentoSolicitado(string idMedicamento)
-    {
-        medicamentoSolicitado = idMedicamento;
-
-        Debug.Log(
-            "HOSPITAL | Medicamento solicitado: " +
-            medicamentoSolicitado
-        );
-    }
-
-    public void LimparMedicamentoSolicitado()
-    {
-        medicamentoSolicitado = "";
-    }
-
-    public float ObterMultiplicadorMedicamento(string idMedicamento)
-    {
-        // Sem solicitação específica: todos os medicamentos
-        // bons possuem seu valor integral.
-        if (string.IsNullOrEmpty(medicamentoSolicitado))
-            return 1f;
-
-        // Medicamento correspondente à necessidade.
-        if (idMedicamento == medicamentoSolicitado)
-            return 1f;
-
-        // Kit de primeiros socorros tem utilidade mais ampla.
-        if (idMedicamento == KIT_PRIMEIROS_SOCORROS)
-            return valorKitDiferente;
-
-        // Outros medicamentos ajudam, mas valem menos.
-        return valorMedicamentoDiferente;
-    }
-
-    // ==========================================
     // MEDICAMENTOS
     // ==========================================
 
@@ -163,33 +100,6 @@ public class HospitalManager : FaseManager
         );
     }
 
-    public bool RegistrarTipoMedicamento(
-        string idMedicamento,
-        Sprite imagemMedicamento)
-    {
-        if (!coletaAtiva)
-            return false;
-
-        if (string.IsNullOrEmpty(idMedicamento))
-        {
-            Debug.LogWarning(
-                "HospitalManager: ID do medicamento está vazio!"
-            );
-
-            return false;
-        }
-
-        bool novoTipo =
-            medicamentosConseguidosTipos.Add(idMedicamento);
-
-        return novoTipo;
-    }
-
-    public bool JaConseguiuMedicamento(string idMedicamento)
-    {
-        return medicamentosConseguidosTipos.Contains(idMedicamento);
-    }
-
     public float ObterMedicamentosConseguidos()
     {
         return medicamentosConseguidos;
@@ -200,10 +110,9 @@ public class HospitalManager : FaseManager
     // ==========================================
 
     public void RegistrarColetaMedicamento(
-     string idMedicamento,
-     float valor,
-     bool medicamentoRuim,
-     float multiplicadorBonusPontuacao = 1f)
+        float valor,
+        bool medicamentoRuim,
+        float multiplicadorBonusPontuacao = 1f)
     {
         if (faseFinalizada || !coletaAtiva)
             return;
@@ -224,35 +133,18 @@ public class HospitalManager : FaseManager
         {
             quantidadeItensBons++;
 
-            // Compatibilidade original do medicamento.
-            float multiplicador =
-                ObterMultiplicadorMedicamento(idMedicamento);
-
-            // Valor que continua sendo contabilizado para a comunidade.
-            float valorEfetivo = valor * multiplicador;
-
-            // Bônus adicional exclusivo da pontuação da Sandy.
-            float pontosRecebidos =
-                valorEfetivo * multiplicadorBonusPontuacao;
+            float pontosRecebidos = valor * multiplicadorBonusPontuacao;
 
             pontosBons += pontosRecebidos;
             pontosSandy += pontosRecebidos;
 
-            // Preserva a regra original de entrega à comunidade.
-            medicamentosBonsConseguidos +=
-    valorEfetivo * multiplicadorBonusPontuacao;
-
+            medicamentosBonsConseguidos += pontosRecebidos;
             medicamentosConseguidos += valor;
 
-            RegistrarTipoMedicamento(idMedicamento, null);
-
             Debug.Log(
-                "Medicamento: " + idMedicamento +
-                " | Valor original: " + valor +
-                " | Compatibilidade: " + multiplicador +
-                " | Bônus de pontuação: " + multiplicadorBonusPontuacao +
-                " | Pontuação recebida: " + pontosRecebidos +
-                " | Valor para comunidade: " + valorEfetivo
+                "Medicamento bom coletado | Valor: " + valor +
+                " | Bônus: " + multiplicadorBonusPontuacao +
+                " | Pontuação recebida: " + pontosRecebidos
             );
         }
 

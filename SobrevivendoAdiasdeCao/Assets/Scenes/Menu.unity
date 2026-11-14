@@ -3745,7 +3745,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Desenvolvido por:\nL\xEDvia Maria Alves de Lima\nMaria Clara Lima\n\nProjeto
+  m_text: "Desenvolvido por:\nL\xEDvia Maria Alves de Lima\nMaria Clara Lima de Oliveira\n\nProjeto
     desenvolvido para o IFRN\nCurso T\xE9cnico Integrado em Programa\xE7\xE3o de
     Jogos Digitais"
   m_isRightToLeft: 0
@@ -26770,9 +26770,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 583767d5ea2229846ad4ba6a096b0394, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConfiguracoesUI
+  painelPause: {fileID: 0}
   painelConfiguracoes: {fileID: 113894961}
   painelAudio: {fileID: 50410273}
   painelCreditos: {fileID: 1080458948}
+  nomeCenaMenu: Menu
 --- !u!4 &1489206046
 Transform:
   m_ObjectHideFlags: 0

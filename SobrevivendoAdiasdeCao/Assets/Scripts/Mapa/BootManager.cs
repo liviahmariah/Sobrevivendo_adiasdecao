@@ -5,6 +5,6 @@ public class BootManager : MonoBehaviour
 {
     private void Start()
     {
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene("Mapa");
     }
 }

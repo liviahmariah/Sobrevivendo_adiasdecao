@@ -35,5 +35,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CenaFinal.unity
     guid: bff76c120427d0445b29dd092c6c3af6
+  - enabled: 1
+    path: Assets/Scenes/TelaAgradecimento.unity
+    guid: 68431c96ad4758043b7878ec92ffba82
+  - enabled: 1
+    path: Assets/Scenes/CenaExtra.unity
+    guid: 16c575c86df49a349806cebd27b8058b
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

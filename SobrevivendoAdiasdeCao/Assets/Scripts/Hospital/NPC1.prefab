@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5407803131280646770}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PontoDeSolta
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 3588257102566105457}
   - component: {fileID: -7687287173040985305}
   - component: {fileID: 733362079664805896}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: NPC1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -148,13 +148,21 @@ MonoBehaviour:
   - {fileID: 805301444011691559, guid: 6095297bdbc30aa46af5f303586b81c0, type: 3}
   - {fileID: 1300144712726418409, guid: adde2ac0a416624478c1a5704444c1c0, type: 3}
   pontoDeSolta: {fileID: 5407803131280646770}
+  escalaItemNaMao: 0.5
   distanciaInteracao: 1.5
   distanciaAFrente: 1
-  animatorNPC: {fileID: 0}
-  triggerSoltarRecurso: SoltarRecurso
   duracaoLancamento: 0.35
   alturaLancamento: 0.6
   escalaInicial: 0.65
+  velocidadeRotacaoNoAr: 360
+  spritePontinho: {fileID: 0}
+  corPontinho: {r: 1, g: 1, b: 1, a: 0.9}
+  tamanhoPontinho: 0.14
+  distanciaEntrePontinhos: 0.18
+  tempoVidaPontinho: 0.7
+  animatorNPC: {fileID: 0}
+  triggerSoltarRecurso: SoltarRecurso
+  tempoParadoNoSusto: 0.5
 --- !u!114 &3588257102566105457
 MonoBehaviour:
   m_ObjectHideFlags: 0

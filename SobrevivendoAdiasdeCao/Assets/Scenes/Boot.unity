@@ -886,6 +886,18 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2043917352293222578, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2043917352293222578, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2043917352293222578, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2143023335398957117, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
       propertyPath: m_SizeDelta.x
       value: 259.9305
@@ -962,6 +974,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2654278419208504141, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2654278419208504141, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2654278419208504141, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3068389627646439474, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
       propertyPath: m_SizeDelta.x
       value: -8.5077
@@ -1033,6 +1057,12 @@ PrefabInstance:
     - target: {fileID: 3607005989139803440, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 102.75995
+      objectReference: {fileID: 0}
+    - target: {fileID: 3617861763239581152, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
+      propertyPath: m_text
+      value: "Desenvolvido por:\nL\xEDvia Maria Alves de Lima\nMaria Clara Lima de
+        Oliveira\n\nProjeto desenvolvido para o IFRN\nCurso T\xE9cnico Integrado
+        em Programa\xE7\xE3o de Jogos Digitais"
       objectReference: {fileID: 0}
     - target: {fileID: 3617861763239581152, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
       propertyPath: m_fontSize
@@ -1317,6 +1347,10 @@ PrefabInstance:
     - target: {fileID: 6325358001538890072, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -12.661095
+      objectReference: {fileID: 0}
+    - target: {fileID: 6416992367150529864, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6598019756341163216, guid: b5486c0f5259b8047a78f8a52f86a6aa, type: 3}
       propertyPath: m_SizeDelta.x
