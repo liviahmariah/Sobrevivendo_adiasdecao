@@ -156,11 +156,13 @@ MonoBehaviour:
   - {fileID: 2156575890166693913, guid: 9815962bbe4a4084d85f78af04b0ebd8, type: 3}
   - {fileID: 2156575890166693913, guid: 85e17a4d9c08d2e4b8c494c70c620d7b, type: 3}
   pontoDeSolta: {fileID: 5407803131280646770}
-  escalaItemNaMao: 1
+  escalaItemNaMao: 0.44
   distanciaInteracao: 1.5
-  distanciaAFrente: 1
-  duracaoLancamento: 0.35
+  jogarPorCimaParaTras: 1
+  distanciaHorizontalSalto: 1.4
   alturaLancamento: 0.6
+  alturaFinalRelativa: 1.3
+  duracaoLancamento: 0.35
   escalaInicial: 0.65
   velocidadeRotacaoNoAr: 360
   spritePontinho: {fileID: 7482667652216324306, guid: 0bf70efc0185e094c88830412f98b376, type: 3}
