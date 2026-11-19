@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class NPCAgressivoMercado : MonoBehaviour
@@ -6,7 +5,11 @@ public class NPCAgressivoMercado : MonoBehaviour
     [Header("Configuração da agressividade")]
     public bool eAgressivo = false;
 
-    [Header("Identificação visual")]
+    [Header("Identificação visual (Editável no Prefab)")]
+    [Tooltip("Arraste aqui o objeto filho do sinal de raiva criado no Prefab para posicioná-lo livremente na Scene.")]
+    public GameObject objetoIndicador;
+
+    [Header("Fallback Automático (caso não use objeto filho)")]
     public Sprite imagemAgressividade;
     public Vector3 deslocamentoImagem = new Vector3(0f, 1.2f, 0f);
     public Vector2 tamanhoImagem = new Vector2(0.6f, 0.6f);
@@ -16,12 +19,11 @@ public class NPCAgressivoMercado : MonoBehaviour
     public int danoPorContato = 1;
 
     private EnergiaSandy energiaSandy;
-    private GameObject objetoIndicador;
     private bool contatoAtivo;
 
     private void Awake()
     {
-        CriarIndicadorVisual();
+        InicializarIndicadorVisual();
     }
 
     // Chamado pelo SpawnNPCMercado após sortear a agressividade.
@@ -31,29 +33,34 @@ public class NPCAgressivoMercado : MonoBehaviour
         AtualizarIndicadorVisual();
     }
 
-    private void CriarIndicadorVisual()
+    private void InicializarIndicadorVisual()
     {
-        if (imagemAgressividade == null)
+        // Se você já criou e posicionou o indicador no Prefab, apenas usa ele!
+        if (objetoIndicador != null)
         {
-            Debug.LogWarning(
-                "NPCAgressivoMercado: configure a imagem de agressividade no Inspector.",
-                this
-            );
+            AtualizarIndicadorVisual();
             return;
         }
+
+        // Caso não tenha arrastado um objeto filho, tenta encontrar um chamado "IndicadorAgressividade"
+        Transform filhoExistente = transform.Find("IndicadorAgressividade");
+        if (filhoExistente != null)
+        {
+            objetoIndicador = filhoExistente.gameObject;
+            AtualizarIndicadorVisual();
+            return;
+        }
+
+        // Fallback: cria via código se nenhum objeto filho existir no Prefab
+        if (imagemAgressividade == null)
+            return;
 
         objetoIndicador = new GameObject("IndicadorAgressividade");
         objetoIndicador.transform.SetParent(transform, false);
         objetoIndicador.transform.localPosition = deslocamentoImagem;
-        objetoIndicador.transform.localScale = new Vector3(
-            tamanhoImagem.x,
-            tamanhoImagem.y,
-            1f
-        );
+        objetoIndicador.transform.localScale = new Vector3(tamanhoImagem.x, tamanhoImagem.y, 1f);
 
-        SpriteRenderer indicador =
-            objetoIndicador.AddComponent<SpriteRenderer>();
-
+        SpriteRenderer indicador = objetoIndicador.AddComponent<SpriteRenderer>();
         indicador.sprite = imagemAgressividade;
         indicador.drawMode = SpriteDrawMode.Simple;
         indicador.sortingOrder = 100;
@@ -73,9 +80,7 @@ public class NPCAgressivoMercado : MonoBehaviour
         if (!eAgressivo || contatoAtivo)
             return;
 
-        EnergiaSandy energia =
-            other.GetComponentInParent<EnergiaSandy>();
-
+        EnergiaSandy energia = other.GetComponentInParent<EnergiaSandy>();
         if (energia == null)
             return;
 
@@ -90,9 +95,7 @@ public class NPCAgressivoMercado : MonoBehaviour
         if (energiaSandy == null)
             return;
 
-        EnergiaSandy energia =
-            other.GetComponentInParent<EnergiaSandy>();
-
+        EnergiaSandy energia = other.GetComponentInParent<EnergiaSandy>();
         if (energia == energiaSandy)
         {
             energiaSandy = null;
@@ -105,13 +108,12 @@ public class NPCAgressivoMercado : MonoBehaviour
         if (energiaSandy == null)
             return;
 
-        // Perde somente uma unidade de energia por contato.
         energiaSandy.PerderEnergia();
     }
 
     private void OnValidate()
     {
         if (objetoIndicador != null)
-            AtualizarIndicadorVisual();
+            objetoIndicador.SetActive(eAgressivo);
     }
 }

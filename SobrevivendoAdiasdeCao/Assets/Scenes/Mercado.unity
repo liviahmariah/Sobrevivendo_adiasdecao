@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 21856235}
   - component: {fileID: 21856236}
   - component: {fileID: 21856237}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Barraca1 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -729,7 +729,7 @@ GameObject:
   - component: {fileID: 71420919}
   - component: {fileID: 71420920}
   - component: {fileID: 71420921}
-  m_Layer: 8
+  m_Layer: 11
   m_Name: Carrocinha
   m_TagString: carrocinha
   m_Icon: {fileID: 0}
@@ -749,7 +749,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CarrocinhaMercado
   velocidade: 3
+  virarParaSandy: 1
   player: {fileID: 1772009079}
+  animator: {fileID: 71420921}
+  paramAndando: Andando
   alturaDoChao: 0
 --- !u!212 &71420917
 SpriteRenderer:
@@ -820,7 +823,7 @@ Transform:
   m_GameObject: {fileID: 71420914}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.08, y: -0.46, z: 0}
+  m_LocalPosition: {x: -10.24, y: -2.34, z: 0}
   m_LocalScale: {x: 4.013947, y: 4.16687, z: 0.84514}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -909,7 +912,7 @@ Animator:
   m_GameObject: {fileID: 71420914}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d0ddccf80758e9644b1dc3f83a4943a5, type: 2}
+  m_Controller: {fileID: 9100000, guid: 4e8e680570fe64d4295b70af93c6804a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1254,7 +1257,7 @@ GameObject:
   - component: {fileID: 109503057}
   - component: {fileID: 109503059}
   - component: {fileID: 109503058}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Barraca1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1270,8 +1273,8 @@ Transform:
   m_GameObject: {fileID: 109503055}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.3614, y: -4.6379, z: -18.456642}
-  m_LocalScale: {x: 0.9988798, y: 1.5733336, z: 1.485013}
+  m_LocalPosition: {x: 1.3167, y: -4.6379, z: -18.456642}
+  m_LocalScale: {x: 0.9805004, y: 1.5733336, z: 1.485013}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1339361057}
@@ -7694,7 +7697,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -1
+  m_SortingOrder: -2
   m_MaskInteraction: 0
   m_Sprite: {fileID: 2158465420675688394, guid: bb714287e7d243f498c5a19d25f42da8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -7980,7 +7983,7 @@ GameObject:
   - component: {fileID: 600204876}
   - component: {fileID: 600204877}
   - component: {fileID: 600204878}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Barraca1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14636,7 +14639,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -2
+  m_SortingOrder: -3
   m_MaskInteraction: 0
   m_Sprite: {fileID: -4325953831398763430, guid: 661092d668f5dba4d9348c83699ead98, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -16762,7 +16765,7 @@ PrefabInstance:
       objectReference: {fileID: 1838257859}
     - target: {fileID: 1428899917796115198, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
       propertyPath: groundLayer.m_Bits
-      value: 8
+      value: 4104
       objectReference: {fileID: 0}
     - target: {fileID: 2388431810192326692, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
       propertyPath: m_Name
@@ -18532,7 +18535,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1539034009}
   - component: {fileID: 1539034008}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Bancadas_41
   m_TagString: Untagged
   m_Icon: {fileID: 0}

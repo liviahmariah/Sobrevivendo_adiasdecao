@@ -10,6 +10,11 @@ public class MapDialogueManager : MonoBehaviour
     public TextMeshProUGUI textoDialogo;
     public TextMeshProUGUI textoIdentificacaoDuke;
 
+    [Header("Fade de Encerramento (Dia 15)")]
+    [Tooltip("Arraste aqui o CanvasGroup da imagem preta de fade (Alpha inicial = 0)")]
+    public CanvasGroup painelFadeSaida;
+    public float duracaoFadeSaida = 2f;
+
     [Header("Aparição do Duke")]
     public GameObject dukeVisual;
     public float duracaoAparicaoDuke = 0.5f;
@@ -48,6 +53,7 @@ public class MapDialogueManager : MonoBehaviour
 
     private bool mostrandoMensagem = false;
     private bool apresentacaoConcluida = false;
+    private bool encerrandoCampanha = false;
 
     private Coroutine rotinaApresentacao;
     private Coroutine rotinaEventos;
@@ -70,6 +76,31 @@ public class MapDialogueManager : MonoBehaviour
         "Estamos juntos nessa! Quando estiver pronta, escolha um local no mapa."
     };
 
+    [Header("Falas do Último Dia (Dia 15)")]
+    [TextArea(2, 5)]
+    public string[] falasEncerramentoBom =
+    {
+        "Chegamos ao décimo quinto dia, Sandy! Olhe só ao nosso redor...",
+        "Graças à sua coragem e dedicação, toda a nossa matilha está forte, saudável e feliz!",
+        "Você provou que juntos podemos superar qualquer desafio nas ruas. Vamos ver o resultado da nossa jornada!"
+    };
+
+    [TextArea(2, 5)]
+    public string[] falasEncerramentoMedio =
+    {
+        "Chegamos ao décimo quinto dia, Sandy! Foi uma jornada cheia de desafios.",
+        "Enfrentamos dias difíceis, mas graças ao seu esforço conseguimos manter a comunidade unida.",
+        "Vamos ver como nossa família canina se saiu nesses quinze dias!"
+    };
+
+    [TextArea(2, 5)]
+    public string[] falasEncerramentoRuim =
+    {
+        "Chegamos ao décimo quinto dia, Sandy... Os tempos foram muito duros para todos nós.",
+        "A fome e o cansaço pesaram na matilha, mas você nunca desistiu de lutar por nós.",
+        "Vamos ver o que restou da nossa jornada nesses quinze dias."
+    };
+
     private void Start()
     {
         ConfigurarDuke();
@@ -78,18 +109,26 @@ public class MapDialogueManager : MonoBehaviour
         if (painelDialogo != null)
             painelDialogo.SetActive(false);
 
+        // Se já entrou no mapa no Dia 15, vai direto para o discurso final
+        if (DayManager.Instance != null && DayManager.Instance.EhUltimoDia())
+        {
+            ExibirDukeImediatamente();
+            IniciarDiscursoFinalDia15();
+            return;
+        }
+
         StartCoroutine(AguardarIntroEIniciar());
     }
 
     private IEnumerator AguardarIntroEIniciar()
     {
-        // Aguarda a cena fazer o fade de entrada suave
         while (Time.timeScale == 0f)
-        {
             yield return null;
-        }
 
         yield return new WaitForSeconds(0.4f);
+
+        if (encerrandoCampanha)
+            yield break;
 
         bool apresentacaoJaRealizada = PlayerPrefs.GetInt(CHAVE_APRESENTACAO_REALIZADA, 0) == 1;
 
@@ -147,10 +186,89 @@ public class MapDialogueManager : MonoBehaviour
         }
     }
 
+    // =====================================================
+    // ENCERRAMENTO DA CAMPANHA NO DIA 15 + FADE FINAL
+    // =====================================================
+    public void IniciarDiscursoFinalDia15()
+    {
+        if (encerrandoCampanha)
+            return;
+
+        encerrandoCampanha = true;
+
+        if (rotinaApresentacao != null) StopCoroutine(rotinaApresentacao);
+        if (rotinaEventos != null) StopCoroutine(rotinaEventos);
+
+        StartCoroutine(RotinaDiscursoEFadeFinal());
+    }
+
+    private IEnumerator RotinaDiscursoEFadeFinal()
+    {
+        while (Time.timeScale == 0f)
+            yield return null;
+
+        yield return new WaitForSeconds(0.5f);
+
+        string[] falasFinais = ObterFalasDoDesfecho();
+
+        for (int i = 0; i < falasFinais.Length; i++)
+        {
+            yield return StartCoroutine(MostrarFalaAnimada(falasFinais[i]));
+            yield return new WaitForSeconds(tempoMensagem);
+            yield return StartCoroutine(EsconderDialogoAnimado());
+
+            if (i < falasFinais.Length - 1)
+                yield return new WaitForSeconds(tempoEntreFalase);
+        }
+
+        // Fade-out suave antes de abrir a CenaFinal
+        if (painelFadeSaida != null)
+        {
+            painelFadeSaida.gameObject.SetActive(true);
+            painelFadeSaida.blocksRaycasts = true;
+
+            float tempo = 0f;
+            float alphaInicial = painelFadeSaida.alpha;
+
+            while (tempo < duracaoFadeSaida)
+            {
+                tempo += Time.unscaledDeltaTime;
+                painelFadeSaida.alpha = Mathf.Lerp(alphaInicial, 1f, tempo / duracaoFadeSaida);
+                yield return null;
+            }
+
+            painelFadeSaida.alpha = 1f;
+        }
+
+        if (DayManager.Instance != null)
+            DayManager.Instance.IrParaCenaFinal();
+    }
+
+    private string[] ObterFalasDoDesfecho()
+    {
+        if (DayManager.Instance == null)
+            return falasEncerramentoMedio;
+
+        switch (DayManager.Instance.resultadoFinal)
+        {
+            case "Final Bom":
+                return falasEncerramentoBom;
+            case "Final Ruim":
+                return falasEncerramentoRuim;
+            default:
+                return falasEncerramentoMedio;
+        }
+    }
+
+    // =====================================================
+    // APRESENTAÇÃO INICIAL E DIÁLOGOS ANIMADOS
+    // =====================================================
     private IEnumerator IniciarApresentacao()
     {
         for (int i = 0; i < falasBoasVindas.Length; i++)
         {
+            if (encerrandoCampanha) yield break;
+
             yield return StartCoroutine(MostrarFalaAnimada(falasBoasVindas[i]));
             yield return new WaitForSeconds(tempoMensagem);
             yield return StartCoroutine(EsconderDialogoAnimado());
@@ -165,7 +283,8 @@ public class MapDialogueManager : MonoBehaviour
         PlayerPrefs.SetInt(CHAVE_APRESENTACAO_REALIZADA, 1);
         PlayerPrefs.Save();
 
-        rotinaEventos = StartCoroutine(SistemaEventos());
+        if (!encerrandoCampanha)
+            rotinaEventos = StartCoroutine(SistemaEventos());
     }
 
     private IEnumerator MostrarFalaAnimada(string mensagem)
@@ -337,15 +456,11 @@ public class MapDialogueManager : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // SISTEMA DE EVENTOS CONSTANTES (MÁXIMO 15 SEGUNDOS)
-    // =====================================================
     private IEnumerator SistemaEventos()
     {
-        // Primeira espera curta de 5 segundos após entrar no mapa
         yield return new WaitForSeconds(5f);
 
-        while (true)
+        while (!encerrandoCampanha)
         {
             if (!mostrandoMensagem && apresentacaoConcluida)
             {
@@ -359,7 +474,6 @@ public class MapDialogueManager : MonoBehaviour
                 }
             }
 
-            // Garante que o intervalo entre o fim de uma fala e o início de outra fique em 10~12 segundos
             yield return new WaitForSeconds(tempoEntreEventos);
         }
     }
@@ -369,7 +483,6 @@ public class MapDialogueManager : MonoBehaviour
         CommunityManager c = CommunityManager.instance;
         List<string> dicas = new List<string>();
 
-        // 1. VERIFICAÇÃO DE ALIMENTAÇÃO
         if (c != null && c.alimentacao < 25)
         {
             dicas.Add("Sandy, a comida está acabando! Precisamos ir ao Mercado quanto antes!");
@@ -382,7 +495,6 @@ public class MapDialogueManager : MonoBehaviour
             dicas.Add("Seria bom planejar uma busca de alimentos em breve.");
         }
 
-        // 2. VERIFICAÇÃO DE FELICIDADE / ÂNIMO
         if (c != null && c.felicidade < 25)
         {
             dicas.Add("O pessoal está muito desanimado... Uma visitinha à Praça faria milagres!");
@@ -394,15 +506,11 @@ public class MapDialogueManager : MonoBehaviour
             dicas.Add("O ânimo da matilha podia estar melhor. Fique de olho nisso!");
         }
 
-        // 3. SE TUDO ESTIVER EQUILIBRADO (MENSAGENS VARIADAS DE COMPANHIAS E DICAS)
         if (dicas.Count == 0)
         {
-            // Dicas gerais sobre locais
             dicas.Add("No Mercado você encontra alimentos e água para abastecer a comunidade!");
             dicas.Add("A Praça é ótima para encontrar itens recreativos e aumentar a felicidade dos cães.");
             dicas.Add("No Hospital conseguimos medicamentos importantes para cuidar de quem precisa.");
-
-            // Frases motivacionais e de carinho da comunidade
             dicas.Add("Você é o orgulho da nossa matilha, Sandy!");
             dicas.Add("Lembre-se: explore com cuidado para não atrair a atenção da Carrocinha.");
             dicas.Add("Sempre que precisar, estou aqui para te dar um direcionamento.");
@@ -425,6 +533,5 @@ public class MapDialogueManager : MonoBehaviour
     {
         PlayerPrefs.DeleteKey(CHAVE_APRESENTACAO_REALIZADA);
         PlayerPrefs.Save();
-        Debug.Log("Apresentação inicial da Sandy resetada com sucesso!");
     }
 }

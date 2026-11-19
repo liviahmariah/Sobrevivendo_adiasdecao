@@ -4,15 +4,22 @@ public class CarrocinhaMercado : MonoBehaviour
 {
     [Header("Movimento")]
     public float velocidade = 3.5f;
+    public bool virarParaSandy = true;
 
     [Header("Alvo")]
     public Transform player;
+
+    [Header("Animação")]
+    public Animator animator;
+    [Tooltip("Nome do parâmetro Bool no Animator (ex: Andando ou Perseguindo)")]
+    public string paramAndando = "Andando";
 
     [Header("Altura do chão")]
     [Tooltip("Altura fixa que a carrocinha deve manter.")]
     public float alturaDoChao;
 
     private Rigidbody2D rb;
+    private Vector3 escalaInicial;
 
     private bool perseguindo = false;
     private bool capturou = false;
@@ -21,6 +28,10 @@ public class CarrocinhaMercado : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        escalaInicial = transform.localScale;
+
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
 
         if (rb != null)
         {
@@ -46,13 +57,7 @@ public class CarrocinhaMercado : MonoBehaviour
         {
             GameObject objetoPlayer = GameObject.FindGameObjectWithTag("Player");
             if (objetoPlayer != null)
-            {
                 player = objetoPlayer.transform;
-            }
-            else
-            {
-                Debug.LogWarning("CarrocinhaMercado: Player não encontrado!");
-            }
         }
     }
 
@@ -78,59 +83,56 @@ public class CarrocinhaMercado : MonoBehaviour
         perseguindo = true;
         capturou = false;
 
-        Debug.Log("CARROCINHA ATIVADA! Perseguindo Sandy.");
+        AtualizarAnimacao(true);
     }
 
     public void Desativar()
     {
         perseguindo = false;
+        AtualizarAnimacao(false);
 
         if (rb != null)
-        {
             rb.linearVelocity = Vector2.zero;
-        }
     }
 
     private void PerseguirSandy()
     {
         float posAtualX = rb != null ? rb.position.x : transform.position.x;
         float distanciaX = player.position.x - posAtualX;
-        float direcaoX = Mathf.Sign(distanciaX);
+        float direcaoX = Mathf.Abs(distanciaX) < 0.05f ? 0f : Mathf.Sign(distanciaX);
 
-        if (Mathf.Abs(distanciaX) < 0.05f)
+        AtualizarAnimacao(direcaoX != 0f);
+
+        if (direcaoX != 0f && virarParaSandy)
         {
-            direcaoX = 0f;
+            transform.localScale = new Vector3(
+                Mathf.Abs(escalaInicial.x) * direcaoX,
+                escalaInicial.y,
+                escalaInicial.z
+            );
         }
 
         float novoX = posAtualX + (direcaoX * velocidade * Time.fixedDeltaTime);
         Vector2 novaPosicao = new Vector2(novoX, alturaDoChao);
 
         if (rb != null)
-        {
             rb.MovePosition(novaPosicao);
-        }
         else
-        {
             transform.position = novaPosicao;
-        }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void AtualizarAnimacao(bool estaAndando)
     {
-        VerificarColisao(collision.gameObject);
+        if (animator != null && !string.IsNullOrEmpty(paramAndando))
+            animator.SetBool(paramAndando, estaAndando);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        VerificarColisao(other.gameObject);
-    }
+    private void OnCollisionEnter2D(Collision2D collision) => VerificarColisao(collision.gameObject);
+    private void OnTriggerEnter2D(Collider2D other) => VerificarColisao(other.gameObject);
 
     private void VerificarColisao(GameObject objeto)
     {
-        if (!perseguindo || capturou)
-            return;
-
-        if (!objeto.CompareTag("Player"))
+        if (!perseguindo || capturou || !objeto.CompareTag("Player"))
             return;
 
         CapturarSandy();
@@ -143,26 +145,14 @@ public class CarrocinhaMercado : MonoBehaviour
 
         capturou = true;
         perseguindo = false;
+        AtualizarAnimacao(false);
 
         if (rb != null)
-        {
             rb.linearVelocity = Vector2.zero;
-        }
 
-        Debug.Log("CARROCINHA ENCOSTOU NA SANDY!");
-
-        // Envia a derrota para o Manager da fase atual (Hospital ou Mercado)
         if (HospitalManager.Instance != null)
-        {
             HospitalManager.Instance.Derrota();
-        }
         else if (MercadoManager.Instance != null)
-        {
             MercadoManager.Instance.Derrota();
-        }
-        else
-        {
-            Debug.LogWarning("CarrocinhaMercado: Nenhum Manager (Hospital ou Mercado) encontrado!");
-        }
     }
 }

@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -8424835717677566566, guid: b5163dd003ab0f14a9ff67aa04adad89, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -825,8 +825,6 @@ MonoBehaviour:
   escalaNormal: 1
   escalaAmpliada: 1.12
   velocidadeEscala: 3
-  audioMusica: {fileID: 0}
-  musicaCutscene: {fileID: 8300000, guid: 56dae8bfa9776b84bbfc6d8313b36196, type: 3}
   audioEscrita: {fileID: 750630291}
   somEscrita: {fileID: 8300000, guid: cfbed163dbcbbb34b80206c665c74374, type: 3}
   textoPular: {fileID: 1014683769}
@@ -1028,7 +1026,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 7546698239369937025, guid: b5163dd003ab0f14a9ff67aa04adad89, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1111,7 +1109,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -8551285238687494601, guid: b5163dd003ab0f14a9ff67aa04adad89, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

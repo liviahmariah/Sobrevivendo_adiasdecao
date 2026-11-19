@@ -6593,8 +6593,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b26fb42ffac2b5499c1604ae6bb7010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CarrocinhaMercado
-  velocidade: 5
+  velocidade: 3.5
+  virarParaSandy: 1
   player: {fileID: 1772009079}
+  animator: {fileID: 0}
+  paramAndando: Andando
   alturaDoChao: 0
 --- !u!1 &458445589
 GameObject:
@@ -7274,7 +7277,7 @@ MonoBehaviour:
   coletaAtiva: 1
   fugaAtiva: 0
   faseFinalizada: 0
-  carrocinha: {fileID: 447812160}
+  carrocinha: {fileID: 0}
   painelFuga: {fileID: 729998595}
   textoAviso: {fileID: 549728048}
   textoContador: {fileID: 2131619675}
@@ -14140,7 +14143,7 @@ MonoBehaviour:
   pontoLancamento: {fileID: 1181681365}
   intervaloAtaques: 5
   atrasoDisparoFallback: 0.25
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1375669297}
   somAtaque: {fileID: 8300000, guid: 1f9fed064a389ac4095a24d3ede5ca5d, type: 3}
   volumeSomAtaque: 0.63
   variarTom: 1
@@ -16009,7 +16012,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1364348034942072925, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.7803
+      value: 5.68
       objectReference: {fileID: 0}
     - target: {fileID: 1364348034942072925, guid: 19a6d19254be0854d94078c54358f3cb, type: 3}
       propertyPath: m_LocalPosition.y
@@ -19994,7 +19997,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1823105266
 MonoBehaviour:
   m_ObjectHideFlags: 0

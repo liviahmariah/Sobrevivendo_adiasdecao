@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -38,22 +37,17 @@ public class DayManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        if (totalDias < 1)
-            totalDias = 15;
-
-        if (duracaoDia <= 0f)
-            duracaoDia = 90f;
+        if (totalDias < 1) totalDias = 15;
+        if (duracaoDia <= 0f) duracaoDia = 90f;
 
         tempoRestante = duracaoDia;
         mediasDosDias = new float[totalDias];
         diasRegistrados = new bool[totalDias];
-
-        Debug.Log("DayManager iniciado. Dia " + diaAtual);
     }
 
     private void Update()
     {
-        if (!diaAtivo || jogoFinalizado)
+        if (!diaAtivo || jogoFinalizado || diaAtual >= totalDias)
             return;
 
         tempoRestante -= Time.deltaTime;
@@ -62,7 +56,6 @@ public class DayManager : MonoBehaviour
         {
             tempoRestante = 0f;
             diaAtivo = false;
-
             PrepararFimDoDia();
         }
     }
@@ -73,48 +66,26 @@ public class DayManager : MonoBehaviour
             return;
 
         fimDoDiaPendente = true;
-
-        RegistrarMediaDoDia();
-
-        Debug.Log(
-            "Fim do dia " + diaAtual +
-            ". Aguardando momento seguro para a transição."
-        );
-
+        RegistrarMediaDoDia(diaAtual);
         TentarIniciarTransicaoPendente();
     }
 
     public void TentarIniciarTransicaoPendente()
     {
-        if (!fimDoDiaPendente ||
-            transicaoEmAndamento ||
-            jogoFinalizado)
+        if (!fimDoDiaPendente || transicaoEmAndamento || jogoFinalizado)
             return;
 
-        // A transição só começa no mapa.
         if (SceneManager.GetActiveScene().name != "Mapa")
             return;
 
-        if (PhaseManager.Instance != null &&
-            PhaseManager.Instance.EstaEmFase())
+        if (PhaseManager.Instance != null && PhaseManager.Instance.EstaEmFase())
             return;
 
-        // Inclui objetos inativos na busca.
-        TransicaoDiaUI transicao =
-            FindObjectOfType<TransicaoDiaUI>(true);
-
+        TransicaoDiaUI transicao = FindFirstObjectByType<TransicaoDiaUI>(FindObjectsInactive.Include);
         if (transicao == null)
-        {
-            Debug.LogError(
-                "DayManager: TransicaoDiaUI não encontrada na cena Mapa."
-            );
             return;
-        }
 
         transicaoEmAndamento = true;
-
-        Debug.Log("Iniciando transição do dia " + diaAtual);
-
         transicao.IniciarTransicao(ConcluirTransicao);
     }
 
@@ -123,70 +94,62 @@ public class DayManager : MonoBehaviour
         if (jogoFinalizado)
             return;
 
-        Debug.Log("Transição do dia " + diaAtual + " concluída.");
-
         transicaoEmAndamento = false;
         fimDoDiaPendente = false;
 
-        // O último dia termina sem criar um dia 16.
+        diaAtual++;
+
         if (diaAtual >= totalDias)
         {
-            FinalizarJogo();
+            PrepararUltimoDia();
             return;
         }
 
-        diaAtual++;
         tempoRestante = duracaoDia;
         diaAtivo = true;
-
-        Debug.Log(
-            "Novo dia: " + diaAtual +
-            " | Tempo: " + tempoRestante
-        );
     }
 
-    private void RegistrarMediaDoDia()
-    {
-        if (CommunityManager.instance == null)
-        {
-            Debug.LogWarning(
-                "DayManager: CommunityManager não encontrado."
-            );
-            return;
-        }
-
-        float media = CommunityManager.instance.MediaComunidade();
-        int indice = diaAtual - 1;
-
-        if (indice < 0 || indice >= mediasDosDias.Length)
-            return;
-
-        mediasDosDias[indice] = media;
-        diasRegistrados[indice] = true;
-
-        Debug.Log(
-            "Dia " + diaAtual + " registrado. " +
-            "Alimentação: " +
-            CommunityManager.instance.alimentacao.ToString("F1") +
-            " | Saúde: " +
-            CommunityManager.instance.saude.ToString("F1") +
-            " | Felicidade: " +
-            CommunityManager.instance.felicidade.ToString("F1") +
-            " | Média: " + media.ToString("F1")
-        );
-    }
-
-    private void FinalizarJogo()
+    private void PrepararUltimoDia()
     {
         diaAtivo = false;
-        jogoFinalizado = true;
+        tempoRestante = 0f;
 
+        RegistrarMediaDoDia(totalDias);
         mediaFinal = CalcularMediaFinal();
         resultadoFinal = DeterminarResultadoFinal();
 
-        Debug.Log("JOGO FINALIZADO");
-        Debug.Log("Média final: " + mediaFinal.ToString("F1"));
-        Debug.Log("Resultado: " + resultadoFinal);
+        MapDialogueManager dialogoMapa = FindFirstObjectByType<MapDialogueManager>(FindObjectsInactive.Include);
+        if (dialogoMapa != null)
+        {
+            dialogoMapa.IniciarDiscursoFinalDia15();
+        }
+        else
+        {
+            Debug.LogWarning("MapDialogueManager não encontrado na cena Mapa. Indo direto para CenaFinal.");
+            IrParaCenaFinal();
+        }
+    }
+
+    public void IrParaCenaFinal()
+    {
+        if (jogoFinalizado)
+            return;
+
+        jogoFinalizado = true;
+        SceneManager.LoadScene("CenaFinal");
+    }
+
+    private void RegistrarMediaDoDia(int dia)
+    {
+        if (CommunityManager.instance == null)
+            return;
+
+        int indice = dia - 1;
+        if (indice < 0 || indice >= mediasDosDias.Length)
+            return;
+
+        mediasDosDias[indice] = CommunityManager.instance.MediaComunidade();
+        diasRegistrados[indice] = true;
     }
 
     private float CalcularMediaFinal()
@@ -196,9 +159,7 @@ public class DayManager : MonoBehaviour
 
         for (int i = 0; i < mediasDosDias.Length; i++)
         {
-            if (!diasRegistrados[i])
-                continue;
-
+            if (!diasRegistrados[i]) continue;
             soma += mediasDosDias[i];
             quantidadeDias++;
         }
@@ -215,6 +176,7 @@ public class DayManager : MonoBehaviour
 
     public float ObterTempoRestante() => tempoRestante;
     public bool DiaEstaAtivo() => diaAtivo;
+    public bool EhUltimoDia() => diaAtual >= totalDias;
 
     public float ObterMediaDoDia(int numeroDoDia)
     {
@@ -223,10 +185,6 @@ public class DayManager : MonoBehaviour
         if (indice < 0 || indice >= mediasDosDias.Length)
             return 0f;
 
-        return diasRegistrados[indice]
-            ? mediasDosDias[indice]
-            : 0f;
-
-        UnityEngine.SceneManagement.SceneManager.LoadScene("CenaFinal");
+        return diasRegistrados[indice] ? mediasDosDias[indice] : 0f;
     }
 }
