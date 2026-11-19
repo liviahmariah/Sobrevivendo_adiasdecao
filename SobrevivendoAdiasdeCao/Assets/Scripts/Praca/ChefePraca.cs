@@ -1,4 +1,3 @@
-
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
@@ -10,7 +9,9 @@ public class ChefePraca : MonoBehaviour
         Parado,
         Perseguindo,
         Agarrando,
-        Fugindo
+        Assustado,
+        Fugindo,
+        AguardandoRetorno
     }
 
     [Header("Estado")]
@@ -22,7 +23,7 @@ public class ChefePraca : MonoBehaviour
     public Transform pontoDeAgarrar;
 
     [Header("Percepção")]
-    public float distanciaPercepcao = 5f;
+    public float distanciaPercepcao = 6f;
 
     [Header("Movimento")]
     public float velocidadePerseguicao = 3.5f;
@@ -31,9 +32,19 @@ public class ChefePraca : MonoBehaviour
     public int latidosNecessarios = 6;
     public float tempoMaximoAgarrada = 4f;
 
-    [Header("Fuga do chefe")]
-    public float duracaoFuga = 3f;
+    [Header("Susto, Fuga e Retorno")]
+    public float duracaoSusto = 0.8f;
+    public float duracaoFuga = 2.5f;
     public float velocidadeFuga = 4.5f;
+    [Tooltip("Tempo que ele fica fora antes de voltar para a praça.")]
+    public float tempoParaVoltar = 3f;
+    [Tooltip("Se marcado, volta para o ponto inicial na praça e já recomeça a perseguir.")]
+    public bool voltarParaPosicaoInicial = true;
+
+    [Header("Animação e Áudio")]
+    public Animator animatorVigia;
+    public AudioSource audioSource;
+    public AudioClip somSustoVigia;
 
     [Header("HUD do agarrão")]
     public GameObject painelAgarramento;
@@ -43,9 +54,12 @@ public class ChefePraca : MonoBehaviour
 
     private int latidosAtuais = 0;
     private float tempoAgarrada;
+    private float tempoSustoRestante;
     private float tempoFugindo;
+    private float tempoEsperaRetorno;
     private int direcaoFuga;
 
+    private Vector3 posicaoInicial;
     private Rigidbody2D rb;
     private Vector2 velocidadeAtual;
     private ControleAgarramentoSandy controleSandy;
@@ -53,10 +67,29 @@ public class ChefePraca : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        posicaoInicial = transform.position;
+
+        if (animatorVigia == null)
+            animatorVigia = GetComponentInChildren<Animator>();
+
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+    }
+
+    private void Start()
+    {
+        if (sandy == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+                sandy = playerObj.transform;
+        }
     }
 
     private void Update()
     {
+        AtualizarAnimacoes();
+
         if (FaseManager.Instance == null ||
             !FaseManager.Instance.PodeColetar())
         {
@@ -79,8 +112,18 @@ public class ChefePraca : MonoBehaviour
                 AtualizarAgarrão();
                 break;
 
+            case EstadoChefe.Assustado:
+                PararMovimento();
+                AtualizarSusto();
+                break;
+
             case EstadoChefe.Fugindo:
                 AtualizarFuga();
+                break;
+
+            case EstadoChefe.AguardandoRetorno:
+                PararMovimento();
+                AtualizarRetorno();
                 break;
         }
     }
@@ -96,15 +139,40 @@ public class ChefePraca : MonoBehaviour
         }
     }
 
+    private void AtualizarAnimacoes()
+    {
+        if (animatorVigia == null)
+            return;
+
+        bool estaParado = estadoAtual == EstadoChefe.Parado ||
+                          estadoAtual == EstadoChefe.Agarrando ||
+                          estadoAtual == EstadoChefe.AguardandoRetorno;
+
+        animatorVigia.SetBool("EstaParado", estaParado);
+        animatorVigia.SetBool("EstaCorrendo", estadoAtual == EstadoChefe.Perseguindo || estadoAtual == EstadoChefe.Fugindo);
+        animatorVigia.SetBool("Agarrando", estadoAtual == EstadoChefe.Agarrando);
+        animatorVigia.SetBool("Assustado", estadoAtual == EstadoChefe.Assustado);
+    }
+
+    private void VirarParaDirecao(float direcaoX)
+    {
+        if (direcaoX == 0f)
+            return;
+
+        float sinal = Mathf.Sign(direcaoX);
+        transform.localScale = new Vector3(
+            Mathf.Abs(transform.localScale.x) * sinal,
+            transform.localScale.y,
+            transform.localScale.z
+        );
+    }
+
     private void VerificarSandy()
     {
         if (sandy == null)
             return;
 
-        float distancia = Vector2.Distance(
-            transform.position,
-            sandy.position
-        );
+        float distancia = Mathf.Abs(sandy.position.x - transform.position.x);
 
         if (distancia <= distanciaPercepcao)
         {
@@ -123,6 +191,8 @@ public class ChefePraca : MonoBehaviour
         float direcaoX = Mathf.Sign(
             sandy.position.x - transform.position.x
         );
+
+        VirarParaDirecao(direcaoX);
 
         velocidadeAtual = new Vector2(
             direcaoX * velocidadePerseguicao,
@@ -177,13 +247,7 @@ public class ChefePraca : MonoBehaviour
 
             if (controleSandy != null)
                 controleSandy.Prender();
-            else
-                Debug.LogError(
-                    "ControleAgarramentoSandy não encontrado na Sandy!"
-                );
         }
-
-        Debug.Log("CHEFE DA PRAÇA AGARROU SANDY!");
     }
 
     private void AtualizarAgarrão()
@@ -202,11 +266,7 @@ public class ChefePraca : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Z))
         {
             latidosAtuais++;
-
             AtualizarTextoLatidos();
-
-            Debug.Log("TECLA Z DETECTADA");
-            Debug.Log("LATIDOS: " + latidosAtuais + "/" + latidosNecessarios);
         }
 
         if (latidosAtuais >= latidosNecessarios)
@@ -226,13 +286,27 @@ public class ChefePraca : MonoBehaviour
         if (controleSandy != null)
             controleSandy.Soltar();
 
-        direcaoFuga = sandy.position.x >= transform.position.x ? -1 : 1;
-
-        tempoFugindo = duracaoFuga;
-        estadoAtual = EstadoChefe.Fugindo;
-
-        Debug.Log("SANDY ESCAPOU! CHEFE ESTÁ FUGINDO!");
         EsconderPainelAgarramento();
+
+        direcaoFuga = sandy != null && sandy.position.x >= transform.position.x ? -1 : 1;
+        VirarParaDirecao(direcaoFuga);
+
+        tempoSustoRestante = duracaoSusto;
+        estadoAtual = EstadoChefe.Assustado;
+
+        if (audioSource != null && somSustoVigia != null)
+            audioSource.PlayOneShot(somSustoVigia);
+    }
+
+    private void AtualizarSusto()
+    {
+        tempoSustoRestante -= Time.deltaTime;
+
+        if (tempoSustoRestante <= 0f)
+        {
+            tempoFugindo = duracaoFuga;
+            estadoAtual = EstadoChefe.Fugindo;
+        }
     }
 
     private void EscaparPorTempoEsgotado()
@@ -240,12 +314,8 @@ public class ChefePraca : MonoBehaviour
         if (controleSandy != null)
             controleSandy.Soltar();
 
-        if (FaseManager.Instance != null)
-        {
-            Debug.Log("TEMPO DE COLETA PERDIDO!");
-        }
-
-        direcaoFuga = sandy.position.x >= transform.position.x ? -1 : 1;
+        direcaoFuga = sandy != null && sandy.position.x >= transform.position.x ? -1 : 1;
+        VirarParaDirecao(direcaoFuga);
 
         tempoFugindo = duracaoFuga;
         estadoAtual = EstadoChefe.Fugindo;
@@ -256,6 +326,8 @@ public class ChefePraca : MonoBehaviour
     {
         tempoFugindo -= Time.deltaTime;
 
+        VirarParaDirecao(direcaoFuga);
+
         velocidadeAtual = new Vector2(
             direcaoFuga * velocidadeFuga,
             0f
@@ -264,20 +336,33 @@ public class ChefePraca : MonoBehaviour
         if (tempoFugindo <= 0f)
         {
             PararMovimento();
-            estadoAtual = EstadoChefe.Parado;
+            tempoEsperaRetorno = tempoParaVoltar;
+            estadoAtual = EstadoChefe.AguardandoRetorno;
+        }
+    }
 
-            Debug.Log("CHEFE VOLTOU A ESPERAR SANDY!");
+    private void AtualizarRetorno()
+    {
+        tempoEsperaRetorno -= Time.deltaTime;
+
+        if (tempoEsperaRetorno <= 0f)
+        {
+            if (voltarParaPosicaoInicial)
+            {
+                transform.position = posicaoInicial;
+                if (rb != null)
+                    rb.position = posicaoInicial;
+            }
+
+            estadoAtual = EstadoChefe.Perseguindo;
+            Debug.Log("CHEFE VOLTOU PARA A PRAÇA!");
         }
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-
-        Gizmos.DrawWireSphere(
-            transform.position,
-            distanciaPercepcao
-        );
+        Gizmos.DrawWireSphere(transform.position, distanciaPercepcao);
     }
 
     private void MostrarPainelAgarramento()
@@ -311,5 +396,5 @@ public class ChefePraca : MonoBehaviour
     {
         if (painelAgarramento != null)
             painelAgarramento.SetActive(false);
-    } 
+    }
 }

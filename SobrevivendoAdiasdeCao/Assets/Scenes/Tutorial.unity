@@ -2970,7 +2970,7 @@ GameObject:
   - component: {fileID: 323726166}
   m_Layer: 11
   m_Name: Carrocinha
-  m_TagString: Untagged
+  m_TagString: carrocinha
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3009,7 +3009,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.018082261, y: -0.2101044}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -3019,7 +3019,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.55, y: 0.6}
+  m_Size: {x: 0.5861646, y: 0.5976912}
   m_EdgeRadius: 0
 --- !u!114 &323726161
 MonoBehaviour:
@@ -3039,7 +3039,7 @@ MonoBehaviour:
     m_Bits: 8
   verificadorChao: {fileID: 1568756908}
   raioVerificacaoChao: 0.2
-  estaNoChao: 0
+  estaNoChao: 1
   chavesColetadas: 0
   quantidadeNecessaria: 8
   chaveFinalPrefab: {fileID: 5543251370450234549, guid: 9929649e85f35e046818433cf2af2726, type: 3}
@@ -3062,7 +3062,7 @@ MonoBehaviour:
   pontoRetornoChefe: {fileID: 29954055}
   pontoGaiolaSandy: {fileID: 1806816680}
   raioAreaSegura: 2
-  pontoCordaChefe: {fileID: 1480015454}
+  pontoCordaChefe: {fileID: 0}
   corCorda: {r: 0.55, g: 0.35, b: 0.18, a: 1}
   larguraCorda: 0.08
   sortingOrderCorda: 12
@@ -3082,7 +3082,7 @@ Transform:
   m_GameObject: {fileID: 323726159}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.25, y: 1.77, z: 0}
+  m_LocalPosition: {x: -10.25, y: -0.84, z: 0}
   m_LocalScale: {x: 4.8027725, y: 4.8027725, z: 4.8027725}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3152,7 +3152,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.018082261, y: -0.20894998}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -3162,7 +3162,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.55, y: 0.6}
+  m_Size: {x: 0.5861646, y: 0.6}
   m_EdgeRadius: 0
 --- !u!1 &340067037
 GameObject:
@@ -9389,7 +9389,7 @@ Animator:
   m_GameObject: {fileID: 907779442}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 5e5c756f7dcdb9146b8dd26f12762b68, type: 2}
+  m_Controller: {fileID: 9100000, guid: 4e8e680570fe64d4295b70af93c6804a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -9470,7 +9470,7 @@ Transform:
   m_GameObject: {fileID: 907779442}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.025, y: -0.219, z: 0}
+  m_LocalPosition: {x: -0.027, y: -0.226, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14289,7 +14289,7 @@ Transform:
   m_GameObject: {fileID: 1480015453}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.176, y: -0.016, z: 0}
+  m_LocalPosition: {x: 0.167, y: -0.271, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15169,7 +15169,7 @@ Transform:
   m_GameObject: {fileID: 1568756907}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.285, z: 0}
+  m_LocalPosition: {x: 0, y: -0.512, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

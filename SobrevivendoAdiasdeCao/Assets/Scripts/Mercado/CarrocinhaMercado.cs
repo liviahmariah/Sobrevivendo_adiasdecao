@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class CarrocinhaMercado : MonoBehaviour
@@ -5,17 +6,17 @@ public class CarrocinhaMercado : MonoBehaviour
     [Header("Movimento")]
     public float velocidade = 3.5f;
     public bool virarParaSandy = true;
+    public bool iniciarAoAtivarObjeto = true;
 
-    [Header("Alvo")]
+    [Header("Alvo e Captura")]
     public Transform player;
+    [Tooltip("Pequeno atraso após encostar na Sandy para o toque ficar visível antes do painel abrir (0 = instantâneo).")]
+    public float atrasoPainelDerrota = 0.25f;
 
     [Header("Animação")]
     public Animator animator;
-    [Tooltip("Nome do parâmetro Bool no Animator (ex: Andando ou Perseguindo)")]
-    public string paramAndando = "Andando";
 
     [Header("Altura do chão")]
-    [Tooltip("Altura fixa que a carrocinha deve manter.")]
     public float alturaDoChao;
 
     private Rigidbody2D rb;
@@ -35,8 +36,17 @@ public class CarrocinhaMercado : MonoBehaviour
 
         if (rb != null)
         {
+            rb.bodyType = RigidbodyType2D.Kinematic;
             rb.gravityScale = 0f;
-            rb.constraints |= RigidbodyConstraints2D.FreezeRotation;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (iniciarAoAtivarObjeto)
+        {
+            Ativar();
         }
     }
 
@@ -83,13 +93,13 @@ public class CarrocinhaMercado : MonoBehaviour
         perseguindo = true;
         capturou = false;
 
-        AtualizarAnimacao(true);
+        AtualizarAnimacao(true, false);
     }
 
     public void Desativar()
     {
         perseguindo = false;
-        AtualizarAnimacao(false);
+        AtualizarAnimacao(false, false);
 
         if (rb != null)
             rb.linearVelocity = Vector2.zero;
@@ -101,7 +111,7 @@ public class CarrocinhaMercado : MonoBehaviour
         float distanciaX = player.position.x - posAtualX;
         float direcaoX = Mathf.Abs(distanciaX) < 0.05f ? 0f : Mathf.Sign(distanciaX);
 
-        AtualizarAnimacao(direcaoX != 0f);
+        AtualizarAnimacao(direcaoX != 0f, false);
 
         if (direcaoX != 0f && virarParaSandy)
         {
@@ -121,38 +131,55 @@ public class CarrocinhaMercado : MonoBehaviour
             transform.position = novaPosicao;
     }
 
-    private void AtualizarAnimacao(bool estaAndando)
+    private void AtualizarAnimacao(bool correndo, bool agarrando)
     {
-        if (animator != null && !string.IsNullOrEmpty(paramAndando))
-            animator.SetBool(paramAndando, estaAndando);
+        if (animator == null || animator.runtimeAnimatorController == null)
+            return;
+
+        animator.SetBool("EstaCorrendo", correndo);
+        animator.SetBool("EstaParado", !correndo && !agarrando);
+        animator.SetBool("EstaAndando", false);
+        animator.SetBool("Agarrando", agarrando);
     }
 
     private void OnCollisionEnter2D(Collision2D collision) => VerificarColisao(collision.gameObject);
     private void OnTriggerEnter2D(Collider2D other) => VerificarColisao(other.gameObject);
+    private void OnTriggerStay2D(Collider2D other) => VerificarColisao(other.gameObject);
 
     private void VerificarColisao(GameObject objeto)
     {
-        if (!perseguindo || capturou || !objeto.CompareTag("Player"))
+        if (!perseguindo || capturou)
             return;
 
-        CapturarSandy();
+        if (!objeto.CompareTag("Player") && objeto.GetComponentInParent<PlayerMovement>() == null)
+            return;
+
+        StartCoroutine(CapturarSandy());
     }
 
-    private void CapturarSandy()
+    private IEnumerator CapturarSandy()
     {
         if (capturou)
-            return;
+            yield break;
 
         capturou = true;
         perseguindo = false;
-        AtualizarAnimacao(false);
 
         if (rb != null)
             rb.linearVelocity = Vector2.zero;
 
-        if (HospitalManager.Instance != null)
+        AtualizarAnimacao(false, true);
+
+        if (atrasoPainelDerrota > 0f)
+            yield return new WaitForSecondsRealtime(atrasoPainelDerrota);
+
+        if (PracaManager.Instance != null)
+            PracaManager.Instance.Derrota();
+        else if (HospitalManager.Instance != null)
             HospitalManager.Instance.Derrota();
         else if (MercadoManager.Instance != null)
             MercadoManager.Instance.Derrota();
+        else if (FaseManager.Instance != null)
+            FaseManager.Instance.Derrota();
     }
 }

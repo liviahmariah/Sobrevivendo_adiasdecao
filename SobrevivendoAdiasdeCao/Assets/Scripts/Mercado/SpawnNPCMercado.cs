@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,11 +37,8 @@ public class SpawnNPCMercado : MonoBehaviour
     {
         npcsAtivos.RemoveAll(npc => npc == null);
 
-        if (MercadoManager.Instance == null ||
-            !MercadoManager.Instance.PodeColetar())
-        {
+        if (!FasePermiteColeta())
             return;
-        }
 
         if (Time.time < proximoSpawn)
             return;
@@ -52,6 +48,23 @@ public class SpawnNPCMercado : MonoBehaviour
 
         SpawnarNPC();
         AgendarSpawn();
+    }
+
+    private bool FasePermiteColeta()
+    {
+        if (PracaManager.Instance != null)
+            return PracaManager.Instance.PodeColetar();
+
+        if (MercadoManager.Instance != null)
+            return MercadoManager.Instance.PodeColetar();
+
+        if (HospitalManager.Instance != null)
+            return HospitalManager.Instance.PodeColetar();
+
+        if (FaseManager.Instance != null)
+            return FaseManager.Instance.PodeColetar();
+
+        return false;
     }
 
     private void SpawnarNPC()

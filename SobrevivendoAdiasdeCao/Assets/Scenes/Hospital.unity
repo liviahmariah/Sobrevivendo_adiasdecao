@@ -6421,7 +6421,7 @@ Animator:
   m_GameObject: {fileID: 447812153}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d0ddccf80758e9644b1dc3f83a4943a5, type: 2}
+  m_Controller: {fileID: 9100000, guid: 4e8e680570fe64d4295b70af93c6804a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -6595,9 +6595,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarrocinhaMercado
   velocidade: 3.5
   virarParaSandy: 1
+  iniciarAoAtivarObjeto: 1
   player: {fileID: 1772009079}
+  atrasoPainelDerrota: 0.25
   animator: {fileID: 0}
-  paramAndando: Andando
   alturaDoChao: 0
 --- !u!1 &458445589
 GameObject:
@@ -7277,7 +7278,7 @@ MonoBehaviour:
   coletaAtiva: 1
   fugaAtiva: 0
   faseFinalizada: 0
-  carrocinha: {fileID: 0}
+  carrocinha: {fileID: 447812160}
   painelFuga: {fileID: 729998595}
   textoAviso: {fileID: 549728048}
   textoContador: {fileID: 2131619675}
@@ -19997,7 +19998,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1823105266
 MonoBehaviour:
   m_ObjectHideFlags: 0

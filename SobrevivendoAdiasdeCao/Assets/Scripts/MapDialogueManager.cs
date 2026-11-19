@@ -66,14 +66,16 @@ public class MapDialogueManager : MonoBehaviour
     {
         "Que bom ver você de volta sã e salva, Sandy!",
         "Você foi incrível conseguindo escapar e libertar nossos amigos lá atrás.",
-        "Agora, este é o nosso Ponto de Encontro. É daqui que cuidamos da nossa grande família canina!",
-        "Dê uma olhada nessas barras ali em cima: elas mostram como a comunidade está se sentindo.",
-        "Precisamos manter todos alimentados, alegres e saudáveis.",
-        "Se a comida faltar, o Mercado é o melhor lugar para buscar suprimentos.",
-        "Se o pessoal estiver desanimado, uma ida à Praça vai renovar a alegria de todos!",
-        "E se alguém ficar doentinho, precisaremos buscar remédios lá no Hospital.",
-        "Escolha para onde ir com sabedoria. Toda a comunidade confia nas suas patinhas, Sandy!",
-        "Estamos juntos nessa! Quando estiver pronta, escolha um local no mapa."
+        "Agora, este é o nosso Ponto de Encontro. É daqui que cuidamos da nossa grande família canina ao longo de 15 dias!",
+        "Dê uma olhada nas barras ali em cima: elas mostram a Alimentação, a Felicidade e a Saúde da comunidade.",
+        "Fique atenta: quanto mais baixa estiver uma barra, menor será o tempo disponível naquela missão!",
+        "Em cada local, colete o máximo de itens bons antes do tempo acabar e fuja para a saída antes que a Carrocinha chegue.",
+        "Cuidado com itens ruins ou estragados, pois eles descontam pontos, e fique longe dos vigias!",
+        "Se algum vigia agarrar você, lata bastante pressionando Z para assustá-lo e escapar!",
+        "No Mercado, buscamos comida e água para matar a fome da matilha.",
+        "Na Praça, recolhemos brinquedos e itens de diversão para levantar o ânimo de todos.",
+        "E no Hospital, pegamos medicamentos importantes para curar quem está doentinho.",
+        "Se a Carrocinha pegar você, perdemos tudo o que foi coletado na missão. Escolha no mapa por onde começar!"
     };
 
     [Header("Falas do Último Dia (Dia 15)")]
@@ -109,7 +111,6 @@ public class MapDialogueManager : MonoBehaviour
         if (painelDialogo != null)
             painelDialogo.SetActive(false);
 
-        // Se já entrou no mapa no Dia 15, vai direto para o discurso final
         if (DayManager.Instance != null && DayManager.Instance.EhUltimoDia())
         {
             ExibirDukeImediatamente();
@@ -221,7 +222,6 @@ public class MapDialogueManager : MonoBehaviour
                 yield return new WaitForSeconds(tempoEntreFalase);
         }
 
-        // Fade-out suave antes de abrir a CenaFinal
         if (painelFadeSaida != null)
         {
             painelFadeSaida.gameObject.SetActive(true);
@@ -485,37 +485,47 @@ public class MapDialogueManager : MonoBehaviour
 
         if (c != null && c.alimentacao < 25)
         {
-            dicas.Add("Sandy, a comida está acabando! Precisamos ir ao Mercado quanto antes!");
-            dicas.Add("A barriguinha dos filhotes está roncando... Que tal dar um pulo no Mercado?");
+            dicas.Add("Sandy, a comida está acabando! No Mercado você coleta ração e água para alimentar a matilha!");
+            dicas.Add("A barriguinha dos filhotes está roncando... Corra para o Mercado e pegue apenas os alimentos bons!");
             dicas.Add("Sem comida, a comunidade fica fraca. O Mercado é nossa melhor opção agora!");
         }
         else if (c != null && c.alimentacao < 50)
         {
-            dicas.Add("Os estoques de ração estão ficando baixos.");
-            dicas.Add("Seria bom planejar uma busca de alimentos em breve.");
+            dicas.Add("Os estoques de ração estão baixos — lembre-se que quanto menor a barra, menor o tempo no Mercado!");
+            dicas.Add("Seria bom planejar uma busca de alimentos no Mercado em breve.");
         }
 
         if (c != null && c.felicidade < 25)
         {
-            dicas.Add("O pessoal está muito desanimado... Uma visitinha à Praça faria milagres!");
-            dicas.Add("Precisamos de brinquedos e carinho! A Praça é o lugar ideal para animar todos.");
+            dicas.Add("O pessoal está muito desanimado... Na Praça você coleta brinquedos e diversão para animar todos!");
+            dicas.Add("Precisamos renovar a alegria da matilha! Visite a Praça e fuja do vigia antes do tempo acabar.");
             dicas.Add("O clima na comunidade está meio triste... Que tal irmos até a Praça?");
         }
         else if (c != null && c.felicidade < 50)
         {
-            dicas.Add("O ânimo da matilha podia estar melhor. Fique de olho nisso!");
+            dicas.Add("O ânimo da matilha podia estar melhor. Uma passada na Praça ajuda a subir a felicidade!");
+        }
+
+        if (c != null && c.saude < 25)
+        {
+            dicas.Add("Atenção, Sandy! A saúde da comunidade está crítica! Precisamos buscar remédios bons no Hospital!");
+            dicas.Add("Temos cãezinhos doentes! Vá ao Hospital e evite os medicamentos estragados.");
+        }
+        else if (c != null && c.saude < 50)
+        {
+            dicas.Add("A saúde da matilha precisa de cuidado. No Hospital você coleta medicamentos para proteger todos!");
         }
 
         if (dicas.Count == 0)
         {
-            dicas.Add("No Mercado você encontra alimentos e água para abastecer a comunidade!");
-            dicas.Add("A Praça é ótima para encontrar itens recreativos e aumentar a felicidade dos cães.");
-            dicas.Add("No Hospital conseguimos medicamentos importantes para cuidar de quem precisa.");
-            dicas.Add("Você é o orgulho da nossa matilha, Sandy!");
-            dicas.Add("Lembre-se: explore com cuidado para não atrair a atenção da Carrocinha.");
-            dicas.Add("Sempre que precisar, estou aqui para te dar um direcionamento.");
-            dicas.Add("Qualquer missão que você escolher ajudará demais nossa comunidade!");
-            dicas.Add("Dá uma olhada no mapa e escolha para onde quer ir primeiro!");
+            dicas.Add("No Mercado, colete ração e água para aumentar a Alimentação — mas evite comidas estragadas!");
+            dicas.Add("Na Praça, recolha itens recreativos para subir a Felicidade da comunidade, tomando cuidado com o vigia!");
+            dicas.Add("No Hospital, pegue apenas os medicamentos bons para aumentar a Saúde da matilha!");
+            dicas.Add("Fique de olho no cronômetro de cada fase: quando o tempo acaba, a Carrocinha aparece para capturar você!");
+            dicas.Add("Se algum vigia agarrar você na fase, aperte Z várias vezes para latir, assustá-lo e escapar!");
+            dicas.Add("Lembre-se: se a Carrocinha pegar a Sandy, todos os itens coletados naquela missão são perdidos!");
+            dicas.Add("Quanto mais cheia estiver a barra de uma necessidade, mais tempo você terá para explorar o local!");
+            dicas.Add("Cada dia no mapa permite uma nova missão. Equilibre Alimentação, Felicidade e Saúde até o Dia 15!");
         }
 
         return dicas[Random.Range(0, dicas.Count)];

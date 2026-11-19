@@ -2,10 +2,23 @@ using UnityEngine;
 
 public class PracaManager : FaseManager
 {
-    public static PracaManager Instance;
+    public static new PracaManager Instance;
 
     [Header("Diversão conseguida nesta fase")]
     public float diversaoConseguida = 0f;
+
+    [Header("Diversão boa para entrega")]
+    public float diversaoBoaConseguida = 0f;
+
+    [Header("Pontuação da Sandy")]
+    public float pontosSandy = 0f;
+
+    [Header("Estatísticas da coleta")]
+    public int quantidadeItensBons = 0;
+    public int quantidadeItensRuins = 0;
+
+    public float pontosBons = 0f;
+    public float pontosRuins = 0f;
 
     [Header("Penalidade por ser pega")]
     public float perdaFelicidadeAoSerPega = 10f;
@@ -27,7 +40,17 @@ public class PracaManager : FaseManager
     protected override void Start()
     {
         tipoFase = TipoFase.Praca;
+
         diversaoConseguida = 0f;
+        diversaoBoaConseguida = 0f;
+
+        pontosSandy = 0f;
+
+        quantidadeItensBons = 0;
+        quantidadeItensRuins = 0;
+
+        pontosBons = 0f;
+        pontosRuins = 0f;
 
         Debug.Log("PRAÇA | Start iniciado.");
         Debug.Log("PRAÇA | CommunityManager: " +
@@ -73,17 +96,13 @@ public class PracaManager : FaseManager
         return tempo;
     }
 
-
     // ==========================================
     // DIVERSÃO
     // ==========================================
 
     public void AdicionarDiversao(float valor)
     {
-        if (faseFinalizada)
-            return;
-
-        if (!coletaAtiva)
+        if (faseFinalizada || !coletaAtiva)
             return;
 
         diversaoConseguida += valor;
@@ -93,10 +112,74 @@ public class PracaManager : FaseManager
             diversaoConseguida = 0f;
         }
 
+        if (valor >= 0f)
+        {
+            quantidadeItensBons++;
+            pontosBons += valor;
+            diversaoBoaConseguida += valor;
+            pontosSandy += valor;
+        }
+        else
+        {
+            quantidadeItensRuins++;
+            float perda = Mathf.Abs(valor);
+            pontosRuins += perda;
+            pontosSandy -= perda;
+        }
+
         Debug.Log(
             "PRAÇA | Diversão conseguida: " +
             diversaoConseguida
         );
+
+        if (FindFirstObjectByType<PontuacaoSandyUI>() != null)
+        {
+            FindFirstObjectByType<PontuacaoSandyUI>()
+                .AtualizarPontuacao();
+        }
+    }
+
+    public float ObterDiversaoConseguida()
+    {
+        return diversaoConseguida;
+    }
+
+    // ==========================================
+    // REGISTRO DA COLETA (PADRÃO HOSPITAL)
+    // ==========================================
+
+    public void RegistrarColetaDiversao(
+        float valor,
+        bool itemRuim,
+        float multiplicadorBonusPontuacao = 1f)
+    {
+        if (faseFinalizada || !coletaAtiva)
+            return;
+
+        if (itemRuim)
+        {
+            quantidadeItensRuins++;
+
+            pontosRuins += valor;
+            pontosSandy -= valor;
+
+            diversaoConseguida -= valor;
+
+            if (diversaoConseguida < 0f)
+                diversaoConseguida = 0f;
+        }
+        else
+        {
+            quantidadeItensBons++;
+
+            float pontosRecebidos = valor * multiplicadorBonusPontuacao;
+
+            pontosBons += pontosRecebidos;
+            pontosSandy += pontosRecebidos;
+
+            diversaoBoaConseguida += pontosRecebidos;
+            diversaoConseguida += valor;
+        }
 
         if (FindFirstObjectByType<PontuacaoSandyUI>() != null)
         {
@@ -118,14 +201,14 @@ public class PracaManager : FaseManager
         Debug.Log("PRAÇA: VITÓRIA!");
         Debug.Log(
             "Diversão conseguida: " +
-            diversaoConseguida
+            diversaoBoaConseguida
         );
         Debug.Log("=================================");
 
         if (CommunityManager.instance != null)
         {
             CommunityManager.instance.AlterarFelicidade(
-                diversaoConseguida
+                diversaoBoaConseguida
             );
         }
 
@@ -160,8 +243,77 @@ public class PracaManager : FaseManager
             );
         }
 
+        Debug.Log("Diversão entregue: 0");
         Debug.Log("=================================");
 
         base.Derrota();
+    }
+
+    // ==========================================
+    // TELA DE RESULTADO
+    // ==========================================
+
+    protected override void AtualizarEstatisticasResultado()
+    {
+        base.AtualizarEstatisticasResultado();
+
+        if (textoRecado != null)
+        {
+            if (resultadoFoiVitoria)
+            {
+                textoRecado.text =
+                    "Voce conseguiu escapar! A diversao conseguida " +
+                    "aumentou a felicidade da comunidade.";
+            }
+            else
+            {
+                textoRecado.text =
+                    "A carrocinha pegou a Sandy! A diversao " +
+                    "conseguida foi perdida e a comunidade " +
+                    "ficou desanimada.";
+            }
+
+            textoRecado.gameObject.SetActive(true);
+        }
+
+        float diversaoEntregue = resultadoFoiVitoria
+            ? diversaoBoaConseguida
+            : 0f;
+
+        if (textoItensBons != null)
+        {
+            textoItensBons.gameObject.SetActive(true);
+
+            textoItensBons.text =
+                "Atividades boas: " + quantidadeItensBons +
+                " | +" + pontosBons.ToString("0.##") + " pontos";
+        }
+
+        if (textoItensRuins != null)
+        {
+            textoItensRuins.gameObject.SetActive(true);
+
+            textoItensRuins.text =
+                "Perigos/itens ruins: " + quantidadeItensRuins +
+                " | -" + pontosRuins.ToString("0.##") + " pontos";
+        }
+
+        if (textoSaldoFinal != null)
+        {
+            textoSaldoFinal.gameObject.SetActive(true);
+
+            textoSaldoFinal.text =
+                "Saldo final: " + pontosSandy.ToString("0.##") +
+                " pontos";
+        }
+
+        if (textoEntregaComunidade != null)
+        {
+            textoEntregaComunidade.gameObject.SetActive(true);
+
+            textoEntregaComunidade.text =
+                "Felicidade entregue: " +
+                diversaoEntregue.ToString("0.##");
+        }
     }
 }

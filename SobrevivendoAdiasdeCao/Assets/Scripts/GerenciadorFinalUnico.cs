@@ -1,12 +1,24 @@
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
 public class GerenciadorFinalUnico : MonoBehaviour
 {
-    [Header("Objetos Visuais de Cada Final (Na mesma cena)")]
+    [Header("Objetos Visuais de Cada Final (Opcional)")]
     public GameObject grupoFinalBom;
     public GameObject grupoFinalMedio;
     public GameObject grupoFinalRuim;
+
+    [Header("Animações dos Finais (Em Looping)")]
+    public Animator animatorFinais;
+    public AnimationClip animacaoFinalBom;
+    public AnimationClip animacaoFinalMedio;
+    public AnimationClip animacaoFinalRuim;
+
+    [Header("Ou Timelines de Cada Final (Em Looping - Opcional)")]
+    public PlayableDirector timelineFinalBom;
+    public PlayableDirector timelineFinalMedio;
+    public PlayableDirector timelineFinalRuim;
 
     [Header("Músicas Específicas (Opcional)")]
     public AudioClip musicaFinalBom;
@@ -37,16 +49,17 @@ public class GerenciadorFinalUnico : MonoBehaviour
 
     private void AtivarFinalCorreto()
     {
-        // Garante que todos comecem desligados
         if (grupoFinalBom != null) grupoFinalBom.SetActive(false);
         if (grupoFinalMedio != null) grupoFinalMedio.SetActive(false);
         if (grupoFinalRuim != null) grupoFinalRuim.SetActive(false);
 
-        // Fallback caso teste a cena diretamente sem passar pelas fases
+        if (timelineFinalBom != null) timelineFinalBom.Stop();
+        if (timelineFinalMedio != null) timelineFinalMedio.Stop();
+        if (timelineFinalRuim != null) timelineFinalRuim.Stop();
+
         if (CommunityManager.instance == null)
         {
-            if (grupoFinalMedio != null) grupoFinalMedio.SetActive(true);
-            TocarMusica(musicaFinalMedio);
+            ExecutarFinal(grupoFinalMedio, animacaoFinalMedio, timelineFinalMedio, musicaFinalMedio);
             return;
         }
 
@@ -57,21 +70,56 @@ public class GerenciadorFinalUnico : MonoBehaviour
         // 1. FINAL RUIM: Média < 40 ou qualquer barra zerada
         if (media < 40f || cm.alimentacao <= 0f || cm.saude <= 0f || cm.felicidade <= 0f)
         {
-            if (grupoFinalRuim != null) grupoFinalRuim.SetActive(true);
-            TocarMusica(musicaFinalRuim);
+            ExecutarFinal(grupoFinalRuim, animacaoFinalRuim, timelineFinalRuim, musicaFinalRuim);
         }
         // 2. FINAL BOM: Média >= 70 e nenhuma barra em estado crítico
         else if (media >= 70f && !temBarraCritica)
         {
-            if (grupoFinalBom != null) grupoFinalBom.SetActive(true);
-            TocarMusica(musicaFinalBom);
+            ExecutarFinal(grupoFinalBom, animacaoFinalBom, timelineFinalBom, musicaFinalBom);
         }
         // 3. FINAL MÉDIO: Casos intermediários
         else
         {
-            if (grupoFinalMedio != null) grupoFinalMedio.SetActive(true);
-            TocarMusica(musicaFinalMedio);
+            ExecutarFinal(grupoFinalMedio, animacaoFinalMedio, timelineFinalMedio, musicaFinalMedio);
         }
+    }
+
+    private void ExecutarFinal(
+        GameObject grupoVisual,
+        AnimationClip clipeAnimacao,
+        PlayableDirector timeline,
+        AudioClip musica)
+    {
+        if (grupoVisual != null)
+            grupoVisual.SetActive(true);
+
+        if (clipeAnimacao != null)
+            clipeAnimacao.wrapMode = WrapMode.Loop;
+
+        if (animatorFinais != null && clipeAnimacao != null)
+        {
+            animatorFinais.gameObject.SetActive(true);
+            animatorFinais.speed = 1f;
+            animatorFinais.Play(clipeAnimacao.name, 0, 0f);
+        }
+        else if (grupoVisual != null && clipeAnimacao != null)
+        {
+            Animator animDoGrupo = grupoVisual.GetComponentInChildren<Animator>();
+            if (animDoGrupo != null)
+            {
+                animDoGrupo.speed = 1f;
+                animDoGrupo.Play(clipeAnimacao.name, 0, 0f);
+            }
+        }
+
+        if (timeline != null)
+        {
+            timeline.gameObject.SetActive(true);
+            timeline.extrapolationMode = DirectorWrapMode.Loop;
+            timeline.Play();
+        }
+
+        TocarMusica(musica);
     }
 
     private void TocarMusica(AudioClip clip)
