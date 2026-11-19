@@ -577,7 +577,7 @@ Transform:
   m_GameObject: {fileID: 29954054}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 12.462395, y: -4.9044857, z: -18.456642}
+  m_LocalPosition: {x: 12.462395, y: -4.44, z: -18.456642}
   m_LocalScale: {x: 1.0566504, y: 1.2051096, z: 1.2051096}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1349,7 +1349,7 @@ GameObject:
   - component: {fileID: 99418996}
   - component: {fileID: 99418995}
   - component: {fileID: 99418994}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Prateleira_0
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -2019,6 +2019,8 @@ MonoBehaviour:
   distanciaVisao: 7
   distanciaCaptura: 1.2
   distanciaGaiola: 0.3
+  pontoSegurarSandy: {fileID: 0}
+  offsetBracoSandy: {x: 0.55, y: 0.2}
   pontosPatrulha:
   - {fileID: 1025519871}
   - {fileID: 29954055}
@@ -2027,10 +2029,6 @@ MonoBehaviour:
   pontoRetornoChefe: {fileID: 29954055}
   pontoGaiolaSandy: {fileID: 1806816680}
   raioAreaSegura: 2
-  pontoCordaChefe: {fileID: 0}
-  corCorda: {r: 0.55, g: 0.35, b: 0.18, a: 1}
-  larguraCorda: 0.08
-  sortingOrderCorda: 12
   audioSource: {fileID: 0}
   somAlertaViuSandy: {fileID: 0}
   somSustoChefe: {fileID: 0}
@@ -3054,6 +3052,8 @@ MonoBehaviour:
   distanciaVisao: 8
   distanciaCaptura: 1.2
   distanciaGaiola: 0.35
+  pontoSegurarSandy: {fileID: 1480015454}
+  offsetBracoSandy: {x: 0.55, y: 0.2}
   pontosPatrulha:
   - {fileID: 1025519871}
   - {fileID: 29954055}
@@ -3062,10 +3062,6 @@ MonoBehaviour:
   pontoRetornoChefe: {fileID: 29954055}
   pontoGaiolaSandy: {fileID: 1806816680}
   raioAreaSegura: 2
-  pontoCordaChefe: {fileID: 0}
-  corCorda: {r: 0.55, g: 0.35, b: 0.18, a: 1}
-  larguraCorda: 0.08
-  sortingOrderCorda: 12
   audioSource: {fileID: 2093051820}
   somAlertaViuSandy: {fileID: 8300000, guid: 0dd4d90beb25f834a9f7eacd37843844, type: 3}
   somSustoChefe: {fileID: 8300000, guid: f57c3a26d6acad646bb87056d84331bc, type: 3}
@@ -5149,7 +5145,7 @@ GameObject:
   - component: {fileID: 441148598}
   - component: {fileID: 441148600}
   - component: {fileID: 441148599}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Plataforma (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -9134,6 +9130,8 @@ MonoBehaviour:
   distanciaVisao: 7
   distanciaCaptura: 1.2
   distanciaGaiola: 0.3
+  pontoSegurarSandy: {fileID: 0}
+  offsetBracoSandy: {x: 0.55, y: 0.2}
   pontosPatrulha:
   - {fileID: 1025519871}
   - {fileID: 29954055}
@@ -9142,10 +9140,6 @@ MonoBehaviour:
   pontoRetornoChefe: {fileID: 29954055}
   pontoGaiolaSandy: {fileID: 1806816680}
   raioAreaSegura: 2
-  pontoCordaChefe: {fileID: 0}
-  corCorda: {r: 0.55, g: 0.35, b: 0.18, a: 1}
-  larguraCorda: 0.08
-  sortingOrderCorda: 12
   audioSource: {fileID: 0}
   somAlertaViuSandy: {fileID: 0}
   somSustoChefe: {fileID: 0}
@@ -10352,7 +10346,7 @@ Transform:
   m_GameObject: {fileID: 1025519870}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.2555895, y: -5.2057633, z: -18.456642}
+  m_LocalPosition: {x: -9.67, y: -3.51, z: -18.456642}
   m_LocalScale: {x: 1.0566504, y: 1.2051096, z: 1.2051096}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14289,7 +14283,7 @@ Transform:
   m_GameObject: {fileID: 1480015453}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.167, y: -0.271, z: 0}
+  m_LocalPosition: {x: 0.063, y: -0.271, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15016,7 +15010,7 @@ GameObject:
   - component: {fileID: 1564418797}
   - component: {fileID: 1564418799}
   - component: {fileID: 1564418798}
-  m_Layer: 3
+  m_Layer: 12
   m_Name: Plataforma (2)
   m_TagString: Ground
   m_Icon: {fileID: 0}

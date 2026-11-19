@@ -45,6 +45,10 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
     public float distanciaVisao = 8f;
     public float distanciaCaptura = 1.2f;
     public float distanciaGaiola = 0.4f;
+    [Tooltip("Objeto vazio filho do chefe posicionado nos braços onde a Sandy será segurada.")]
+    public Transform pontoSegurarSandy;
+    [Tooltip("Posição alternativa caso 'Ponto Segurar Sandy' não seja preenchido.")]
+    public Vector2 offsetBracoSandy = new Vector2(0.55f, 0.2f);
 
     [Header("Pontos de Ronda e Gaiola")]
     public Transform[] pontosPatrulha;
@@ -53,12 +57,6 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
     public Transform pontoRetornoChefe;
     public Transform pontoGaiolaSandy;
     public float raioAreaSegura = 2f;
-    public Transform pontoCordaChefe;
-
-    [Header("Corda Visual (Conexão Chefe <-> Sandy)")]
-    public Color corCorda = new Color(0.55f, 0.35f, 0.18f, 1f);
-    public float larguraCorda = 0.08f;
-    public int sortingOrderCorda = 12;
 
     [Header("Áudio")]
     public AudioSource audioSource;
@@ -73,7 +71,6 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
     private Rigidbody2D rb;
     private Collider2D colisorPrincipal;
-    private LineRenderer linhaCorda;
 
     private int pontoAtual = 0;
     private bool chefeAtivo = false;
@@ -115,8 +112,6 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
             audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.playOnAwake = false;
         }
-
-        ConfigurarLinhaCorda();
     }
 
     private void Start()
@@ -134,27 +129,36 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
         }
 
         if (sandy != null)
+        {
             movimentoSandy = sandy.GetComponent<PlayerMovement>();
+            ConfigurarIgnorarColisaoComSandy();
+        }
 
         AtualizarIndicadorChefe();
         AtualizarAnimacoes();
     }
 
-    private void ConfigurarLinhaCorda()
+    private void ConfigurarIgnorarColisaoComSandy()
     {
-        linhaCorda = GetComponent<LineRenderer>();
-        if (linhaCorda == null)
-            linhaCorda = gameObject.AddComponent<LineRenderer>();
+        if (sandy == null)
+            return;
 
-        linhaCorda.positionCount = 2;
-        linhaCorda.startWidth = larguraCorda;
-        linhaCorda.endWidth = larguraCorda;
-        linhaCorda.material = new Material(Shader.Find("Sprites/Default"));
-        linhaCorda.startColor = corCorda;
-        linhaCorda.endColor = corCorda;
-        linhaCorda.sortingOrder = sortingOrderCorda;
-        linhaCorda.useWorldSpace = true;
-        linhaCorda.enabled = false;
+        Collider2D[] colisoresChefe = GetComponentsInChildren<Collider2D>(true);
+        Collider2D[] colisoresSandy = sandy.GetComponentsInChildren<Collider2D>(true);
+
+        foreach (Collider2D colChefe in colisoresChefe)
+        {
+            if (colChefe == null || colChefe.isTrigger)
+                continue;
+
+            foreach (Collider2D colSandy in colisoresSandy)
+            {
+                if (colSandy == null || colSandy.isTrigger)
+                    continue;
+
+                Physics2D.IgnoreCollision(colChefe, colSandy, true);
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -184,7 +188,6 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
     private void Update()
     {
         AtualizarAnimacoes();
-        AtualizarCordaVisual();
 
         if (!chefeAtivo || sandy == null)
         {
@@ -219,27 +222,9 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
             return;
 
         animatorCarrocinha.SetBool("EstaParada", estadoAtual == EstadoChefe.Fora);
-        animatorCarrocinha.SetBool("EstaAndando", estadoAtual == EstadoChefe.Andando);
+        animatorCarrocinha.SetBool("EstaAndando", estadoAtual == EstadoChefe.Andando || estadoAtual == EstadoChefe.Capturando);
         animatorCarrocinha.SetBool("EstaCorrendo", estadoAtual == EstadoChefe.Correndo);
-        animatorCarrocinha.SetBool("Agarrando", estadoAtual == EstadoChefe.Capturando);
-    }
-
-    private void AtualizarCordaVisual()
-    {
-        if (linhaCorda == null)
-            return;
-
-        if (estadoAtual == EstadoChefe.Capturando && sandy != null)
-        {
-            linhaCorda.enabled = true;
-            Vector3 origemCorda = pontoCordaChefe != null ? pontoCordaChefe.position : transform.position;
-            linhaCorda.SetPosition(0, origemCorda);
-            linhaCorda.SetPosition(1, sandy.position);
-        }
-        else
-        {
-            linhaCorda.enabled = false;
-        }
+        animatorCarrocinha.SetBool("Agarrando", false);
     }
 
     private void TocarSom(AudioClip clip)
@@ -465,9 +450,16 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
 
         if (sandy != null)
         {
-            Transform ancora = pontoCordaChefe != null ? pontoCordaChefe : transform;
-            sandy.SetParent(ancora);
-            sandy.localPosition = new Vector3(0.6f * Mathf.Sign(transform.localScale.x), -0.3f, 0f);
+            if (pontoSegurarSandy != null)
+            {
+                sandy.SetParent(pontoSegurarSandy);
+                sandy.localPosition = Vector3.zero;
+            }
+            else
+            {
+                sandy.SetParent(transform);
+                sandy.localPosition = new Vector3(Mathf.Abs(offsetBracoSandy.x), offsetBracoSandy.y, 0f);
+            }
         }
 
         if (pontoGaiolaSandy != null)
@@ -492,11 +484,18 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
         transportandoSandy = false;
         velocidadeHorizontalAtual = 0f;
 
+        ConfigurarIgnorarColisaoComSandy();
+
         if (sandy != null)
         {
             sandy.SetParent(paiOriginalSandy);
             if (pontoGaiolaSandy != null)
+            {
                 sandy.position = pontoGaiolaSandy.position;
+                Rigidbody2D rbSandy = sandy.GetComponent<Rigidbody2D>();
+                if (rbSandy != null)
+                    rbSandy.linearVelocity = Vector2.zero;
+            }
         }
 
         if (movimentoSandy != null)
@@ -614,9 +613,6 @@ public class ChefeCarrocinhaTutorial : MonoBehaviour
         transportandoSandy = false;
         velocidadeHorizontalAtual = 0f;
         estadoAtual = EstadoChefe.Fora;
-
-        if (linhaCorda != null)
-            linhaCorda.enabled = false;
 
         AtualizarIndicadorChefe();
         StopAllCoroutines();

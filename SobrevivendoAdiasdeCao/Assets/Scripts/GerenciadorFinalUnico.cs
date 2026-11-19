@@ -1,29 +1,27 @@
+using System.Collections;
 using UnityEngine;
-using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
 public class GerenciadorFinalUnico : MonoBehaviour
 {
-    [Header("Objetos Visuais de Cada Final (Opcional)")]
+    [Header("Imagens / Grupos de Cada Final")]
     public GameObject grupoFinalBom;
     public GameObject grupoFinalMedio;
     public GameObject grupoFinalRuim;
 
-    [Header("Animações dos Finais (Em Looping)")]
-    public Animator animatorFinais;
-    public AnimationClip animacaoFinalBom;
-    public AnimationClip animacaoFinalMedio;
-    public AnimationClip animacaoFinalRuim;
+    [Header("Fade Suave de Entrada e Saída")]
+    [Tooltip("Arraste aqui o CanvasGroup de uma Image preta que cobre 100% da tela.")]
+    public CanvasGroup painelFade;
+    public float duracaoFadeEntrada = 1.5f;
+    public float duracaoFadeSaida = 1.5f;
 
-    [Header("Ou Timelines de Cada Final (Em Looping - Opcional)")]
-    public PlayableDirector timelineFinalBom;
-    public PlayableDirector timelineFinalMedio;
-    public PlayableDirector timelineFinalRuim;
-
-    [Header("Músicas Específicas (Opcional)")]
+    [Header("Músicas Específicas")]
+    public AudioSource audioSourceFinal;
     public AudioClip musicaFinalBom;
     public AudioClip musicaFinalMedio;
     public AudioClip musicaFinalRuim;
+    [Range(0f, 1f)]
+    public float volumeMusica = 1f;
 
     [Header("Transição para a Cena Extra")]
     public string cenaExtra = "CenaExtra";
@@ -36,15 +34,32 @@ public class GerenciadorFinalUnico : MonoBehaviour
     private bool podeAvancar = false;
     private bool jaCarregou = false;
 
+    private void Awake()
+    {
+        if (audioSourceFinal == null)
+            audioSourceFinal = GetComponent<AudioSource>();
+
+        if (audioSourceFinal == null)
+            audioSourceFinal = gameObject.AddComponent<AudioSource>();
+
+        // Garante áudio 2D audível em qualquer posição da cena
+        audioSourceFinal.playOnAwake = false;
+        audioSourceFinal.loop = true;
+        audioSourceFinal.spatialBlend = 0f;
+        audioSourceFinal.volume = volumeMusica;
+    }
+
     private void Start()
     {
         Time.timeScale = 1f;
+        AudioListener.pause = false;
         cronometro = atrasoLiberacaoEspaco;
 
         if (avisoPressioneEspaco != null)
             avisoPressioneEspaco.SetActive(false);
 
         AtivarFinalCorreto();
+        StartCoroutine(RotinaFadeEntrada());
     }
 
     private void AtivarFinalCorreto()
@@ -53,13 +68,9 @@ public class GerenciadorFinalUnico : MonoBehaviour
         if (grupoFinalMedio != null) grupoFinalMedio.SetActive(false);
         if (grupoFinalRuim != null) grupoFinalRuim.SetActive(false);
 
-        if (timelineFinalBom != null) timelineFinalBom.Stop();
-        if (timelineFinalMedio != null) timelineFinalMedio.Stop();
-        if (timelineFinalRuim != null) timelineFinalRuim.Stop();
-
         if (CommunityManager.instance == null)
         {
-            ExecutarFinal(grupoFinalMedio, animacaoFinalMedio, timelineFinalMedio, musicaFinalMedio);
+            ExecutarFinal(grupoFinalBom, musicaFinalBom);
             return;
         }
 
@@ -70,64 +81,111 @@ public class GerenciadorFinalUnico : MonoBehaviour
         // 1. FINAL RUIM: Média < 40 ou qualquer barra zerada
         if (media < 40f || cm.alimentacao <= 0f || cm.saude <= 0f || cm.felicidade <= 0f)
         {
-            ExecutarFinal(grupoFinalRuim, animacaoFinalRuim, timelineFinalRuim, musicaFinalRuim);
+            ExecutarFinal(grupoFinalRuim, musicaFinalRuim);
         }
         // 2. FINAL BOM: Média >= 70 e nenhuma barra em estado crítico
         else if (media >= 70f && !temBarraCritica)
         {
-            ExecutarFinal(grupoFinalBom, animacaoFinalBom, timelineFinalBom, musicaFinalBom);
+            ExecutarFinal(grupoFinalBom, musicaFinalBom);
         }
         // 3. FINAL MÉDIO: Casos intermediários
         else
         {
-            ExecutarFinal(grupoFinalMedio, animacaoFinalMedio, timelineFinalMedio, musicaFinalMedio);
+            ExecutarFinal(grupoFinalMedio, musicaFinalMedio);
         }
     }
 
-    private void ExecutarFinal(
-        GameObject grupoVisual,
-        AnimationClip clipeAnimacao,
-        PlayableDirector timeline,
-        AudioClip musica)
+    private void ExecutarFinal(GameObject grupoVisual, AudioClip musica)
     {
         if (grupoVisual != null)
             grupoVisual.SetActive(true);
-
-        if (clipeAnimacao != null)
-            clipeAnimacao.wrapMode = WrapMode.Loop;
-
-        if (animatorFinais != null && clipeAnimacao != null)
-        {
-            animatorFinais.gameObject.SetActive(true);
-            animatorFinais.speed = 1f;
-            animatorFinais.Play(clipeAnimacao.name, 0, 0f);
-        }
-        else if (grupoVisual != null && clipeAnimacao != null)
-        {
-            Animator animDoGrupo = grupoVisual.GetComponentInChildren<Animator>();
-            if (animDoGrupo != null)
-            {
-                animDoGrupo.speed = 1f;
-                animDoGrupo.Play(clipeAnimacao.name, 0, 0f);
-            }
-        }
-
-        if (timeline != null)
-        {
-            timeline.gameObject.SetActive(true);
-            timeline.extrapolationMode = DirectorWrapMode.Loop;
-            timeline.Play();
-        }
 
         TocarMusica(musica);
     }
 
     private void TocarMusica(AudioClip clip)
     {
-        if (MusicManager.instance != null && clip != null)
+        if (clip == null)
+        {
+            Debug.LogWarning("[GerenciadorFinalUnico] Nenhum AudioClip de música foi atribuído no Inspector!");
+            return;
+        }
+
+        // Toca pelo AudioSource local para garantir som mesmo sem MusicManager ou se ele estiver pausado
+        if (MusicManager.instance != null)
         {
             MusicManager.instance.TocarMusicaSuave(clip);
         }
+
+        if (audioSourceFinal != null)
+        {
+            // Se o MusicManager não estiver tocando esse clipe, toca localmente
+            AudioSource fonteMusicManager = MusicManager.instance != null
+                ? MusicManager.instance.GetComponent<AudioSource>()
+                : null;
+
+            if (fonteMusicManager == null || !fonteMusicManager.isPlaying || fonteMusicManager.clip != clip)
+            {
+                audioSourceFinal.clip = clip;
+                audioSourceFinal.volume = volumeMusica;
+                audioSourceFinal.loop = true;
+                audioSourceFinal.Play();
+            }
+        }
+    }
+
+    private IEnumerator RotinaFadeEntrada()
+    {
+        if (painelFade == null)
+            yield break;
+
+        painelFade.gameObject.SetActive(true);
+        painelFade.blocksRaycasts = true;
+        painelFade.alpha = 1f;
+
+        float tempo = 0f;
+        float duracao = Mathf.Max(0.01f, duracaoFadeEntrada);
+
+        while (tempo < duracao)
+        {
+            tempo += Time.unscaledDeltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, tempo / duracao);
+            painelFade.alpha = Mathf.Lerp(1f, 0f, t);
+            yield return null;
+        }
+
+        painelFade.alpha = 0f;
+        painelFade.blocksRaycasts = false;
+    }
+
+    private IEnumerator RotinaFadeSaidaECarregar()
+    {
+        if (painelFade != null)
+        {
+            painelFade.gameObject.SetActive(true);
+            painelFade.blocksRaycasts = true;
+
+            float tempo = 0f;
+            float duracao = Mathf.Max(0.01f, duracaoFadeSaida);
+            float alphaInicial = painelFade.alpha;
+            float volumeInicial = audioSourceFinal != null ? audioSourceFinal.volume : volumeMusica;
+
+            while (tempo < duracao)
+            {
+                tempo += Time.unscaledDeltaTime;
+                float t = Mathf.SmoothStep(0f, 1f, tempo / duracao);
+                painelFade.alpha = Mathf.Lerp(alphaInicial, 1f, t);
+
+                if (audioSourceFinal != null && audioSourceFinal.isPlaying)
+                    audioSourceFinal.volume = Mathf.Lerp(volumeInicial, 0f, t);
+
+                yield return null;
+            }
+
+            painelFade.alpha = 1f;
+        }
+
+        SceneManager.LoadScene(cenaExtra);
     }
 
     private void Update()
@@ -137,7 +195,7 @@ public class GerenciadorFinalUnico : MonoBehaviour
 
         if (!podeAvancar)
         {
-            cronometro -= Time.deltaTime;
+            cronometro -= Time.unscaledDeltaTime;
             if (cronometro <= 0f)
             {
                 podeAvancar = true;
@@ -150,7 +208,7 @@ public class GerenciadorFinalUnico : MonoBehaviour
         if (Input.GetKeyDown(teclaAvancar))
         {
             jaCarregou = true;
-            SceneManager.LoadScene(cenaExtra);
+            StartCoroutine(RotinaFadeSaidaECarregar());
         }
     }
 }
